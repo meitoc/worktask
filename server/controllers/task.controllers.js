@@ -1,5 +1,5 @@
 const { sendResponse, AppError}=require("../helpers/utils.js")
-const { query, body, validationResult } = require('express-validator');
+const { query, body, param, validationResult } = require('express-validator');
 const Task = require("../models/Task.js")
 const User = require("../models/User.js")
 
@@ -21,7 +21,7 @@ taskController.createTask=async(req,res,next)=>{
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
-        
+        //process
         const created= await Task.create(info)
         sendResponse(res,200,true,{data:created},null,"Create task Success")
     }catch(err){
@@ -29,25 +29,51 @@ taskController.createTask=async(req,res,next)=>{
     }
 }
 
+//update task status
+taskController.updateTaskStatus=async(req,res,next)=>{
+    try{
+        console.log(req.params.id)
+        //check param and query by express-validator
+        await param('id').notEmpty().withMessage('Empty task id!').run(req);
+        await param('id').isMongoId().withMessage('Wrong task id!').run(req);
+        await body('status').notEmpty().withMessage('Empty status!').run(req);
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        //process
+        const taskId= req.params.id
+        const {status} = req.body
+
+        let successTask=null;
+        const refFound = await Task.findOneAndUpdate({_id:taskId,active:true},{status},{new:true});
+        console.log(refFound)
+        if(refFound.status===status)
+        successTask=taskId;
+        sendResponse(res,200,true,{users:successTask},null,"Add user success")
+    }catch(err){
+        next(err)
+    }
+}
 //add users to task
 taskController.addReference=async(req,res,next)=>{
     try{
-        //check body and query by express-validator
-        await query('id').notEmpty().withMessage('Empty task id!').run(req);
+        //check param and query by express-validator
+        await param('id').notEmpty().withMessage('Empty task id!').run(req);
+        await param('id').isMongoId().withMessage('Wrong task id!').run(req);
         await body('users').notEmpty().withMessage('Empty users!').run(req);
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
-
-        const taskId= req.query.id
+        //process
+        const taskId= req.params.id
         const {users} = req.body
         const successName=[];
 
         let found = await User.find({name:{$in:users}})
         if(found.length<=0)
         return res.status(400).json({ errors: [{ msg: 'Invalid data' }] }); 
-        // throw new AppError(400,"Bad request","Invalid data");
         for(const e of found){
             const refFound = await Task.findOneAndUpdate({_id:taskId,active:true},{$addToSet:{users: e._id}},{new:true});
             console.log(refFound)
@@ -63,25 +89,24 @@ taskController.addReference=async(req,res,next)=>{
 //delete users from task
 taskController.deleteReference=async(req,res,next)=>{
     try{
-        //check body and query by express-validator
-        await query('id').notEmpty().withMessage('Empty task id!').run(req);
+        //check param and query by express-validator
+        await param('id').notEmpty().withMessage('Empty task id!').run(req);
+        await param('id').isMongoId().withMessage('Wrong task id!').run(req);
         await body('users').notEmpty().withMessage('Empty users!').run(req);
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
-
-        const taskId= req.query.id
+        //process
+        const taskId= req.params.id
         const {users} = req.body
         const successName=[];
         
         if(users.length<=0) 
         return res.status(400).json({ errors: [{ msg: 'No data' }] }); 
-        // throw new AppError(400,"Bad request","No data");
         let found = await User.find({name:{$in:users}})
         if(found.length<=0)
         return res.status(400).json({ errors: [{ msg: 'Invalid dat' }] }); 
-        // throw new AppError(400,"Bad request","Invalid data");
         for(const e of found){
             const refFound = await Task.findOneAndUpdate({_id:taskId,active:true},{$pull:{users: e._id}});
             if(refFound.users.includes(e._id))
@@ -108,22 +133,41 @@ taskController.getAllTasks=async(req,res,next)=>{
         next(err)
     }
 }
+//Get a task
+taskController.getTask=async(req,res,next)=>{
+    try{
+        //check param by express-validator
+        await param('id').notEmpty().withMessage('Empty task id!').run(req);
+        await param('id').isMongoId().withMessage('Wrong task id!').run(req);
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        //process
+        const id=req.params.id;
+        const filter = {_id:id, active:true}
+        const listOfFound= await Task.find(filter).populate("users","-password");
+        sendResponse(res,200,true,{data:listOfFound},null,"Found list of tasks success")
+
+    }catch(err){
+        next(err)
+    }
+}
 //delete a task
 taskController.deleteTask=async(req,res,next)=>{
     try{
         //check query by express-validator
         await query('id').notEmpty().withMessage('Empty task id!').run(req);
+        await query('id').isMongoId().withMessage('Wrong task id!').run(req);
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
-
+        //process
         const taskId= req.query.id;
-
         const taskChange = await Task.findOneAndUpdate({_id:taskId,active:true},{active:false});
         if(taskChange?.active===true) sendResponse(res,200,true,{id:taskId},null,"Delete task success")
         else return res.status(400).json({ errors: [{ msg: 'Invalid data' }] });
-        // else throw new AppError(400,"Bad request","Invalid data")
      }catch(err){
          next(err)
      }

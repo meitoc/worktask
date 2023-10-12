@@ -27,11 +27,9 @@ userController.createUser=async(req,res,next)=>{
         :await User.findOne({name:info.name});
         if(existUser) 
         return res.status(400).json({ errors: [{ msg: 'User existed or unvalable' }] });
-        // throw new AppError(400,"Bad Request","User existed or unvalable");
         else try{
             if(!info.name || !info.password) 
             return res.status(400).json({ errors: [{ msg: 'Create User Error' }] });
-            // throw new AppError(400,"Bad Request","Create User Error")
             const created= await User.create(info)
             sendResponse(res,200,true,{data:created},null,"Create User Success")
         }catch(err){
@@ -41,10 +39,9 @@ userController.createUser=async(req,res,next)=>{
         next(err)
     }
 }
-//Get a user
-userController.getUserInfo=async(req,res,next)=>{
-    const name = req.params.name;
-    const filter = name===undefined?{active:true}:{name, active:true}
+//Get all user
+userController.getUsersInfo=async(req,res,next)=>{
+    const filter = {active:true}
     try{
         const listOfFound= await User.find(filter)
         if(listOfFound.length<=0)return res.status(400).json({ errors: [{ msg: 'Invalid user name' }] }); 
@@ -52,16 +49,28 @@ userController.getUserInfo=async(req,res,next)=>{
             name: element.name,
             role: element.role,
         }));
-        if(name!==undefined && req.query.tasks==="all" && listOfFound.length>0){
-            try{
-                const tasks = await Task.find({users: listOfFound[0]._id});
-                const filterredTask = tasks.map(element=>element._id);
-                filterredList = {...filterredList, tasks: filterredTask};
-            }catch(err){
-                next(err)
-            }
-        }
         sendResponse(res,200,true,{users:filterredList},null,"Found list of users success")
+    }catch(err){
+        next(err)
+    }
+}
+//Get a user
+userController.getAUser=async(req,res,next)=>{
+    const filter = {name:req.params.name, active:true}
+    try{
+        const userFound= await User.findOne(filter)
+        if(userFound===null) return res.status(400).json({ errors: [{ msg: 'Invalid user name' }] }); 
+        let filterredInfo = {
+            name: userFound.name,
+            role: userFound.role,
+        };
+        if(req.query.tasks==="all")try{
+            const tasks = await Task.find({users: userFound._id}).populate("users","name");;
+            filterredInfo = {...filterredInfo, tasks};
+        }catch(err){
+            next(err)
+        };
+        sendResponse(res,200,true,{filterredInfo},null,"Found list of users success")
     }catch(err){
         next(err)
     }
@@ -105,7 +114,6 @@ userController.deleteUserByName=async(req,res,next)=>{
         //hide updated for secure
         sendResponse(res,200,true,{},null,"Delete user success");
         else return res.status(400).json({ errors: [{ msg: 'No matched data' }] });
-        // else throw new AppError(400,"Bad Request","No matched data");
     }catch(err){
         next(err)
     }

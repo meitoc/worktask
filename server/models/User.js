@@ -3,8 +3,8 @@ const mongoose = require("mongoose");
 const userSchema = mongoose.Schema(
   {
     name: { type: String, required: true },
-    role: { type:String, enum: ["manager", "employee"] },
-    active: { type: Boolean, enum: [true, false], require: true },
+    role: { type:String, enum: ["manager", "employee"], default: "employee" },
+    active: { type: Boolean, default: true },
     password: {type: String, required: true}
   },
   {
