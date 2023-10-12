@@ -1,7 +1,7 @@
 {
     "client": "Thunder Client",
     "collectionName": "worktask",
-    "dateExported": "2023-10-11T06:58:57.606Z",
+    "dateExported": "2023-10-12T08:12:52.729Z",
     "version": "1.1",
     "folders": [
         {
@@ -110,21 +110,23 @@
             "colId": "2b6d10c7-aabf-458d-a924-310f346d8338",
             "containerId": "c024fb18-1522-4889-bbb8-d5677e5114e4",
             "name": "get-all-task-with-filter",
-            "url": "http://localhost:8000/api/task?name=Elon&status=pending",
+            "url": "http://localhost:8000/api/task?id=652770ecdc699c417ed83225",
             "method": "GET",
-            "sortNum": 38750,
+            "sortNum": 32187.5,
             "created": "2023-10-10T18:27:07.302Z",
-            "modified": "2023-10-10T18:46:12.655Z",
+            "modified": "2023-10-12T04:09:08.135Z",
             "headers": [],
             "params": [
                 {
                     "name": "name",
                     "value": "Elon",
+                    "isDisabled": true,
                     "isPath": false
                 },
                 {
                     "name": "status",
                     "value": "pending",
+                    "isDisabled": true,
                     "isPath": false
                 },
                 {
@@ -141,11 +143,24 @@
                 },
                 {
                     "name": "id",
-                    "value": "6525037a4d2bafb98aec1f7d",
-                    "isDisabled": true,
+                    "value": "652770ecdc699c417ed83225",
                     "isPath": false
                 }
             ],
+            "tests": []
+        },
+        {
+            "_id": "4821842b-b333-4c34-a60b-4339a6194add",
+            "colId": "2b6d10c7-aabf-458d-a924-310f346d8338",
+            "containerId": "c024fb18-1522-4889-bbb8-d5677e5114e4",
+            "name": "get-a-task",
+            "url": "http://localhost:8000/api/task/6525037a4d2bafb98aec1f7d",
+            "method": "GET",
+            "sortNum": 34375,
+            "created": "2023-10-12T04:18:07.257Z",
+            "modified": "2023-10-12T08:08:32.469Z",
+            "headers": [],
+            "params": [],
             "tests": []
         },
         {
@@ -153,13 +168,19 @@
             "colId": "2b6d10c7-aabf-458d-a924-310f346d8338",
             "containerId": "eb290903-87ac-4e96-b9ca-008bf2c618e5",
             "name": "get-a-user-infomation",
-            "url": "http://localhost:8000/api/user",
+            "url": "http://localhost:8000/api/user/abc?tasks=all",
             "method": "GET",
             "sortNum": 40000,
             "created": "2023-10-09T16:31:04.027Z",
-            "modified": "2023-10-11T06:50:10.662Z",
+            "modified": "2023-10-12T07:40:19.471Z",
             "headers": [],
-            "params": [],
+            "params": [
+                {
+                    "name": "tasks",
+                    "value": "all",
+                    "isPath": false
+                }
+            ],
             "tests": []
         },
         {
@@ -171,7 +192,7 @@
             "method": "GET",
             "sortNum": 45000,
             "created": "2023-10-10T06:50:05.305Z",
-            "modified": "2023-10-10T07:38:48.501Z",
+            "modified": "2023-10-12T04:32:35.898Z",
             "headers": [],
             "params": [
                 {
@@ -206,19 +227,13 @@
             "colId": "2b6d10c7-aabf-458d-a924-310f346d8338",
             "containerId": "c024fb18-1522-4889-bbb8-d5677e5114e4",
             "name": "add-user-to-task",
-            "url": "http://localhost:8000/api/task/add-user?id=6525037a4d2bafb98aec1f7d",
+            "url": "http://localhost:8000/api/task/6525037a4d2bafb98aec1f7d/add-user",
             "method": "PUT",
             "sortNum": 50000,
             "created": "2023-10-10T16:36:33.365Z",
-            "modified": "2023-10-11T04:41:51.288Z",
+            "modified": "2023-10-12T04:09:46.706Z",
             "headers": [],
-            "params": [
-                {
-                    "name": "id",
-                    "value": "6525037a4d2bafb98aec1f7d",
-                    "isPath": false
-                }
-            ],
+            "params": [],
             "body": {
                 "type": "json",
                 "raw": "{\n  \"users\":[\"def\"]\n}",
@@ -245,22 +260,35 @@
             "colId": "2b6d10c7-aabf-458d-a924-310f346d8338",
             "containerId": "c024fb18-1522-4889-bbb8-d5677e5114e4",
             "name": "delete-user-from-task",
-            "url": "http://localhost:8000/api/task/delete-user?id=6525037a4d2bafb98aec1f7d",
+            "url": "http://localhost:8000/api/task/6525037a4d2bafb98aec1f7d/delete-user",
             "method": "PUT",
             "sortNum": 60000,
             "created": "2023-10-10T17:49:42.582Z",
-            "modified": "2023-10-10T17:51:03.818Z",
+            "modified": "2023-10-12T04:09:33.213Z",
             "headers": [],
-            "params": [
-                {
-                    "name": "id",
-                    "value": "6525037a4d2bafb98aec1f7d",
-                    "isPath": false
-                }
-            ],
+            "params": [],
             "body": {
                 "type": "json",
                 "raw": "{\n  \"users\":[\"def\"]\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "ed5c7d00-09ce-4b34-9d02-71523301315f",
+            "colId": "2b6d10c7-aabf-458d-a924-310f346d8338",
+            "containerId": "c024fb18-1522-4889-bbb8-d5677e5114e4",
+            "name": "change-task-status",
+            "url": "http://localhost:8000/api/task/652770ecdc699c417ed83225/update-status",
+            "method": "PUT",
+            "sortNum": 65000,
+            "created": "2023-10-12T04:02:00.531Z",
+            "modified": "2023-10-12T04:08:35.164Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"status\":\"working\"\n}",
                 "form": []
             },
             "tests": []
