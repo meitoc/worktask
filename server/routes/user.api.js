@@ -2,31 +2,29 @@ const express= require("express")
 const router = express.Router()
 const {createUser, getAllUser, getAUser, updateUserByName ,deleteUserByName} = require("../controllers/user.controllers.js")
 
-
+const { isAuthenticated,isAdminAuthenticated } = require("../auth/authorization.js")
 
 //Read
 /**
  * @route GET api/user/
  * @description get list of users
- * @access secure: admin, user
+ * @access secure: admin
  */
-router.get("/",getAllUser)
+router.get("/",isAuthenticated,getAllUser)
 
 //Read
 /**
  * @route GET api/user/abc
  * @description get list of users
- * @access secure: admin
+ * @access secure: admin, user
  */
-router.get("/:name",getAUser)
+router.get("/:name",isAuthenticated,getAUser)
 
 //Create
 /**
- * @route POST api/user/abc
+ * @route POST api/user
  * @description create a user
- * @access secure: admin, user
- * change this when build a bot
- * only bot can change
+ * @access public
  * all change have been via OTP auth
  */
 router.post("/",createUser)
@@ -38,7 +36,7 @@ router.post("/",createUser)
  * only bot can change
  * all change have been via OTP auth
  */
-router.put("/:name",updateUserByName )
+router.put("/:name", isAdminAuthenticated,updateUserByName )
 //Delete
 /**
  * @route DELETE api/user/abc
@@ -48,7 +46,7 @@ router.put("/:name",updateUserByName )
  * only bot can change
  * all change have been via OTP auth
  */
-router.delete("/:name",deleteUserByName)
+router.delete("/:name",isAdminAuthenticated,deleteUserByName)
 
 //=============
 
@@ -60,7 +58,7 @@ const {getAUserInfo, updateAUserInfo} = require("../controllers/userinfo.control
  * @description get a user info
  * @access secure: admin, user
  */
-router.get("/:name/info",getAUserInfo)
+router.get("/:name/info",isAuthenticated,getAUserInfo)
 
 //Update /create
 /**
@@ -68,7 +66,7 @@ router.get("/:name/info",getAUserInfo)
  * @description update a user info
  * @access secure: admin, user
  */
-router.put("/:name/info",updateAUserInfo )
+router.put("/:name/info",isAuthenticated,updateAUserInfo )
 
 //export
 module.exports= router;

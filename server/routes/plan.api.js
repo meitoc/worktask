@@ -2,6 +2,7 @@ const express= require("express")
 
 const router = express.Router()
 const {createPlan, getAllPlans, deletePlan, getPlan,updatePlan} = require("../controllers/plan.controllers.js")
+const { isAdminAuthenticated } = require("../auth/authorization.js")
 
 //Read
 /**
@@ -28,7 +29,7 @@ router.get("/",getAllPlans)
  * @description create a plan
  * @access admin
  */
-router.post("/",createPlan)
+router.post("/",isAdminAuthenticated, createPlan)
 
 //Delete plan
 /**
@@ -36,7 +37,7 @@ router.post("/",createPlan)
  * @description delete plan
  * @access admin
  */
-router.delete("/:code",deletePlan)
+router.delete("/:code",isAdminAuthenticated,deletePlan)
 
 //Update
 /**
@@ -44,7 +45,7 @@ router.delete("/:code",deletePlan)
  * @description update new info fo a plan
  * @access admin
  */
-router.put("/:code",updatePlan)
+router.put("/:code",isAdminAuthenticated,updatePlan)
 
 
 //export

@@ -23,7 +23,7 @@ userController.createUser=async(req,res,next)=>{
             .isLength({ min: 8, max: 64 }).withMessage('Password must be between 8 and 64 characters!')
             .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/)
             .withMessage('Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character!')
-            .run(req);;
+            .run(req);
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
@@ -37,7 +37,6 @@ userController.createUser=async(req,res,next)=>{
         const newUser = {
             name:req.body.name,
             email:req.body.email,
-            role: "user",
             active: false,
             password
         }
@@ -57,6 +56,7 @@ userController.createUser=async(req,res,next)=>{
                 email_otp : encodeURIComponent(otp_string),
                 email_otp_status : true,
                 session,
+                role: "user",
                 user : createdUser._id
             };
             const createdAccess= await Access.create(newAccess)
@@ -188,11 +188,13 @@ userController.deleteUserByName=async(req,res,next)=>{
         }
         
         const name = req.params.name;
-        const updated= await User.findOneAndUpdate({name},{active:false, name:"@"+name})
+        const updatedUser= await User.findOneAndUpdate({name},{active:false, name:"@"+name})
         //add update others collection later
-        if(updated) 
-        //hide updated for secure
-        sendResponse(res,200,true,{},null,"Delete user success");
+        if(updatedUser){
+            const updatedAccess = await Access.findOneAndUpdate({user: updatedUser._id}, {active:false})
+            //hide updated for secure
+            sendResponse(res,200,true,{},null,"Delete user success");
+        }
         else return res.status(400).json({ errors: [{ msg: 'No matched data' }] });
     }catch(err){
         next(err)

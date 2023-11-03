@@ -83,6 +83,10 @@ userPlanController.updateUserPlan=async(req,res,next)=>{
 //Get all user plan
 userPlanController.getAllUserPlans=async(req,res,next)=>{
     let filter = {}
+    const {userId, role} = req.access;
+    if(role!=="admin"){
+        filter={user:userId}
+    }
     if(req.query.paid==="true") filter ={paid:true};
     if(req.query.paid==="false") filter ={paid:false};
     // if(req.query.plan) filter ={...filter,plan:{name:{$regex:req.query.plan}}};
@@ -104,13 +108,15 @@ userPlanController.getUserPlan=async(req,res,next)=>{
         //no need to check param by express-validator
         //process
         const id=req.params.id;
-        // const user=req.params.user_name;
-        const filter = {_id:id}
-        const listOfFound= (req.query.detail==="true")?
-            await UserPlan.find(filter).populate("plan")
-            : await UserPlan.find(filter);
-        sendResponse(res,200,true,{data:listOfFound},null,"Found list of userPlans success")
-
+        const {userId, role} = req.access;
+        if(role==="admin" || userId===id){
+            // const user=req.params.user_name;
+            const filter = {_id:id}
+            const listOfFound= (req.query.detail==="true")?
+                await UserPlan.find(filter).populate("plan")
+                : await UserPlan.find(filter);
+            sendResponse(res,200,true,{data:listOfFound},null,"Found list of userPlans success")
+        }else return res.status(400).json({ errors: [{msg: "No accept to access!"}] });
     }catch(err){
         next(err)
     }

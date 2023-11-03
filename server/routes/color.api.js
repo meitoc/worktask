@@ -2,6 +2,7 @@ const express= require("express")
 
 const router = express.Router()
 const {createColor, getAllColors, deleteColor, getColor,updateColor} = require("../controllers/color.controllers.js")
+const { isAdminAuthenticated } = require("../auth/authorization.js")
 
 //Read
 /**
@@ -28,7 +29,7 @@ router.get("/",getAllColors)
  * @description create a color
  * @access admin
  */
-router.post("/",createColor)
+router.post("/",isAdminAuthenticated,createColor)
 
 //Delete color
 /**
@@ -36,7 +37,7 @@ router.post("/",createColor)
  * @description update reference to a color
  * @access admin
  */
-router.delete("/:name",deleteColor)
+router.delete("/:name",isAdminAuthenticated,deleteColor)
 
 //Update
 /**
@@ -44,7 +45,7 @@ router.delete("/:name",deleteColor)
  * @description delete reference to a color by user name
  * @access admin
  */
-router.put("/:name",updateColor)
+router.put("/:name",isAdminAuthenticated,updateColor)
 
 
 //export

@@ -2,6 +2,7 @@ const express= require("express")
 
 const router = express.Router()
 const {createUserPlan, getAllUserPlans, deleteUserPlan, getUserPlan,updateUserPlan} = require("../controllers/userplan.controllers.js")
+const { isAuthenticated, isAdminAuthenticated } = require("../auth/authorization.js")
 
 //Read
 /**
@@ -9,7 +10,7 @@ const {createUserPlan, getAllUserPlans, deleteUserPlan, getUserPlan,updateUserPl
  * @description get a user plan
  * @access admin, owner user
  */
-router.get("/:id",getUserPlan)
+router.get("/:id",isAuthenticated, getUserPlan)
 
 //Read
 /**
@@ -20,7 +21,7 @@ router.get("/:id",getUserPlan)
  * time: forward, backward
  * @access admin, owner user
  */
-router.get("/",getAllUserPlans)
+router.get("/",isAuthenticated, getAllUserPlans)
 
 //Create
 /**
@@ -28,7 +29,7 @@ router.get("/",getAllUserPlans)
  * @description create a user plan
  * @access admin only
  */
-router.post("/",createUserPlan)
+router.post("/",isAdminAuthenticated, createUserPlan)
 
 //Delete user plan
 /**
@@ -36,7 +37,7 @@ router.post("/",createUserPlan)
  * @description delete user plan
  * @access admin only
  */
-router.delete("/:id",deleteUserPlan)
+router.delete("/:id",isAdminAuthenticated,deleteUserPlan)
 
 //Update
 /**

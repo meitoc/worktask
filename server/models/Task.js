@@ -13,14 +13,15 @@ const taskSchema = mongoose.Schema(
       finish: { type: Date },
     },
     description: { type: String, default: "" },
-    task: { type: mongoose.SchemaTypes.ObjectId, ref: "Task" },
+    parent_task: { type: mongoose.SchemaTypes.ObjectId, ref: "Task" },
     users: {
       owners: [{ type: mongoose.SchemaTypes.ObjectId, ref: "User", required: true }],
       managers: [{ type: mongoose.SchemaTypes.ObjectId, ref: "User" }],
       members: [{ type: mongoose.SchemaTypes.ObjectId, ref: "User" }],
     },
     color: { type: mongoose.SchemaTypes.ObjectId, ref: "Color", required: true },
-    active: {type: Boolean, required: true}
+    active: {type: Boolean, required: true},
+    member_add_member:{type:Boolean, default: false}
   },
   {
     timestamps: true,

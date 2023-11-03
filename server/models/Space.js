@@ -3,10 +3,10 @@ const mongoose = require("mongoose");
 const spaceSchema = mongoose.Schema(
   {
     name: { type: String, required: true , default:""},
+    description: { type: String, default: "" },
     tasks: [{ type: mongoose.SchemaTypes.ObjectId, ref: "Task" }],
     user: { type: mongoose.SchemaTypes.ObjectId, ref: "User", required: true },
-    color: { type: mongoose.SchemaTypes.ObjectId, ref: "Color", required: true },
-    active: {type: Boolean, required: true}
+    color: { type: mongoose.SchemaTypes.ObjectId, ref: "Color", required: true }
   },
   {
     timestamps: true,

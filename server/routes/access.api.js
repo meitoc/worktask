@@ -1,6 +1,7 @@
 const express= require("express")
 const router = express.Router()
-const {getFirstAccess, postLogin, getLogout} = require("../controllers/access.controllers.js")
+const {getFirstAccess, getLogin, getLogout} = require("../controllers/access.controllers.js")
+const { isAuthenticated } = require("../auth/authorization.js")
 
 //Request to first log in
 /**
@@ -14,9 +15,9 @@ router.get("/first/:otp_string",getFirstAccess)
 /**
  * @route GET api/access/login
  * @description request to log in
- * @access admin, user
+ * @access public
  */
-// router.get("/",getLogin)
+router.get("/login",getLogin)
 
 //Request for normal login
 /**
@@ -24,7 +25,7 @@ router.get("/first/:otp_string",getFirstAccess)
  * @description request log out
  * @access admin, user
  */
-// router.get("/",getLogout)
+router.get("/logout", isAuthenticated, getLogout)
 
 //export
 module.exports= router;
