@@ -50,7 +50,7 @@ router.delete("/:name",isAdminAuthenticated,deleteUserByName)
 
 //=============
 
-const {getAUserInfo, updateAUserInfo} = require("../controllers/userinfo.controllers.js")
+const {getAUserInfo} = require("../controllers/userinfo.controllers.js")
 
 //Read
 /**
@@ -59,14 +59,6 @@ const {getAUserInfo, updateAUserInfo} = require("../controllers/userinfo.control
  * @access secure: admin, user
  */
 router.get("/:name/info",isAuthenticated,getAUserInfo)
-
-//Update /create
-/**
- * @route PUT api/user/abc
- * @description update a user info
- * @access secure: admin, user
- */
-router.put("/:name/info",isAuthenticated,updateAUserInfo )
 
 //export
 module.exports= router;

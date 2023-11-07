@@ -1,6 +1,6 @@
 const express= require("express")
 const router = express.Router()
-const {getFirstAccess, getLogin, getLogout} = require("../controllers/access.controllers.js")
+const {getFirstAccess, postLogin, getLogout, getCheck} = require("../controllers/access.controllers.js")
 const { isAuthenticated } = require("../auth/authorization.js")
 
 //Request to first log in
@@ -17,7 +17,15 @@ router.get("/first/:otp_string",getFirstAccess)
  * @description request to log in
  * @access public
  */
-router.get("/login",getLogin)
+router.post("/login",postLogin)
+
+//Request for check a session, later need filter ip or change it method for prevent hacking
+/**
+ * @route GET api/access/check
+ * @description request log out
+ * @access admin, user
+ */
+router.get("/check", isAuthenticated, getCheck)
 
 //Request for normal login
 /**

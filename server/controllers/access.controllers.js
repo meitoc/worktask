@@ -2,9 +2,10 @@ const { sendResponse, AppError}=require("../helpers/utils.js")
 const { param, body, validationResult } = require('express-validator');
 const User = require("../models/User.js")
 const Access = require("../models/Access.js")
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcryptjs');
+const { filterField } = require("../tools/filterData.js");
 const jwtSecretKey = process.env.JWT_SECRET_KEY;
-
+const showField = {name:1,email:1,phone:1,information:1}
 const accessController={}
 
 //Create a first access for a user
@@ -40,9 +41,10 @@ accessController.getFirstAccess=async(req,res,next)=>{
 }
 
 //Login
-accessController.getLogin = async (req,res,next) => {
+accessController.postLogin = async (req,res,next) => {
     try{
         //check param by express-validator
+        console.log(req.body)
         if(req.body.name)
         await body('name')
             .matches(/^[a-z][a-z0-9_]{4,}$/)
@@ -62,8 +64,8 @@ accessController.getLogin = async (req,res,next) => {
         const {name,email,password} =req.body;
         //find and update Access
         const userFound = name?
-        await User.findOne({name, active:true})
-        : await User.findOne({email, active:true});
+        await User.findOne({name, active:true}).populate("information","-_id -__v")
+        : await User.findOne({email, active:true}).populate("information","-_id -__v");
         if(!userFound) return res.status(400).json({ errors: [{ msg: 'Invalid name or email!' }] });
         const accessFound = await Access.findOne({user: userFound._id})
         console.log("accessFound",accessFound)
@@ -85,7 +87,22 @@ accessController.getLogin = async (req,res,next) => {
             const session = await userFound.generateSession();
             const updatedAccess = await Access.findOneAndUpdate({user:userFound._id},{tried_time:0,session})
             if(!updatedAccess) return res.status(400).json({ errors: [{ msg: 'Something wrong! Try again later!' }] });
-            sendResponse(res,200,true,{data:{session}},null,"Login Success")
+            sendResponse(res,200,true,{session, data:filterField(userFound,showField) },null,"Login Success")
+        
+    }catch(err){
+        next(err)
+    }
+}
+//Check token
+accessController.getCheck=async(req,res,next)=>{
+    try{
+        //check name by express-validator
+        const {userId, role} = req.access;
+        console.log(role)
+        
+        //find and update Access
+        if(!userId)  return res.status(400).json({ errors: [{ msg: 'Invalid session!' }] });
+        sendResponse(res,200,true,{data:{}},null,"Logged in")
         
     }catch(err){
         next(err)
@@ -95,7 +112,6 @@ accessController.getLogin = async (req,res,next) => {
 accessController.getLogout=async(req,res,next)=>{
     try{
         //check name by express-validator
-        //2 lines below for testing
         const {userId, role} = req.access;
         console.log(role)
         
@@ -103,7 +119,7 @@ accessController.getLogout=async(req,res,next)=>{
         const accessFound = await Access.findOne({user:userId});
         const newSession = await accessFound.generateLogoutSession();
         const updatedAccess = await Access.findOneAndUpdate({user:userId},{session:newSession})
-        if(!updatedAccess)  return res.status(400).json({ errors: [{ msg: 'Invalid session3!' }] });
+        if(!updatedAccess)  return res.status(400).json({ errors: [{ msg: 'Invalid session!' }] });
         sendResponse(res,200,true,{data:{}},null,"Logout Success")
         
     }catch(err){

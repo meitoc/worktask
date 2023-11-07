@@ -31,7 +31,7 @@ spaceController.createSpace = async(req,res,next)=>{
         if(!created) return res.status(400).json({ errors: [{ msg: 'Can not create a space!' }] }); 
         const foundSpace = await Space.findOne({_id:created._id}).populate("color","name background frame text -_id")
         if(!foundSpace) return res.status(400).json({ errors: [{ msg: 'Can not create a space!' }] }); 
-        sendResponse(res,200,true,{data:filterField(foundSpace,showField)},null,"Create space Success")
+        sendResponse(res,200,true,filterField(foundSpace,showField),null,"Create space Success")
     }catch(err){
         next(err);
     }
@@ -41,13 +41,12 @@ spaceController.createSpace = async(req,res,next)=>{
 //update space status
 spaceController.updateSpace=async(req,res,next)=>{
     try{
-        console.log(req.params.id)
         //check param and query by express-validator
         await param('id').isMongoId().withMessage('Wrong task id!').run(req);
 
         if(req.body.name) await body('name').isString().withMessage('Invalid name!').run(req);
         if(req.body.description) await body('description').isString().withMessage('Invalid description!').run(req);
-
+        console.log(req.body)
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
@@ -57,11 +56,11 @@ spaceController.updateSpace=async(req,res,next)=>{
         const {userId} = req.access;
         const { name,description} = req.body;
         const update = {};
-        if(name) update.name=name;
-        if(description) update.description=description;
-        const updatedSpace = await Space.findOneAndUpdate({_id:spaceId,user: userId},update);
+        if(name || name==="") update.name=name;
+        if(description || description==="") update.description=description;
+        const updatedSpace = await Space.findOneAndUpdate({_id:spaceId,user: userId},update,{new:true});
         if(!updatedSpace) return res.status(400).json({ errors: [{ msg: 'Can not update the task!' }] }); 
-        sendResponse(res,200,true,{data:spaceId},null,"Change data success")
+        sendResponse(res,200,true,filterField(updatedSpace,showField),null,"Change data success")
     }catch(err){
         next(err)
     }
@@ -79,7 +78,7 @@ spaceController.getAllSpaces=async(req,res,next)=>{
         const listOfFound= (req.query.detail==="true")?
             await Space.find(filter).populate("color","name background frame text -_id").sort({ name: sortByAbc })
             : await Space.find(filter).sort({ code: sortByAbc });
-        sendResponse(res,200,true,{data:listOfFound},null,"Found list of spaces success")
+        sendResponse(res,200,true,listOfFound,null,"Found list of spaces success")
 
     }catch(err){
         //no show public
@@ -96,8 +95,9 @@ spaceController.getSpace=async(req,res,next)=>{
         if(role==="user" || userId===id){
             // const user=req.params.user_name;
             const filter = {_id:id,user:userId}
-            const listOfFound=  await Space.find(filter).populate("color","name background frame text -_id")
-            sendResponse(res,200,true,{data:listOfFound},null,"Found list of spaces success")
+            const foundSpace=  await Space.findOne(filter).populate("color","name background frame text -_id")
+            if(!foundSpace) return res.status(400).json({ errors: [{msg: "Can't find space!"}] });
+            sendResponse(res,200,true,filterField(foundSpace,showField),null,"Found list of spaces success")
         }else return res.status(400).json({ errors: [{msg: "No accept to access!"}] });
     }catch(err){
         next(err)
@@ -115,7 +115,7 @@ spaceController.deleteSpace=async(req,res,next)=>{
         //process
         const id= req.params.id;
         const spaceChange = await Space.deleteOne({_id:id});
-        sendResponse(res,200,true,{data:spaceChange},null,"Delete space success")
+        sendResponse(res,200,true,filterField(spaceChange,showField),null,"Delete space success")
      }catch(err){
          next(err)
      }
