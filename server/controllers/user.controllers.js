@@ -7,7 +7,7 @@ const Access = require("../models/Access.js");
 // const { response } = require("express");
 const email = require("../email/email.js");
 
-const {BACKEND_URL} = process.env;
+const {FRONTEND_URL} = process.env;
 
 const userController={}
 //Create a user
@@ -53,7 +53,7 @@ userController.createUser=async(req,res,next)=>{
             const otp_string = await createdUser.generateFirst();
             const session = await createdUser.generateSession();
             const newAccess = {
-                email_otp : encodeURIComponent(otp_string),
+                email_otp : encodeURIComponent(otp_string).replace(/\./g, '__'),
                 email_otp_status : true,
                 session,
                 role: "user",
@@ -61,7 +61,7 @@ userController.createUser=async(req,res,next)=>{
             };
             const createdAccess= await Access.create(newAccess)
             //send email contains otp
-            const emailContent=`<a href="${BACKEND_URL}/api/access/first/${newAccess.email_otp}"></a>`
+            const emailContent=`<a href="${FRONTEND_URL}/first-access/${newAccess.email_otp}"></a>`
             const sendEmail = await email.sendEmail("Email Authentication",emailContent,newUser.email);
             //response with secure password
             const responseUser={

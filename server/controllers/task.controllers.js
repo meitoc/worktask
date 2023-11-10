@@ -62,7 +62,7 @@ taskController.createRootTask = async(req,res,next)=>{
         const created= await Task.create(newTask)
         if(!created) return res.status(400).json({ errors: [{ msg: 'Can not create a task!' }] }); 
         created.tree = await loadTree(created.parent_task)
-        sendResponse(res,200,true,{data:filterField(created,showField)},null,"Create task Success")
+        sendResponse(res,200,true,filterField(created,showField),null,"Create task Success")
     }catch(err){
         next(err)
     }
@@ -81,7 +81,7 @@ taskController.getOwnTasks=async(req,res,next)=>{
             .populate("users.owners users.managers users.members","name active -_id")
             .populate("color","name frame background text -_id")
             .sort({ createdAt: sortByTime })
-        sendResponse(res,200,true,{data:listOfFound},null,"Found list of task success")
+        sendResponse(res,200,true,listOfFound,null,"Found list of task success")
 
     }catch(err){
         next(err)
@@ -90,7 +90,7 @@ taskController.getOwnTasks=async(req,res,next)=>{
 //Get member task on root
 taskController.getMemberTasks=async(req,res,next)=>{
     try{
-        let filter = {"users.members":req.access.userId,parent_task:null,active:true};
+        let filter = {"users.members":req.access.userId,active:true};
         if(req.query.name) filter ={...filter,name:{$regex:req.query.name}};
         if(req.query.status) filter ={...filter,status:req.query.status};
         if(req.query.id) filter ={...filter,_id:req.query.id};
@@ -99,7 +99,7 @@ taskController.getMemberTasks=async(req,res,next)=>{
             .populate("users.owners users.managers users.members","name active -_id")
             .populate("color","name frame background text -_id")
             .sort({ createdAt: sortByTime })
-        sendResponse(res,200,true,{data:listOfFound},null,"Found list of task success")
+        sendResponse(res,200,true,listOfFound,null,"Found list of task success")
 
     }catch(err){
         next(err)
@@ -153,7 +153,7 @@ taskController.createTask=async(req,res,next)=>{
         const createdTask= await Task.create(newTask)
         if(!createdTask) return res.status(400).json({ errors: [{ msg: 'Can not create a task!' }] }); 
         createdTask.tree = await loadTree(createdTask.parent_task)
-        sendResponse(res,200,true,{data:filterField(createdTask,showField)},null,"Create task Success")
+        sendResponse(res,200,true,filterField(createdTask,showField),null,"Create task Success")
     }catch(err){
         next(err)
     }
@@ -186,7 +186,7 @@ taskController.updateTask=async(req,res,next)=>{
         if(description) update.description=description;
         const updatedTask = await Task.findOneAndUpdate({_id:taskId,$or:[{"users.owners": userId}, {"users.managers": userId}],active:true},update);
         if(!updatedTask) return res.status(400).json({ errors: [{ msg: 'Can not update the task!' }] }); 
-        sendResponse(res,200,true,{data:taskId},null,"Change data success")
+        sendResponse(res,200,true,taskId,null,"Change data success")
     }catch(err){
         next(err)
     }
@@ -212,7 +212,7 @@ taskController.getTask=async(req,res,next)=>{
             .sort({ createdAt: sortByTime });
         if(!foundTask) return res.status(400).json({ errors: [{ msg: 'Wrong task id!' }] });
         foundTask.tree = await loadTree(foundTask.parent_task);
-        sendResponse(res,200,true,{data:filterField(foundTask,showField)},null,"Found list of task success")
+        sendResponse(res,200,true,filterField(foundTask,showField),null,"Found list of task success")
 
     }catch(err){
         next(err)

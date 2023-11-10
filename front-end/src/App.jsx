@@ -23,8 +23,6 @@ export default function App() {
     const [movieList, updateMovieList] = React.useState([]);//use for fetch data
     const [showMovieList, setShowMovieList] = React.useState(null);//use for show data
     
-    //User info
-    const [userData, setUserData] = React.useState(null);//use for show data
     
     //============
     // const handleResize = ()=>{
@@ -53,7 +51,6 @@ export default function App() {
         showMovieList, setShowMovieList,
         favoriteData, setFavoriteData,
         mobile,
-        userData, setUserData,
         viewWidth, setViewWidth,
         showLoginForm, setShowLoginForm
         }}>

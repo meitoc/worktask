@@ -7,9 +7,11 @@ import MenuItem from '@mui/material/MenuItem';
 // import { styled } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import { ContextStatus } from '../../App';
+import { useSelector } from 'react-redux';
 
 export default function AccountAvatar() {
-    const {userData, setShowLoginForm} = useContext(ContextStatus);
+    const { setShowLoginForm} = useContext(ContextStatus);
+    const userInfo = useSelector(state=>state.user_info)
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
@@ -20,12 +22,12 @@ export default function AccountAvatar() {
     };
     return (
       <>
-        {userData!==undefined && userData!==null?
+        {userInfo?
         <>
           <Button  onClick={handleClick} >
             <Avatar 
               sx={{ width: 27, height: 27}}
-              alt={userData.name}
+              alt={userInfo.name}
               src=""//Change this later to view
             
             /> 

@@ -20,6 +20,8 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 import { ContextStatus } from '../../App';
 import SubmitOTP from '../account/SubmitOTP';
+import { useDispatch } from 'react-redux';
+import { updateUser } from '../../sevice/user_info/slice';
 const style = {
   position: 'absolute',
   top: '50%',
@@ -37,9 +39,10 @@ const styleShow={display: 'flex', flexDirection: 'column', alignItems: 'center'}
 const styleHide={display: 'none'};
 
 export default function LoginForm(prop) {
+  const dispatch = useDispatch();
   //common hook
   const goBack = prop.goBack!==false;
-  const { setLoginStatus,showLoginForm,setShowLoginForm,setUserData} = React.useContext(ContextStatus);
+  const { showLoginForm,setShowLoginForm} = React.useContext(ContextStatus);
   const [openPart,setOpenPart] = React.useState("login");
   
   //Login
@@ -83,16 +86,14 @@ export default function LoginForm(prop) {
       .then(response => {
         console.log(response);
         if(response.success===true){
-            if(response.data.session!==undefined) {
+            if(response.data?.session) {
               localStorage.setItem('loginSession',response.data.session);
-              setUserData (response.data.data);
+              dispatch(updateUser(response.data.data));
+              console.log("Logged in")
             }
             setShowLoginForm(false);
             console.log("Server: You'r logged in.");
-            // setServiceInfo(response);
-            setLoginStatus(true);
         } else {
-          setLoginStatus(false);
           if(response.comment==="login_locked"){
             setNote( "The account is locked!");
             console.log( "Server: The account is locked!");
@@ -170,7 +171,6 @@ export default function LoginForm(prop) {
           setSessionOTP(response.waiting_key);
           setOpenPart('otp');
         } else {
-          setLoginStatus(false);
           if(response.comment==="login_locked"){
             setNote( "The account is locked!");
             console.log( "Server: The account is locked!");
@@ -354,7 +354,6 @@ export default function LoginForm(prop) {
                 <SubmitOTP show={openPart==='otp'} session={sessionOTP} fn={()=>{
                     // setDoneSubmit(undefined);
                     setShowLoginForm(false);
-                    setLoginStatus(true);
                 }} />
               </div>
             </Box>

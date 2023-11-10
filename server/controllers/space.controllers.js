@@ -1,7 +1,7 @@
 const { sendResponse, AppError}=require("../helpers/utils.js")
 const { query, body, param, validationResult } = require('express-validator');
 const Space = require("../models/Space.js")
-const Plan = require("../models/Plan.js")//use later for real deploy within payment
+const Color = require("../models/Color.js")//use later for real deploy within payment
 const { filterField } = require("../tools/filterData.js");
 
 const showField = {_id:1,name:1,description:1,color:1,createdAt:1,updatedAt:1};
@@ -20,12 +20,17 @@ spaceController.createSpace = async(req,res,next)=>{
         
         //process
         const {userId} = req.access;
-        const spaceName = req.body.name;
+        const spaceName = req.body.name??"";
+        const spaceDescription = req.body.description??"";
+        const spaceColor = req.body.color??"default";
+        const color = await Color.findOne({name:spaceColor})
+        const colorId = color._id
         const info = {
             name: spaceName,
+            description: spaceDescription,
             tasks:[],
             user:userId,
-            color:"6532ae5d2bd43ea0a4b0f78a"
+            color:colorId
         }
         const created= await Space.create(info);
         if(!created) return res.status(400).json({ errors: [{ msg: 'Can not create a space!' }] }); 
@@ -55,10 +60,14 @@ spaceController.updateSpace=async(req,res,next)=>{
         const spaceId = req.params.id
         const {userId} = req.access;
         const { name,description} = req.body;
+        const spaceColor = req.body.color??"default";
+        const color = await Color.findOne({name:spaceColor})
+        const colorId = color?._id
         const update = {};
-        if(name || name==="") update.name=name;
+        if(name) update.name=name;
         if(description || description==="") update.description=description;
-        const updatedSpace = await Space.findOneAndUpdate({_id:spaceId,user: userId},update,{new:true});
+        update.color=colorId;
+        const updatedSpace = await Space.findOneAndUpdate({_id:spaceId,user: userId},update,{new:true}).populate("color","name frame background text -_id");
         if(!updatedSpace) return res.status(400).json({ errors: [{ msg: 'Can not update the task!' }] }); 
         sendResponse(res,200,true,filterField(updatedSpace,showField),null,"Change data success")
     }catch(err){
@@ -68,16 +77,13 @@ spaceController.updateSpace=async(req,res,next)=>{
 
 //Get all space
 spaceController.getAllSpaces=async(req,res,next)=>{
-    let filter = {}
-    const {userId, role} = req.access;
-    if(role!=="user"){
-        filter={user:userId}
-    }
+    const {userId} = req.access;
+    const filter={user:userId}
     const sortByAbc = req.query.sort==="forward"? 1 : req.query.sort==="backward"? -1 : 0;
     try{
         const listOfFound= (req.query.detail==="true")?
-            await Space.find(filter).populate("color","name background frame text -_id").sort({ name: sortByAbc })
-            : await Space.find(filter).sort({ code: sortByAbc });
+            await Space.find(filter).populate("color","name frame background text -_id").sort({ name: sortByAbc })
+            : await Space.find(filter).populate("color","name frame background text -_id").sort({ code: sortByAbc });
         sendResponse(res,200,true,listOfFound,null,"Found list of spaces success")
 
     }catch(err){

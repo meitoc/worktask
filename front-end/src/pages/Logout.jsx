@@ -1,47 +1,29 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { ContextStatus } from "../App";
 import { createBrowserHistory } from "history";
+import { useDispatch } from 'react-redux';
+import { deleteUser } from '../sevice/user_info/slice';
+import { getLogout } from '../sevice/api';
 
 export default function Logout() {
-    const { setLoginStatus, setLoginSession, setFavoriteData} = React.useContext(ContextStatus);
+    const dispatch = useDispatch();
     const history = createBrowserHistory();
     React.useEffect(()=>{
-        const requestLogout = async (session) => {
-            const options = {
-              method: 'GET',
-              headers: {
-                accept: 'application/json',
-                'content-type': 'application/json',
-              },
-            };
-            console.log(session)
-            fetch(`http://localhost:8000/api/access/logout`, options)
-            .then(response => response.json())
-            .then(response => {
-            console.log(response);
-            if(response.status===true){
-                localStorage.setItem('loginSession',undefined);
-                console.log("Logged out.");
-                // setServiceInfo(null);
-                setLoginStatus(false);
-                setLoginSession("");
-                setFavoriteData([]);
-            }
-            })
-            .catch(error => {
-            console.log(error)
-            console.log("Movie.meitoc.net: Check your internet connection!");
-            })
-          }
-        
-        requestLogout(localStorage.getItem('loginSession'));
+      const requestLogout = async () => {
+        const response = await getLogout();
+        console.log(response);
+        if(response.success===true){
+            localStorage.setItem('loginSession',response.data?.session??"");
+            console.log("Logged out.");
+        }
+      }
+        requestLogout();
+        dispatch(deleteUser())
         localStorage.setItem('loginSession',"");
         history.push("/");
-        // history.back();
         window.location.reload();
     }
-    ,[history,setLoginStatus,setLoginSession, setFavoriteData])
+    ,[history,dispatch])
     
     return(<Link to={"/"}><p>Goto Home page</p></Link>);
     

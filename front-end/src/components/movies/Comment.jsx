@@ -17,7 +17,7 @@ import fetchComment from '../../features/fetch-data/fetchComment';
 
 
 export default function Comment(prop) {
-    const {mobile,loginStatus,setShowLoginForm,userData} =React.useContext(ContextStatus);
+    const {mobile,loginStatus,setShowLoginForm} =React.useContext(ContextStatus);
     const [aComment,setAComment]=React.useState("");
     const [disableEnter,setDisableEnter]=React.useState(false);
     React.useEffect( ()=>{
@@ -44,13 +44,10 @@ export default function Comment(prop) {
                 setDisableEnter(true);
                 const result = await addUserData(`${prop.movie}`,processedComment ,"comment");
                 if(result.status===true) {
-                    console.log(userData);//test
                     const newCommentList=commentList;
-                    const index = newCommentList.comments.findIndex(comment => comment.id === userData.id);
+                    const index = newCommentList.comments.findIndex(comment => comment.id === "abcd");
                     if (index === -1) {
                         const newComment = {
-                            id:  userData.id,
-                            name: userData.realname??`*user-${userData.id}`,
                             image: null,
                             time: "just now",
                             comment: processedComment

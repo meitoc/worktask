@@ -17,11 +17,13 @@ import HelpIcon from '@mui/icons-material/Help';
 import Divider from '@mui/material/Divider';
 
 import { ContextStatus } from '../../App';
+import { useSelector } from 'react-redux';
 
 
 
 export default function NavigationList() {
-    const {mobile, handleDrawerClose,loginStatus, setShowLoginForm} = useContext(ContextStatus);
+    const userInfo = useSelector(state=>state.user_info);
+    const {mobile, handleDrawerClose, setShowLoginForm} = useContext(ContextStatus);
     const navList = [
         // viewByLogin: true: only be shown when logged in / false: only be shown when logged out / not set: always be shown
         {text:'Home page', link: "", icon: (<WhatshotIcon />), viewByLogin: false},
@@ -54,11 +56,12 @@ export default function NavigationList() {
             </ListItemButton>
         )
     }
+    console.log(userInfo,"XXXXXXXX")
     return (
         <>
             <List>
                 {navList.map((element,index) => (
-                    (element.viewByLogin===undefined) || !(element.viewByLogin===true ^ loginStatus===true) ?(
+                    (element.viewByLogin===undefined) || !(element.viewByLogin===true ^ (userInfo!==null && userInfo!==false)) ?(
                         <ListItem key={index} disablePadding sx={{ display: 'block' }} 
                         >
                             {element.text===undefined?

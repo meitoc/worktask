@@ -22,6 +22,7 @@ import DetailSpace from "./pages/DetailSpace";
 import DetailTask from "./pages/DetailTask";
 import Spaces from "./pages/Spaces";
 import AloneTasks from "./pages/AloneTasks";
+import FirstAccess from "./pages/FirstAccess";
 
 const router = createBrowserRouter([
   {
@@ -77,6 +78,11 @@ const router = createBrowserRouter([
       {
         path: "login",
         element: <Login />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "first-access/:accessString",
+        element: <FirstAccess />,
         errorElement: <ErrorPage />,
       },
     ]

@@ -31,7 +31,7 @@ userInfoController.updateAUserInfo=async(req,res,next)=>{
         const foundUser = await User.findOne({_id:userId},"information")
         const updated= await UserInfo.findOneAndUpdate({_id:foundUser.information},newUserInfo,{upsert:true,new:true})
         if(!updated) await User.findOneAndUpdate({_id:userId,active:true},{information:updated._id})
-        sendResponse(res,200,true,{data:updated},null,"Create UserInfo Success")
+        sendResponse(res,200,true,updated,null,"Create UserInfo Success")
     }catch(err){
         next(err)
     }
@@ -44,9 +44,9 @@ userInfoController.getAUserInfo=async(req,res,next)=>{
     if(req.params.name) filter.name = req.params.name;
     else filter._id=userId;
     try{
-        const userInfoFound = await User.findOne(filter).populate("information -_id -__v");
+        const userInfoFound = await User.findOne(filter).populate("information", "-_id -__v");
         if(userInfoFound===null) return res.status(400).json({ errors: [{ msg: 'No user info be found!' }] }); 
-        sendResponse(res,200,true,{data: filterField(userInfoFound,showField)},null,"Found list of user info success")
+        sendResponse(res,200,true, filterField(userInfoFound,showField),null,"Found list of user info success")
     }catch(err){
         next(err)
     }

@@ -22,7 +22,7 @@ colorController.createColor = async(req,res,next)=>{
             text: req.body.text
         }
         const created= await Color.create(info);
-        if(info.name===created.name) sendResponse(res,200,true,{data:info},null,"Create color Success")
+        if(info.name===created.name) sendResponse(res,200,true,info,null,"Create color Success")
     }catch(err){
         //error
         if (err.code === 11000) {
@@ -47,7 +47,7 @@ colorController.updateColor=async(req,res,next)=>{
         const name = req.params.name;
         const { background, frame, text } = req.body
         const refFound = await Color.findOneAndUpdate({name},{ background, frame, text },{upsert: true, new:true, select:'name background frame text -_id'});
-        sendResponse(res,200,true,{data:refFound},null,"Update color success")
+        sendResponse(res,200,true,refFound,null,"Update color success")
     }catch(err){
         //show other error for admin
         next(err)
@@ -61,7 +61,7 @@ colorController.getAllColors=async(req,res,next)=>{
     const sortByAbc = req.query.sort==="forward"? 1 : req.query.sort==="backward"? -1 : 0;
     try{
         const listOfFound= await Color.find(filter, {name:1, frame:1, background:1, text:1, _id:0}).sort({ name: sortByAbc });
-        sendResponse(res,200,true,{data:listOfFound},null,"Found list of colors success")
+        sendResponse(res,200,true,listOfFound,null,"Found list of colors success")
 
     }catch(err){
         //no show public
@@ -76,7 +76,7 @@ colorController.getColor=async(req,res,next)=>{
         const name=req.params.name;
         const filter = {name}
         const listOfFound= await Color.find(filter, {name:1, frame:1, background:1, text:1, _id:0});
-        sendResponse(res,200,true,{data:listOfFound},null,"Found list of colors success")
+        sendResponse(res,200,true,listOfFound,null,"Found list of colors success")
 
     }catch(err){
         next(err)
@@ -94,7 +94,7 @@ colorController.deleteColor=async(req,res,next)=>{
         //process
         const name= req.params.name;
         const colorChange = await Color.findOneAndDelete({name},{select:'name background frame text -_id'});
-        sendResponse(res,200,true,{data:colorChange},null,"Delete color success")
+        sendResponse(res,200,true,colorChange,null,"Delete color success")
      }catch(err){
          next(err)
      }

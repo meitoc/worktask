@@ -21,7 +21,7 @@ accessController.getFirstAccess=async(req,res,next)=>{
         const {otp_string} =req.params;
         
         //find and update Access
-        const accessFound = await Access.findOneAndUpdate({email_otp: otp_string, email_otp_status:true},{email_otp_status:false})
+        const accessFound = await Access.findOneAndUpdate({email_otp: otp_string, email_otp_status:true},{email_otp_status:false,active:true})
         if(!accessFound) return res.status(400).json({ errors: [{ msg: 'Access string is end of service!' }] });
         else{
             try{
@@ -30,7 +30,7 @@ accessController.getFirstAccess=async(req,res,next)=>{
                 const session= await userFound.generateSession();
                 const updatedAccess= await Access.findOneAndUpdate({user:accessFound.user}, {session})
                 if(!updatedAccess) return res.status(400).json({ errors: [{ msg: 'Please login by password!' }] });
-                sendResponse(res,200,true,{data:{session}},null,"Authenticate Account Success")
+                sendResponse(res,200,true,{session},null,"Authenticate Account Success")
             }catch(err){
                 next(err)
             };

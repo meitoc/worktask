@@ -10,27 +10,28 @@ import ChangeAccountInfo from "../info-change/ChangeAccountInfo";
 // chang this function later for security
 import addUserData from "../../features/fetch-data/addUserData";
 import SubmitOTP from "./SubmitOTP";
+import { useDispatch, useSelector } from "react-redux";
+import { updateUserEmail } from "../../sevice/user_info/slice";
 
 const styleShow={display: 'flex', flexDirection: 'column', alignItems: 'center'};
 const styleHide={display: 'none'};
 
 export default function AccountInformation() {
-    const {userData,setUserData} = useContext(ContextStatus);
+    const {setUserData} = useContext(ContextStatus); 
+    const dispatch = useDispatch();
+    const userInfo = useSelector(state=>state.user_info)
 
-    // const [username, setUsername] = useState(userData.username);
+    // const [username, setUsername] = useState(userInfo.username);
     // const [showUsername, setShowUsername] = useState(username);
     // const [doneSubmitUsername, setDoneSubmitUsername] = useState(undefined);
     // const [openModalUsername, setOpenModalUsername] = useState(false);
     
-    const [email, setEmail] = useState(userData.email);
+    const [email, setEmail] = useState(userInfo.email);
     const [showEmail, setShowEmail] = useState(email);
     const [doneSubmitEmail, setDoneSubmitEmail] = useState(undefined);
     const [openModalEmail, setOpenModalEmail] = useState(false);
     
-    const [phone, setPhone] = useState(userData.phone);
-    const [showPhone, setShowPhone] = useState(phone);
-    const [doneSubmitPhone, setDoneSubmitPhone] = useState(undefined);
-    const [openModalPhone, setOpenModalPhone] = useState(false);
+    
     
     const [sessionOTP, setSessionOTP] = useState("");
 
@@ -60,14 +61,14 @@ export default function AccountInformation() {
                 Account informations
             </Typography>
             <Typography variant="h6" gutterBottom>
-                - Username: {userData.name}
+                - Username: {userInfo.name}
             </Typography>
             <Typography variant="h6" gutterBottom>
                 - Email: {email}
             </Typography>
             <ChangeAccountInfo
                 buttonName={email===undefined?"Add":"Change"} title="Account information"
-                note={doneSubmitEmail===true?"":`After click submit, we will send you an OTP code via ${userData.email==undefined || userData.phone==undefined?"email.":"phone."}`}
+                note={doneSubmitEmail===true?"":`After click submit, we will send you an OTP code via ${userInfo.email==undefined || userInfo.phone==undefined?"email.":"phone."}`}
                 open={openModalEmail}
             >
                 <div style={doneSubmitEmail!==true?styleShow:styleHide}>
@@ -94,51 +95,14 @@ export default function AccountInformation() {
                 </div>
                 <SubmitOTP show={doneSubmitEmail===true} session={sessionOTP} fn={()=>{
                     setDoneSubmitEmail(undefined);
-                    setUserData({...userData,email:showEmail});
+                    setUserData({...userInfo,email:showEmail});
                     setEmail(showEmail);
                     setOpenModalEmail(false);
+                    dispatch(updateUserEmail())
                 }} />
             </ChangeAccountInfo>
-            <Typography variant="h6" gutterBottom>
-                - Phone: {phone}
-            </Typography>
-            <ChangeAccountInfo
-                buttonName={phone===undefined?"Add":"Change"}
-                title="Account information"
-                note={doneSubmitPhone===true?"":`After click submit, we will send you an OTP code via ${userData.phone==undefined || userData.email==undefined?"phone.":"email."}`}
-                open={openModalPhone}
-            >
-                <div style={doneSubmitPhone!==true?styleShow:styleHide}>
-                    <TextField
-                        disabled={doneSubmitPhone===""}
-                        sx={{margin:2, width:270}}
-                        required
-                        id="outlined-required"
-                        label="Phone"
-                        value={showPhone}
-                        onChange={(event)=>{
-                            if(/^0\d*$/.test(event.target.value)) setShowPhone(event.target.value);
-                        }}
-                    />
-                    <Typography sx={{display:(doneSubmitPhone===false?"block":"none"),margin:2, width:270}} variant="caption" gutterBottom>
-                        Sorry! Something went be wrong. Try again or wait a minute.
-                    </Typography>
-                    <Button
-                        disabled={doneSubmitPhone===""}
-                        sx={{margin:2, width:270}}
-                        variant="outlined"
-                        onClick={()=>handleSubmit(setOpenModalPhone,setDoneSubmitPhone,'phone',showPhone)}
-                    >
-                        Submit
-                    </Button>
-                </div>
-                <SubmitOTP show={doneSubmitPhone===true} session={sessionOTP} fn={()=>{
-                    setDoneSubmitPhone(undefined);
-                    setUserData({...userData,phone:showPhone});
-                    setPhone(showPhone);
-                    setOpenModalPhone(false);
-                }} />
-            </ChangeAccountInfo>
+            
+            
         </>
     );
 }

@@ -18,13 +18,12 @@ import { deleteSpace, putSpace } from '../../sevice/api';
 import { useSelector } from 'react-redux';
 
 
-export default function ASpace(prop) {
+export default function AnAloneTask(prop) {
 
   const colors = useSelector(state => state.colors)
   const [activeSpace, setActiveSpace] = useState(true);
   const [editSpace, setEditSpace] = useState(false);
   const [spaceName, setSpaceName] = useState(prop.space?.name);
-  const [spaceDescription, setSpaceDescription] = useState(prop.space?.description);
   const [spaceColor, setSpaceColor] = useState(prop.space?.color);
   const [showSpaceName, setShowSpaceName] = useState(prop.space.name??"");
   const [showSpaceDescription, setShowSpaceDescription] = useState(prop.space.description??"");
@@ -52,7 +51,6 @@ export default function ASpace(prop) {
     setActiveSpace(false);
     const data={};
     if(showSpaceName!==spaceName)data.name=spaceName;
-    if(showSpaceDescription!==spaceDescription)data.description=spaceDescription;
     if(spaceColor.name!==prop.space.color)data.color=spaceColor.name;
     console.log(data)
     const response = await putSpace(prop.space._id,data)
@@ -86,7 +84,7 @@ export default function ASpace(prop) {
   }
   if(activeSpace===null) return null;
   else if(activeSpace===true) return (
-    <Card sx={{ width:300, minHeight:350, display:"flex", flexDirection:"column", justifyContent:"space-between", color:spaceColor?.text, backgroundColor:spaceColor?.background}}>
+    <Card sx={{ width:300, minHeight:150, display:"flex", flexDirection:"column", justifyContent:"space-between", color:spaceColor?.text, backgroundColor:spaceColor?.background}}>
         <CardHeader
           color={spaceColor?.text}
           action={
@@ -149,16 +147,7 @@ export default function ASpace(prop) {
                   )}
                 </NativeSelect>
               </FormControl>
-              <TextField
-                id="description-input"
-                multiline={true}
-                maxRows={3}
-                minRows={1}
-                fullWidth={true}
-                placeholder="Description"
-                defaultValue={showSpaceDescription}
-                onChange={(event)=>setSpaceDescription(event.target.value)}
-              />
+              
             </>
             : showSpaceDescription?.split('\n').map((e,i)=>
             <Typography sx={{ fontSize: 14 }} color={spaceColor?.text} gutterBottom key={i}>{e}</Typography>
@@ -180,7 +169,7 @@ export default function ASpace(prop) {
   );
   else return (
     <Card sx={{ width:300, display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
-      <img style={{width:"200px"}} src='http://localhost:5173/lost-space.svg'></img>
+      <img style={{width:"200px"}} src='http://localhost:5173/lost-task.svg'></img>
       </Card>
   );
   

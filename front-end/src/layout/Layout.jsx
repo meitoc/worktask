@@ -23,7 +23,7 @@ import AccountAvatar from './modules/AccountAvatar';
 // import { checkSession } from '../features/authentication/checkSession';
 import { ContextStatus } from '../App';
 import { Outlet } from 'react-router-dom';
-import CheckUserSession from '../features/authentication/CheckUserSession';
+// import CheckUserSession from '../features/authentication/CheckUserSession';
 import FetchUserData from '../features/fetch-data/FetchUserData';
 import LoginForm from '../components/form/LoginForm';
 
@@ -108,7 +108,6 @@ export default function Layout() {
     
     return (
         <ThemeProvider theme={darkTheme}>
-          <CheckUserSession>
             <FetchUserData>
               <Box display= 'flex' justifyContent='center'>
                   <CssBaseline />
@@ -169,7 +168,6 @@ export default function Layout() {
                   </Main>
               </Box>
             </FetchUserData>
-          </CheckUserSession>
       </ThemeProvider>
     );
 }

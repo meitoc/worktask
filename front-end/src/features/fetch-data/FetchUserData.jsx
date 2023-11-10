@@ -1,41 +1,20 @@
-import { useEffect,useContext} from "react";
-import { ContextStatus } from "../../App";
+import { useEffect} from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getUserInfo } from "../../sevice/api";
+import { updateUser } from "../../sevice/user_info/slice";
 
 export default function FetchUserData(prop) {
-    const { loginStatus, setUserData} = useContext(ContextStatus);
-    // const [changeData,setChangData] =useState(null);
+    const dispatch = useDispatch();
+    const userInfo = useSelector(state=>state.user_info)
     useEffect(()=>{
-        async function fetchData(session) {
-            const options = {
-                method: 'GET',
-                headers: {
-                  accept: 'application/json',
-                  Authorization: `Bearer ${session}`,
-                }
-              };
-              console.log(`http://localhost:8000/api/user-info`);
-              fetch(`http://localhost:8000/api/user-info`, options)
-                .then(response => response.json())
-                .then(response => {
-                    if(response.success){
-                        console.log("User Data")
-                        console.log(response.data);
-                        setUserData(response.data.data);
-                        console.log("Fetched your account info.")
-                    }
-                    else console.log("No data.")
-                })
-                .catch(err => {
-                    console.log("Error when fetch account info!")
-                    console.error(err);
-                });
-        }
-        let session = localStorage.getItem('loginSession');
-        if(loginStatus===true && session!==null && session!=undefined) {
-            fetchData(session);
+        async function fetchData() {
             console.log("Fetching user data...")
+            const response = await getUserInfo();
+            if(response?.success===true) dispatch(updateUser(response.data))
+            else dispatch(updateUser(false))
         }
-    },[setUserData,loginStatus]);
+        if(userInfo===null) fetchData();
+    },[dispatch,userInfo]);
         return(<>
             {prop.children}
         </>)
