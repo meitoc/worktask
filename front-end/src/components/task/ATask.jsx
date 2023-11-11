@@ -2,9 +2,8 @@ import { useState } from 'react';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
+// import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
@@ -14,19 +13,20 @@ import FormControl from '@mui/material/FormControl';
 import NativeSelect from '@mui/material/NativeSelect';
 
 import TextField from '@mui/material/TextField';
-import { deleteSpace, putSpace } from '../../sevice/api';
+import { deleteTask, putTask } from '../../sevice/api';
 import { useSelector } from 'react-redux';
+import ModalConfirm from '../small-component/ModalConfirm';
 
 
 export default function AnAloneTask(prop) {
 
   const colors = useSelector(state => state.colors)
-  const [activeSpace, setActiveSpace] = useState(true);
-  const [editSpace, setEditSpace] = useState(false);
-  const [spaceName, setSpaceName] = useState(prop.space?.name);
-  const [spaceColor, setSpaceColor] = useState(prop.space?.color);
-  const [showSpaceName, setShowSpaceName] = useState(prop.space.name??"");
-  const [showSpaceDescription, setShowSpaceDescription] = useState(prop.space.description??"");
+  const userInfo = useSelector(state => state.user_info)
+  const [activeTask, setActiveTask] = useState(true);
+  const [editTask, setEditTask] = useState(false);
+  const [taskName, setTaskName] = useState(prop.task?.name);
+  const [taskColor, setTaskColor] = useState(prop.task?.color);
+  const [showTaskName, setShowTaskName] = useState(prop.task.name??"");
 
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -37,60 +37,58 @@ export default function AnAloneTask(prop) {
   const handleCloseMore = () => {
     setAnchorEl(null);
   };
-  const handleEditSpace = async () => {
+  const handleEditTask = async () => {
     handleCloseMore();
-    setEditSpace(true);
+    setEditTask(true);
   }
   const handleCancel = () => {
-    setSpaceColor(prop.space.color)
-    setEditSpace(false);
+    setTaskColor(prop.task.color)
+    setEditTask(false);
   }
-  const handleSubmitSpace = async () => {
-    setEditSpace(false);
+  const handleSubmitTask = async () => {
+    setEditTask(false);
     handleCloseMore();
-    setActiveSpace(false);
+    setActiveTask(false);
     const data={};
-    if(showSpaceName!==spaceName)data.name=spaceName;
-    if(spaceColor.name!==prop.space.color)data.color=spaceColor.name;
-    console.log(data)
-    const response = await putSpace(prop.space._id,data)
+    if(showTaskName!==taskName)data.name=taskName;
+    if(taskColor.name!==prop.task.color.name)data.color=taskColor.name;
+    const response = await putTask(prop.task._id,data)
     if(response?.success===true){
-      setShowSpaceName(response.data.name)
-      setShowSpaceDescription(response.data.description)
-      setActiveSpace(true)
+      setShowTaskName(response.data.name)
+      setActiveTask(true)
       prop.fnUpdate(response.data)
-      console.log("Updated space")
+      console.log("Updated task")
     }
     else{
-      setSpaceColor(prop.space.color)
-      setActiveSpace(true)
+      setTaskColor(prop.task.color)
+      setActiveTask(true)
     }
   }
-  const handleDeleteSpace = async () => {
+  const handleDeleteTask = async () => {
     handleCloseMore();
-    setActiveSpace(false);
-    const response = await deleteSpace(prop.space._id)
+    setActiveTask(false);
+    const response = await deleteTask(prop.task._id)
     console.log(response)
     if(response?.success===true){
-      console.log("Deleted space")
-      setActiveSpace(null)
-      prop.fnDelete(prop.space._id)
+      console.log("Deleted task")
+      setActiveTask(null)
+      prop.fnDelete(prop.task._id)
       }
-      else setActiveSpace(true)
+      else setActiveTask(true)
   }
   const handleChangeColor = (event)=>{
     const colorName=event.target.value
-    setSpaceColor(colors.find(element => element.name === colorName))
+    setTaskColor(colors.find(element => element.name === colorName))
   }
-  if(activeSpace===null) return null;
-  else if(activeSpace===true) return (
-    <Card sx={{ width:300, minHeight:150, display:"flex", flexDirection:"column", justifyContent:"space-between", color:spaceColor?.text, backgroundColor:spaceColor?.background}}>
+  if(activeTask===null) return null;
+  else if(activeTask===true) return (
+    <Card sx={{ width:300, minHeight:150, display:"flex", flexDirection:"column", justifyContent:"space-between", color:taskColor?.text, backgroundColor:taskColor?.background}}>
         <CardHeader
-          color={spaceColor?.text}
+          color={taskColor?.text}
           action={
             <>
               <IconButton 
-              sx={{color:spaceColor?.text}}
+              sx={{color:taskColor?.text}}
               aria-label="settings"
               onClick={handleClickMore}
               >
@@ -105,30 +103,33 @@ export default function AnAloneTask(prop) {
                 open={openMore}
                 onClose={handleCloseMore}
                 >
-                <MenuItem onClick={handleEditSpace}>Edit</MenuItem>
-                <MenuItem onClick={handleDeleteSpace}>Delete space</MenuItem>
+                <MenuItem onClick={handleEditTask}>Edit</MenuItem>
+                <ModalConfirm confirm={handleDeleteTask} cancel={handleCloseMore}
+                  title="Confirm to delete this task"
+                  text="Impotant: All child tasks on the task will be deleted!"
+                >
+                  <MenuItem >Delete task</MenuItem>
+                </ModalConfirm>
               </Menu>
             </>
             
           }
           title={
-            editSpace?
+            editTask?
             <TextField
               id="name-input"
               fullWidth={true}
-              placeholder="Space name"
-              defaultValue={spaceName}
-              onChange={(event)=>setSpaceName(event.target.value)}
+              placeholder="Task name"
+              defaultValue={taskName}
+              onChange={(event)=>setTaskName(event.target.value)}
             />
-            :showSpaceName
+            :`${prop.task?.users?.owners.some(e=>e.name===userInfo.name)?"🤠 ":"✊ "}${showTaskName}`
             }
-          subheader={<p style={{color:spaceColor.text}}>{`${prop.space.tasks?.length??0} tasks`}</p>}
           />
         
-        <CardContent color={spaceColor?.text}>
           
           {
-            editSpace?
+            editTask?
             <>
               <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
                 <InputLabel variant="standard" htmlFor="uncontrolled-native">
@@ -149,20 +150,15 @@ export default function AnAloneTask(prop) {
               </FormControl>
               
             </>
-            : showSpaceDescription?.split('\n').map((e,i)=>
-            <Typography sx={{ fontSize: 14 }} color={spaceColor?.text} gutterBottom key={i}>{e}</Typography>
-            )
+            : null
           }
-          
-          
-        </CardContent>
-        <CardActions sx={{display:"flex", justifyContent:"space-between"}}>
-          {editSpace?
+        <CardActions sx={{display:"flex", justifyContent:"task-between"}}>
+          {editTask?
             <>
-            <Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} onClick = {handleSubmitSpace}>SUBMIT CHANGE</Button>
-            <Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} onClick = {handleCancel}>CANCEL</Button>
+            <Button sx={{color:taskColor?.text, backgroundColor:taskColor?.frame}} onClick = {handleSubmitTask}>SUBMIT CHANGE</Button>
+            <Button sx={{color:taskColor?.text, backgroundColor:taskColor?.frame}} onClick = {handleCancel}>CANCEL</Button>
             </>
-            :<Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} href={`http://localhost:5173/space/${prop.space?._id}`}>EXPLORE</Button>
+            :<Button sx={{color:taskColor?.text, backgroundColor:taskColor?.frame}} href={`http://localhost:5173/task/${prop.task?._id}`}>EXPLORE</Button>
           }
         </CardActions>
   </Card>

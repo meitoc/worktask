@@ -61,7 +61,7 @@ export default function AddSpace() {
     setSpaceColor(colors.find(element => element.name === colorName))
   }
     if(activeSpace===true) return (
-      <Card sx={{ width:300, minHeight:350, display:"flex", flexDirection:"column", justifyContent:"space-between", color:spaceColor?.text, backgroundColor:spaceColor?.background}}>
+      <Card sx={{borderRadius:4, width:300, minHeight:350, display:"flex", flexDirection:"column", justifyContent:"space-between", color:spaceColor?.text, backgroundColor:spaceColor?.background}}>
         <CardHeader
         title={
           <TextField
@@ -106,16 +106,18 @@ export default function AddSpace() {
         <Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} onClick = {handleCanel}>CANCEL</Button>
       </CardActions>
     </Card>);
-  else if(activeSpace===null) return (
-  <Card sx={{ width:300, minHeight:350, display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
-    <ButtonBase onClick={shandleAddSpace} >
-      <img style={{width:"200px"}} src='http://localhost:5173/add-space.svg'></img>
-    </ButtonBase>
-  </Card>
-  );
-  else return (
-  <Card sx={{ width:300, minHeight:350, display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
-      <img style={{width:"200px"}} src='http://localhost:5173/lost-space.svg'></img>
-  </Card>
-  );
+  else {
+    if(activeSpace===null) return (
+    <Card sx={{ borderRadius:4, width:300, minHeight:350, display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
+      <ButtonBase onClick={shandleAddSpace} >
+        <img style={{width:"200px"}} src='http://localhost:5173/add-space.svg'></img>
+      </ButtonBase>
+    </Card>
+    );
+    else return (
+    <Card sx={{ borderRadius:4, width:300, minHeight:350, display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
+        <img style={{width:"200px"}} src='http://localhost:5173/lost-space.svg'></img>
+    </Card>
+    );
+  }
 }

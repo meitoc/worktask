@@ -16,6 +16,7 @@ import NativeSelect from '@mui/material/NativeSelect';
 import TextField from '@mui/material/TextField';
 import { deleteSpace, putSpace } from '../../sevice/api';
 import { useSelector } from 'react-redux';
+import ModalConfirm from '../small-component/ModalConfirm';
 
 
 export default function ASpace(prop) {
@@ -86,7 +87,7 @@ export default function ASpace(prop) {
   }
   if(activeSpace===null) return null;
   else if(activeSpace===true) return (
-    <Card sx={{ width:300, minHeight:350, display:"flex", flexDirection:"column", justifyContent:"space-between", color:spaceColor?.text, backgroundColor:spaceColor?.background}}>
+    <Card sx={{ borderRadius:4, width:300, minHeight:350, display:"flex", flexDirection:"column", justifyContent:"space-between", color:spaceColor?.text, backgroundColor:spaceColor?.background}}>
         <CardHeader
           color={spaceColor?.text}
           action={
@@ -108,7 +109,12 @@ export default function ASpace(prop) {
                 onClose={handleCloseMore}
                 >
                 <MenuItem onClick={handleEditSpace}>Edit</MenuItem>
-                <MenuItem onClick={handleDeleteSpace}>Delete space</MenuItem>
+                <ModalConfirm confirm={handleDeleteSpace} cancel={handleCloseMore}
+                  title="Confirm to delete this space"
+                  text="All tasks on the space will be moved to Alone Tasks."
+                >
+                  <MenuItem >Delete space</MenuItem>
+                </ModalConfirm>
               </Menu>
             </>
             
@@ -179,7 +185,7 @@ export default function ASpace(prop) {
   </Card>
   );
   else return (
-    <Card sx={{ width:300, display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
+    <Card sx={{ borderRadius:4, width:300, display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
       <img style={{width:"200px"}} src='http://localhost:5173/lost-space.svg'></img>
       </Card>
   );

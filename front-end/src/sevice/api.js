@@ -224,7 +224,7 @@ async function getTask(id) {
     return null;
   }
 }
-async function postTask(data) {
+async function postRootTask(data) {
   const session = localStorage.getItem('loginSession');
   if (!session) return null;
   try {
@@ -234,7 +234,7 @@ async function postTask(data) {
       Authorization: `Bearer ${session}`
     }
     const body = JSON.stringify(data);
-    const response = await axios.post(`http://localhost:8000/api/space`,body, {headers});
+    const response = await axios.post(`http://localhost:8000/api/task`,body, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -279,5 +279,5 @@ export {
   getColors,
   getUserInfo, putUserInfo,
   getCheckAccess, getLogout, postLogin, getFirstAccess,
-  getOwnerTasks, getMemberTasks, getTask, postTask, putTask, deleteTask,
+  getOwnerTasks, getMemberTasks, getTask, postRootTask, putTask, deleteTask,
 };

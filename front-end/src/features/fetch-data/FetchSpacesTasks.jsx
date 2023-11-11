@@ -1,6 +1,6 @@
 import { useEffect} from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getColors, getSpaces, getOwnerTasks } from "../../sevice/api";
+import { getColors, getSpaces, getOwnerTasks, getMemberTasks } from "../../sevice/api";
 import { updateSpaces } from "../../sevice/spaces/slice";
 import { updateColors } from "../../sevice/colors/slice";
 import { updateOwnerTasks } from "../../sevice/root_tasks/owner_tasks/slice";
@@ -25,7 +25,7 @@ export default function FetchSpacesTasks(prop) {
           }
         }
         const fetchMemberTasks = async () =>{
-          const response = await getOwnerTasks();  
+          const response = await getMemberTasks();  
           if(response?.success===true) {
             dispatch(updateMemberTasks(response.data));
           }

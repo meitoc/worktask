@@ -2,7 +2,6 @@ import { useState } from 'react';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import ButtonBase from '@mui/material/ButtonBase';
 import InputLabel from '@mui/material/InputLabel';
@@ -13,7 +12,7 @@ import TextField from '@mui/material/TextField';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { addToOwnerTasks } from '../../sevice/root_tasks/owner_tasks/slice';
-import { postTask } from '../../sevice/api';
+import { postRootTask } from '../../sevice/api';
 
 // import LostTask from './image/LostTask';
 export default function AddAloneTask() {
@@ -25,7 +24,7 @@ export default function AddAloneTask() {
     
   const dispatch = useDispatch();
 
-  const shandleAddTask = async () => {
+  const handleAddTask = async () => {
     setActiveTask(true);
   }
   const handleCanel = () => {
@@ -38,7 +37,7 @@ export default function AddAloneTask() {
         name:spaceName,
         color:spaceColor.name
       };
-      const response = await postTask(data)
+      const response = await postRootTask(data)
       if(response?.success===true){
           console.log("Created task")
           setTaskName("");
@@ -56,7 +55,7 @@ export default function AddAloneTask() {
     setTaskColor(colors.find(element => element.name === colorName))
   }
     if(activeTask===true) return (
-      <Card sx={{ width:300, minHeight:250, display:"flex", flexDirection:"column", justifyContent:"space-between", color:spaceColor?.text, backgroundColor:spaceColor?.background}}>
+      <Card sx={{ width:300, minHeight:150, display:"flex", flexDirection:"column", justifyContent:"space-between", color:spaceColor?.text, backgroundColor:spaceColor?.background}}>
         <CardHeader
         title={
           <TextField
@@ -68,7 +67,6 @@ export default function AddAloneTask() {
           />}
         />
       
-      <CardContent>
         <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
           <InputLabel variant="standard" htmlFor="uncontrolled-native">
             Color
@@ -86,15 +84,14 @@ export default function AddAloneTask() {
             )}
           </NativeSelect>
         </FormControl>
-      </CardContent>
       <CardActions sx={{display:"flex", justifyContent:"space-between"}}>
-        <Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} onClick = {handleSubmitTask}>SUBMIT NEW SPACE</Button>
+        <Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} onClick = {handleSubmitTask}>SUBMIT NEW TASK</Button>
         <Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} onClick = {handleCanel}>CANCEL</Button>
       </CardActions>
     </Card>);
   else if(activeTask===null) return (
-  <Card sx={{ width:300, minHeight:250, display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
-    <ButtonBase onClick={shandleAddTask} >
+  <Card sx={{ width:300, minHeight:50, display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
+    <ButtonBase onClick={handleAddTask} >
       <img style={{width:"200px"}} src='http://localhost:5173/add-alone-task.svg'></img>
     </ButtonBase>
   </Card>

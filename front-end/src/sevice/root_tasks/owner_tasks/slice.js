@@ -9,7 +9,7 @@ export const rootOwnerTasksSlice = createSlice({
     reducers: {
         addToOwnerTasks: (state, action) => {
             const newOwnerTasks = action.payload;
-            const index = state.findIndex((rootOwnerTasks) => rootOwnerTasks.id === newOwnerTasks.id);
+            const index = state.findIndex((rootOwnerTasks) => rootOwnerTasks._id === newOwnerTasks._id);
             console.log("ADDING ROOT TASK", newOwnerTasks);
             if(index!==-1) return state;
             return [...state,newOwnerTasks];

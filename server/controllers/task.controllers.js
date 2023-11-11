@@ -2,6 +2,7 @@ const { sendResponse, AppError}=require("../helpers/utils.js")
 const { query, body, param, validationResult } = require('express-validator');
 const Task = require("../models/Task.js")
 const User = require("../models/User.js");
+const Color = require("../models/Color");
 const { filterField } = require("../tools/filterData.js");
 
 const showField = {_id:1,users:1,name:1,status:1,description:1,parent_task:1,tree:1, color:1,member_add_member:1,createdAt:1,updatedAt:1};
@@ -11,6 +12,8 @@ const taskController={};
 async function loadTree(_id) {
     const foundTree =[]
     const foundItem = await Task.findOne({_id},{_id:1, name:1, parent_task:1})
+    .populate("users.owners users.managers users.members","name active -_id")
+    .populate("color","name background frame text -_id");
     if(foundItem) {
         foundTree.push({_id:foundItem._id.toString(),name:foundItem.name})
         if(foundItem.parent_task) {
@@ -39,6 +42,9 @@ taskController.createRootTask = async(req,res,next)=>{
             managers: [],
             members: [],
         };
+        const taskColor = req.body.color??"default";
+        const color = await Color.findOne({name:taskColor})
+        const colorId = color._id
         const newTask ={
             name: req.body.name,
             status: "pending",
@@ -52,17 +58,21 @@ taskController.createRootTask = async(req,res,next)=>{
             // },
             description: "",
             users,
-            color: "6532ae5d2bd43ea0a4b0f78a",
+            color: colorId,
             active: true,
             member_add_member:false,
             parent_task:null
         };
 
         //process
-        const created= await Task.create(newTask)
+        const created= await Task.create(newTask);
         if(!created) return res.status(400).json({ errors: [{ msg: 'Can not create a task!' }] }); 
-        created.tree = await loadTree(created.parent_task)
-        sendResponse(res,200,true,filterField(created,showField),null,"Create task Success")
+        const foundTask = await Task.findOne({_id:created._id})
+            .populate("users.owners users.managers users.members","name active -_id")
+            .populate("color","name background frame text -_id")
+        foundTask.tree = [];//await loadTree(created.parent_task)
+
+        sendResponse(res,200,true,filterField(foundTask,showField),null,"Create task Success")
     }catch(err){
         next(err)
     }
@@ -124,12 +134,17 @@ taskController.createTask=async(req,res,next)=>{
         const parentTaskId = req.params.id;
         //find task
         const foundTask = await Task.findOne({_id:parentTaskId, $or:[{"users.owners":userId}, {"users.managers":userId}, {"users.members":userId}], active:true})
+            .populate("users.owners users.managers users.members","name active -_id")
+            .populate("color","name background frame text -_id");
         if(!foundTask) return res.status(400).json({ errors: [{ msg: 'Can not create a task!' }] }); 
         let users = {
             owners: foundTask.users.owners,
             managers: [...foundTask.users.managers, ...foundTask.users.members],
             members: [],
         };
+        const taskColor = req.body.color??"default";
+        const color = await Color.findOne({name:taskColor})
+        const colorId = color._id
         const newTask ={
             name: req.body.name,
             status: "pending",
@@ -143,7 +158,7 @@ taskController.createTask=async(req,res,next)=>{
             // },
             description: "",
             users,
-            color: "6532ae5d2bd43ea0a4b0f78a",
+            color: colorId,
             active: true,
             member_add_member:false,
             parent_task: parentTaskId
@@ -177,16 +192,25 @@ taskController.updateTask=async(req,res,next)=>{
         //process
         const taskId = req.params.id
         const {userId} = req.access;
-        const { name,status,plan,reality,description} = req.body;
+        const { name,status,plan,reality,description,color} = req.body;
         const update = {};
         if(name) update.name=name;
         if(status) status.name=status;
         if(plan) status.name=plan;
         if(reality) update.reality=reality;
         if(description) update.description=description;
-        const updatedTask = await Task.findOneAndUpdate({_id:taskId,$or:[{"users.owners": userId}, {"users.managers": userId}],active:true},update);
+        if(color){
+            const colorFound = await Color.findOne({name:color})
+            if(colorFound) {
+                const colorId = colorFound._id
+                update.color = colorId
+            }
+        }
+        const updatedTask = await Task.findOneAndUpdate({_id:taskId,$or:[{"users.owners": userId}, {"users.managers": userId}],active:true},update,{new:true})
+            .populate("color","name background frame text -_id")
+            .populate("users.owners users.managers users.members","name active -_id");
         if(!updatedTask) return res.status(400).json({ errors: [{ msg: 'Can not update the task!' }] }); 
-        sendResponse(res,200,true,taskId,null,"Change data success")
+        sendResponse(res,200,true,filterField(updatedTask,showField),null,"Change data success")
     }catch(err){
         next(err)
     }
@@ -206,7 +230,7 @@ taskController.getTask=async(req,res,next)=>{
         //process
         const taskId=req.params.id;
         const filter = {_id:taskId,$or:[{"users.owners": userId}, {"users.managers": userId}, {"users.members": userId}], active:true}
-        const foundTask= await Task.findOne(filter)
+        const foundTask= await Task.findOne(filter).populate("color","name background frame text -_id")
             .populate("users.owners users.managers users.members","name active -_id")
             .populate("color","name frame background text -_id")
             .sort({ createdAt: sortByTime });
@@ -231,7 +255,9 @@ taskController.deleteTask=async(req,res,next)=>{
         const {userId} = req.access;
         //process
         const taskId= req.params.id;
-        const changedTask = await Task.findOneAndUpdate({_id:taskId,$or:[{"users.owners":userId},{"users.managers":userId}],active:true},{active:false, task:null});
+        const changedTask = await Task.findOneAndUpdate({_id:taskId,$or:[{"users.owners":userId},{"users.managers":userId}],active:true},{active:false, task:null})
+        .populate("users.owners users.managers users.members","name active -_id")
+        .populate("color","name background frame text -_id");
         if(!changedTask) return res.status(400).json({ errors: [{ msg: 'Invalid data!' }] });
         // recursive function
         async function deleteChildTasks (parentId) {

@@ -20,7 +20,7 @@ email.sendEmail = async function (title,content, emailTarget)
     const transporter = await nodemailer.createTransport({
         host: BACKEND_MAIL_SERVER_HOST,
         port: BACKEND_MAIL_SERVER_PORT,
-        secure: false,
+        secure: true,
         auth: {
             user: BACKEND_MAIL_SERVER_USER,
             pass: BACKEND_MAIL_SERVER_PASSWORD
