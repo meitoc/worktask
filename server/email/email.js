@@ -31,7 +31,7 @@ email.sendEmail = async function (title,content, emailTarget)
     from: BACKEND_MAIL_SERVER_USER,
     to: emailTarget,
     subject: title,
-    text: emailContent
+    html: emailContent
     };
     
     const sendEmail = (mailOptions) => {
