@@ -61,7 +61,7 @@ userController.createUser=async(req,res,next)=>{
             };
             const createdAccess= await Access.create(newAccess)
             //send email contains otp
-            const emailContent=`<a href="${FRONTEND_URL}/first-access/${newAccess.email_otp}"></a>`
+            const emailContent=`<a href="${FRONTEND_URL}/first-access/${newAccess.email_otp}">Verify your email.</a>`
             const sendEmail = await email.sendEmail("Email Authentication",emailContent,newUser.email);
             if(!sendEmail){
                 //delete UserInfo
