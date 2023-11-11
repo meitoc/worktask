@@ -63,6 +63,15 @@ userController.createUser=async(req,res,next)=>{
             //send email contains otp
             const emailContent=`<a href="${FRONTEND_URL}/first-access/${newAccess.email_otp}"></a>`
             const sendEmail = await email.sendEmail("Email Authentication",emailContent,newUser.email);
+            if(!sendEmail){
+                //delete UserInfo
+                const deleteIfo= await UserInfo.deleteOne({_id:createdInfo._id})
+                //delete User
+                const deleteUser= await User.deleteOne({_id:createdUser._id})
+                //delete Access
+                const deleteAccess = await Access.deleteOne({_id:createdAccess._id});
+                return res.status(400).json({ errors: [{ msg: 'Try other email or try later!' }] });
+            }
             //response with secure password
             const responseUser={
                 name: newUser.name,
