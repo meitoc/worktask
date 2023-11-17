@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const taskSchema = mongoose.Schema(
   {
     name: { type: String, default: ""},
-    status: { type: String, enum:["pending","started","finished"], default: "pending"},
+    status: { type: String, enum:["todo","processing","done"], default: "todo"},
     plan:{
       start: { type: Date },
       expiry: { type: Date },

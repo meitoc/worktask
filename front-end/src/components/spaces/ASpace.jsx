@@ -16,7 +16,7 @@ import NativeSelect from '@mui/material/NativeSelect';
 import TextField from '@mui/material/TextField';
 import { deleteSpace, putSpace } from '../../sevice/api';
 import { useSelector } from 'react-redux';
-import ModalConfirm from '../small-component/ModalConfirm';
+import ModalConfirm from '../modal/ModalConfirm';
 
 
 export default function ASpace(prop) {

@@ -28,7 +28,7 @@ userSchema.methods.generateSession = async function() {
 // userSchema.methods.isValidSession = async (accessToken) => {
 //   try {
 //     const decoded = await jwt.verify(accessToken, JWT_SECRET_SESSION_KEY);
-//     const currentTime = Math.floor(Date.now() / 1000); // Thời điểm hiện tại (đơn vị giây)
+//     const currentTime = Math.floor(Date.now() / 1000);
 //     if (decoded.exp < currentTime) {
 //       // console.log('Session has expired.');
 //       return false;

@@ -12,7 +12,7 @@ export default function FetchSpacesTasks(prop) {
     const spaces = useSelector(state=>state.spaces)
     const colors = useSelector(state=>state.colors)
     useEffect(()=>{
-        const fetchUser = async () =>{
+        const fetchSpaces = async () =>{
           const response = await getSpaces();  
           if(response?.success===true) {
             dispatch(updateSpaces(response.data));
@@ -38,7 +38,7 @@ export default function FetchSpacesTasks(prop) {
           }
         }
         if(userInfo && spaces===null ){
-            fetchUser();
+            fetchSpaces();
           if(colors===null) fetchColors()
           fetchOwnerTasks();
           fetchMemberTasks();

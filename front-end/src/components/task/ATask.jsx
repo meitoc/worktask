@@ -14,19 +14,24 @@ import NativeSelect from '@mui/material/NativeSelect';
 
 import TextField from '@mui/material/TextField';
 import { deleteTask, putTask } from '../../sevice/api';
-import { useSelector } from 'react-redux';
-import ModalConfirm from '../small-component/ModalConfirm';
+import { useDispatch,useSelector } from 'react-redux';
+import ModalConfirm from '../modal/ModalConfirm';
+import MoveToSpace from '../modal/MoveToSpace';
+import { removeTaskFromASpace } from '../../sevice/a_space/slice';
+import { removeTaskFromSpaces } from '../../sevice/spaces/slice';
+import { removeTaskFromATask } from '../../sevice/a_task/slice';
 
 
-export default function AnAloneTask(prop) {
-
+export default function ATask(prop) {
+  const dispatch = useDispatch();
+  const task = prop.task
   const colors = useSelector(state => state.colors)
   const userInfo = useSelector(state => state.user_info)
   const [activeTask, setActiveTask] = useState(true);
   const [editTask, setEditTask] = useState(false);
-  const [taskName, setTaskName] = useState(prop.task?.name);
-  const [taskColor, setTaskColor] = useState(prop.task?.color);
-  const [showTaskName, setShowTaskName] = useState(prop.task.name??"");
+  const [taskName, setTaskName] = useState(task?.name);
+  const [taskColor, setTaskColor] = useState(task?.color);
+  const [showTaskName, setShowTaskName] = useState(task?.name??"");
 
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -42,7 +47,7 @@ export default function AnAloneTask(prop) {
     setEditTask(true);
   }
   const handleCancel = () => {
-    setTaskColor(prop.task.color)
+    setTaskColor(task.color)
     setEditTask(false);
   }
   const handleSubmitTask = async () => {
@@ -51,28 +56,31 @@ export default function AnAloneTask(prop) {
     setActiveTask(false);
     const data={};
     if(showTaskName!==taskName)data.name=taskName;
-    if(taskColor.name!==prop.task.color.name)data.color=taskColor.name;
-    const response = await putTask(prop.task._id,data)
+    if(taskColor.name!==task.color.name)data.color=taskColor.name;
+    const response = await putTask(task._id,data)
     if(response?.success===true){
       setShowTaskName(response.data.name)
       setActiveTask(true)
-      prop.fnUpdate(response.data)
+      if(typeof prop.fnUpdate === "function") prop.fnUpdate(response.data)
       console.log("Updated task")
     }
     else{
-      setTaskColor(prop.task.color)
+      setTaskColor(task.color)
       setActiveTask(true)
     }
   }
   const handleDeleteTask = async () => {
     handleCloseMore();
     setActiveTask(false);
-    const response = await deleteTask(prop.task._id)
+    const response = await deleteTask(task._id)
     console.log(response)
     if(response?.success===true){
       console.log("Deleted task")
       setActiveTask(null)
-      prop.fnDelete(prop.task._id)
+      dispatch(removeTaskFromASpace(task._id))
+      dispatch(removeTaskFromSpaces(task._id))
+      dispatch(removeTaskFromATask(task._id))
+      if(typeof prop.fnDelete ==="function") prop.fnDelete(task._id)
       }
       else setActiveTask(true)
   }
@@ -80,6 +88,7 @@ export default function AnAloneTask(prop) {
     const colorName=event.target.value
     setTaskColor(colors.find(element => element.name === colorName))
   }
+  
   if(activeTask===null) return null;
   else if(activeTask===true) return (
     <Card sx={{ width:300, minHeight:150, display:"flex", flexDirection:"column", justifyContent:"space-between", color:taskColor?.text, backgroundColor:taskColor?.background}}>
@@ -102,6 +111,7 @@ export default function AnAloneTask(prop) {
                 }}
                 open={openMore}
                 onClose={handleCloseMore}
+                style={{display:"flex",flexDirection:"column"}}
                 >
                 <MenuItem onClick={handleEditTask}>Edit</MenuItem>
                 <ModalConfirm confirm={handleDeleteTask} cancel={handleCloseMore}
@@ -110,6 +120,10 @@ export default function AnAloneTask(prop) {
                 >
                   <MenuItem >Delete task</MenuItem>
                 </ModalConfirm>
+                <MoveToSpace cancel={handleCloseMore} id={task._id} confirm={handleCloseMore}
+                >
+                  <MenuItem >Move to a space</MenuItem>
+                </MoveToSpace>
               </Menu>
             </>
             
@@ -123,7 +137,7 @@ export default function AnAloneTask(prop) {
               defaultValue={taskName}
               onChange={(event)=>setTaskName(event.target.value)}
             />
-            :`${prop.task?.users?.owners.some(e=>e.name===userInfo.name)?"🤠 ":"✊ "}${showTaskName}`
+            :`${task?.users?.owners.some(e=>e.name===userInfo.name)?"🤠 ":"✊ "}${showTaskName}`
             }
           />
         
@@ -158,14 +172,14 @@ export default function AnAloneTask(prop) {
             <Button sx={{color:taskColor?.text, backgroundColor:taskColor?.frame}} onClick = {handleSubmitTask}>SUBMIT CHANGE</Button>
             <Button sx={{color:taskColor?.text, backgroundColor:taskColor?.frame}} onClick = {handleCancel}>CANCEL</Button>
             </>
-            :<Button sx={{color:taskColor?.text, backgroundColor:taskColor?.frame}} href={`http://localhost:5173/task/${prop.task?._id}`}>EXPLORE</Button>
+            :<Button sx={{color:taskColor?.text, backgroundColor:taskColor?.frame}} href={`http://localhost:5173/task/${task?._id}`}>EXPLORE</Button>
           }
         </CardActions>
   </Card>
   );
   else return (
-    <Card sx={{ width:300, display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
-      <img style={{width:"200px"}} src='http://localhost:5173/lost-task.svg'></img>
+    <Card sx={{width:300, minHeight:100, display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
+      <img style={{maxHeight:150}} src='http://localhost:5173/lost-task.svg'></img>
       </Card>
   );
   

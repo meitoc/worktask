@@ -3,6 +3,7 @@ const express= require("express")
 const router = express.Router()
 const {createSpace, getAllSpaces, deleteSpace, getSpace,updateSpace} = require("../controllers/space.controllers.js")
 const {updateSpaceColor} = require("../controllers/space/colorSpace.controllers.js")
+const {addSpaceTask, removeSpaceTask} = require("../controllers/space/taskSpace.controllers.js")
 const { isAuthenticated } = require("../auth/authorization.js")
 
 //Read
@@ -58,6 +59,24 @@ router.put("/id/:id",isAuthenticated,updateSpace)
  * @access user
  */
 router.put("/id/:id/color",isAuthenticated,updateSpaceColor)
+
+/////////// Specificated Id for task
+
+//Update
+/**
+ * @route PUT api/task/id/1234.../task
+ * @description delete reference to a task by user name
+ * @access user
+ */
+router.put("/id/:id/task",isAuthenticated,addSpaceTask)
+
+//Delete
+/**
+ * @route PUT api/task/id/1234.../task
+ * @description delete reference to a task by user name
+ * @access user
+ */
+router.delete("/id/:id/task",isAuthenticated,removeSpaceTask)
 
 //export
 module.exports= router

@@ -11,7 +11,9 @@ export default function FetchUserData(prop) {
             console.log("Fetching user data...")
             const response = await getUserInfo();
             if(response?.success===true) dispatch(updateUser(response.data))
-            else dispatch(updateUser(false))
+            else {
+                dispatch(updateUser(false))
+            }
         }
         if(userInfo===null) fetchData();
     },[dispatch,userInfo]);

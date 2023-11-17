@@ -1,10 +1,11 @@
 const { sendResponse, AppError}=require("../helpers/utils.js")
 const { query, body, param, validationResult } = require('express-validator');
 const Space = require("../models/Space.js")
+const Task = require("../models/Task.js")
 const Color = require("../models/Color.js")//use later for real deploy within payment
 const { filterField } = require("../tools/filterData.js");
 
-const showField = {_id:1,name:1,description:1,color:1,createdAt:1,updatedAt:1};
+const showField = {_id:1,name:1,description:1,tasks:1,color:1,createdAt:1,updatedAt:1};
 
 const spaceController={}
 
@@ -51,6 +52,7 @@ spaceController.updateSpace=async(req,res,next)=>{
 
         if(req.body.name) await body('name').isString().withMessage('Invalid name!').run(req);
         if(req.body.description) await body('description').isString().withMessage('Invalid description!').run(req);
+        if(req.body.tasks) await body('tasks').isArray().withMessage('Invalid tasks!').run(req);
         console.log(req.body)
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -59,13 +61,21 @@ spaceController.updateSpace=async(req,res,next)=>{
         //process
         const spaceId = req.params.id
         const {userId} = req.access;
-        const { name,description} = req.body;
+        const { name,description,tasks} = req.body;
         const spaceColor = req.body.color??"default";
         const color = await Color.findOne({name:spaceColor})
         const colorId = color?._id
         const update = {};
         if(name) update.name=name;
-        if(description || description==="") update.description=description;
+        if(description) update.description=description;
+        if(tasks) {
+            //prevent hacking
+            const filterredTasks= await Promise.all(tasks.map(async (e)=>{
+                const foundTask = await Task.findOne({_id:e,"users.owners":userId})
+                if(foundTask) return e;
+            }));
+            update.tasks=filterredTasks;
+        }
         update.color=colorId;
         const updatedSpace = await Space.findOneAndUpdate({_id:spaceId,user: userId},update,{new:true}).populate("color","name frame background text -_id");
         if(!updatedSpace) return res.status(400).json({ errors: [{ msg: 'Can not update the task!' }] }); 

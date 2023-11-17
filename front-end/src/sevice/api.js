@@ -17,6 +17,21 @@ async function getSpaces() {
     return null;
   }
 }
+async function getSpace(id) {
+  const session = localStorage.getItem('loginSession');
+  if (!session) return null;
+  try {
+    const headers = {
+      accept: 'application/json',
+      Authorization: `Bearer ${session}`
+    }
+    const response = await axios.get(`http://localhost:8000/api/space/id/${id}`,{headers});
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
 
 async function postSpace(data) {
   const session = localStorage.getItem('loginSession');
@@ -68,6 +83,24 @@ async function deleteSpace(id) {
     return null;
   }
 }
+//space detail
+async function putSpaceColor(id,data) {
+  const session = localStorage.getItem('loginSession');
+  if (!session) return null;
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+      accept: 'application/json',
+      Authorization: `Bearer ${session}`
+    }
+    const body = JSON.stringify(data);
+    const response = await axios.put(`http://localhost:8000/api/space/id/${id}/color`,body, {headers});
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
 //////COLORS
 async function getColors() {
   const session = localStorage.getItem('loginSession');
@@ -97,6 +130,7 @@ async function getUserInfo() {
     const response = await axios.get(`http://localhost:8000/api/user-info`,{headers});
     return response.data;
   } catch (error) {
+    localStorage.removeItem('loginSession')
     console.error(error);
     return null;
   }
@@ -142,7 +176,7 @@ async function getLogout() {
       accept: 'application/json',
       Authorization: `Bearer ${session}`
     }
-    const response = await axios.get(`http://localhost:8000/api/logout`,{headers});
+    const response = await axios.get(`http://localhost:8000/api/access/logout`,{headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -150,16 +184,13 @@ async function getLogout() {
   }
 }
 async function postLogin(data) {
-  const session = localStorage.getItem('loginSession');
-  if (!session) return null;
   try {
     const headers = {
       'Content-Type': 'application/json',
       accept: 'application/json',
-      Authorization: `Bearer ${session}`
     }
     const body = JSON.stringify(data);
-    const response = await axios.post(`http://localhost:8000/api/space`,body, {headers});
+    const response = await axios.post(`http://localhost:8000/api/access/login`,body, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -172,6 +203,21 @@ async function getFirstAccess(string) {
       accept: 'application/json',
     }
     const response = await axios.get(`http://localhost:8000/api/access/first/${string}`,{headers});
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+/////////USER
+async function postCreateUser(data) {
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+      accept: 'application/json',
+    }
+    const body = JSON.stringify(data);
+    const response = await axios.post(`http://localhost:8000/api/user`,body, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -217,14 +263,14 @@ async function getTask(id) {
       accept: 'application/json',
       Authorization: `Bearer ${session}`
     }
-    const response = await axios.get(`http://localhost:8000/api/task/id${id}`,{headers});
+    const response = await axios.get(`http://localhost:8000/api/task/id/${id}`,{headers});
     return response.data;
   } catch (error) {
     console.error(error);
     return null;
   }
 }
-async function postRootTask(data) {
+async function postTask(data) {
   const session = localStorage.getItem('loginSession');
   if (!session) return null;
   try {
@@ -235,6 +281,23 @@ async function postRootTask(data) {
     }
     const body = JSON.stringify(data);
     const response = await axios.post(`http://localhost:8000/api/task`,body, {headers});
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+async function getTaskList(array) {
+  const session = localStorage.getItem('loginSession');
+  if (!session) return null;
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+      accept: 'application/json',
+      Authorization: `Bearer ${session}`
+    }
+    const body = JSON.stringify({tasks:array});
+    const response = await axios.post(`http://localhost:8000/api/task/get-list`,body, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -274,10 +337,67 @@ async function deleteTask(id) {
     return null;
   }
 }
+//space detail
+async function putTaskColor(id,data) {
+  const session = localStorage.getItem('loginSession');
+  if (!session) return null;
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+      accept: 'application/json',
+      Authorization: `Bearer ${session}`
+    }
+    const body = JSON.stringify(data);
+    const response = await axios.put(`http://localhost:8000/api/task/id/${id}/color`,body, {headers});
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+//SPACE TASKS (TASKS IN A SPACE)
+async function putTaskToSpace(data,spaceId) {
+  const session = localStorage.getItem('loginSession');
+  if (!session) return null;
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+      accept: 'application/json',
+      Authorization: `Bearer ${session}`
+    }
+    const body = JSON.stringify(data);
+    const response = await axios.put(`http://localhost:8000/api/space/id/${spaceId}/task`,body, {headers});
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+async function deleteTaskFromSpace(data,spaceId) {
+  const session = localStorage.getItem('loginSession');
+  if (!session) return null;
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+      accept: 'application/json',
+      Authorization: `Bearer ${session}`
+    }
+    const body = JSON.stringify(data);
+    const response = await axios.delete(`http://localhost:8000/api/space/id/${spaceId}/task`,body, {headers});
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
 export {
-  getSpaces,postSpace,putSpace,deleteSpace,
+  getSpaces, getSpace,postSpace,putSpace,deleteSpace,
+  putSpaceColor,
   getColors,
   getUserInfo, putUserInfo,
   getCheckAccess, getLogout, postLogin, getFirstAccess,
-  getOwnerTasks, getMemberTasks, getTask, postRootTask, putTask, deleteTask,
+  postCreateUser,
+  getOwnerTasks, getMemberTasks, getTask, postTask, putTask, deleteTask, getTaskList,
+  putTaskColor,
+  putTaskToSpace, deleteTaskFromSpace,
 };

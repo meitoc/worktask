@@ -46,7 +46,7 @@ export default function AddSpace() {
           console.log("Created space")
           setSpaceName("");
           setSpaceDescription("");
-          setSpaceColor(null);
+          setSpaceColor({name:"default",frame:"rgb(100,100,150)",background:"rgb(200,200,255)",text:"rgb(10,10,0)"});
           setActiveSpace(null)
           dispatch(addToSpaces(response.data))
       }

@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 import { createBrowserHistory } from "history";
 import { useDispatch } from 'react-redux';
 import { deleteUser } from '../sevice/user_info/slice';
 import { getLogout } from '../sevice/api';
+import GoToHomePage from '../components/small-component/GoToHomePage';
 
 export default function Logout() {
     const dispatch = useDispatch();
@@ -11,8 +11,7 @@ export default function Logout() {
     React.useEffect(()=>{
       const requestLogout = async () => {
         const response = await getLogout();
-        console.log(response);
-        if(response.success===true){
+        if(response?.success===true){
             localStorage.setItem('loginSession',response.data?.session??"");
             console.log("Logged out.");
         }
@@ -25,6 +24,6 @@ export default function Logout() {
     }
     ,[history,dispatch])
     
-    return(<Link to={"/"}><p>Goto Home page</p></Link>);
+    return(<GoToHomePage/>);
     
 }

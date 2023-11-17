@@ -1,7 +1,7 @@
 const { sendResponse, AppError}=require("../helpers/utils.js")
 const { query, body, param, validationResult } = require('express-validator');
 const Task = require("../models/Task.js")
-const User = require("../models/User.js");
+const Space = require("../models/Space.js");
 const Color = require("../models/Color");
 const { filterField } = require("../tools/filterData.js");
 
@@ -47,7 +47,7 @@ taskController.createRootTask = async(req,res,next)=>{
         const colorId = color._id
         const newTask ={
             name: req.body.name,
-            status: "pending",
+            status: "todo",
             // plan:{
             // start: { type: Date },
             // expiry: { type: Date },
@@ -147,7 +147,7 @@ taskController.createTask=async(req,res,next)=>{
         const colorId = color._id
         const newTask ={
             name: req.body.name,
-            status: "pending",
+            status: "todo",
             // plan:{
             // start: { type: Date },
             // expiry: { type: Date },
@@ -184,6 +184,7 @@ taskController.updateTask=async(req,res,next)=>{
         if(req.body.name) await body('name').isString().withMessage('Invalid name!').run(req);
         if(req.body.description) await body('description').isString().withMessage('Invalid description!').run(req);
         if(req.body.status) await body('status').isString().withMessage('Invalid status!').run(req);
+        if(req.body.tasks) await body('tasks').isArray().withMessage('Invalid status!').run(req);
 
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -192,11 +193,11 @@ taskController.updateTask=async(req,res,next)=>{
         //process
         const taskId = req.params.id
         const {userId} = req.access;
-        const { name,status,plan,reality,description,color} = req.body;
+        const { name,status,plan,reality,description,color,tasks} = req.body;
         const update = {};
         if(name) update.name=name;
-        if(status) status.name=status;
-        if(plan) status.name=plan;
+        if(status) update.status=status;
+        if(plan) update.plan=plan;
         if(reality) update.reality=reality;
         if(description) update.description=description;
         if(color){
@@ -205,6 +206,14 @@ taskController.updateTask=async(req,res,next)=>{
                 const colorId = colorFound._id
                 update.color = colorId
             }
+        }
+        if(tasks) {
+            //prevent hacking
+            const filterredTasks= await Promise.all(tasks.map(async (e)=>{
+                const foundTask = await Task.findOne({_id:e,"users.owners":userId})
+                if(foundTask) return e;
+            }));
+            update.tasks=filterredTasks;
         }
         const updatedTask = await Task.findOneAndUpdate({_id:taskId,$or:[{"users.owners": userId}, {"users.managers": userId}],active:true},update,{new:true})
             .populate("color","name background frame text -_id")
@@ -242,6 +251,37 @@ taskController.getTask=async(req,res,next)=>{
         next(err)
     }
 }
+//Get a task list// note that porpose is get but method is POST
+taskController.postTaskList=async(req,res,next)=>{
+    try{
+        //check param by express-validator
+        await body('tasks').isArray().withMessage('Wrong task id!').run(req);
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        const {userId} = req.access;
+        const sortByTime = req.query.time==="forward"? 1 : req.query.time==="backward"? -1 : 0;
+        //process
+        const getSplitTask = async (taskId) =>{
+            const filter = {_id:taskId,$or:[{"users.owners": userId}, {"users.managers": userId}, {"users.members": userId}], active:true}
+            const foundTask= await Task.findOne(filter).populate("color","name background frame text -_id")
+                .populate("users.owners users.managers users.members","name active -_id")
+                .populate("color","name frame background text -_id")
+                .sort({ createdAt: sortByTime });
+            if(!foundTask) return null;
+            foundTask.tree = await loadTree(foundTask.parent_task);
+            const filterredTask = filterField(foundTask,showField);
+            return filterredTask;
+        }
+        const requestList = req.body.tasks;
+        const promises = requestList.map(getSplitTask);
+        const taskList = await Promise.all(promises);
+        sendResponse(res, 200, true, taskList, null, "Found list of task success");
+    }catch(err){
+        next(err)
+    }
+}
 //delete a task
 taskController.deleteTask=async(req,res,next)=>{
     try{
@@ -273,7 +313,8 @@ taskController.deleteTask=async(req,res,next)=>{
         if(changedTask?.active===true){
             //delete all child task
             const totalChangedChildTask  = await deleteChildTasks(changedTask._id);
-            sendResponse(res,200,true,{id:taskId,totalChangedChildTask},null,"Delete task success")
+            const totalChangedSpace = await Space.updateMany({tasks:taskId},{$pull:{tasks:taskId}})
+            sendResponse(res,200,true,{id:taskId,totalChangedChildTask,totalChangedSpace:totalChangedSpace?.upsertedCount},null,"Delete task success")
         }
         else return res.status(400).json({ errors: [{ msg: 'Invalid data!' }] });
      }catch(err){

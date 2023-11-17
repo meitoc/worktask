@@ -11,13 +11,22 @@ export default function ModalConfirm(prop) {
   }
   const handleCloseModal = ()=>{
     setOpenModal(false);
-    prop.cancel();
+    if(prop.cancel) prop.cancel();
+  }
+  const handleConfirm = ()=>{
+    if(prop.confirm) prop.confirm();
   }
     return(
         <>
-        <ButtonBase variant="text" onClick={handleOpenModal}>
-          {prop.children}
-        </ButtonBase>
+        {
+          prop.children.type=== Button?
+          <div onClick={handleOpenModal}>
+            {prop.children}
+          </div>
+          :<ButtonBase variant="text" onClick={handleOpenModal}>
+            {prop.children}
+          </ButtonBase>
+        }
         <Modal
                 open={openModal}
                 onClose={handleCloseModal}
@@ -42,8 +51,8 @@ export default function ModalConfirm(prop) {
                     {prop.text??""}
                   </p>
                   <div style={{display:"flex",justifyContent:"space-between"}}>
-                    <Button onClick = {prop.confirm}>OK</Button>
-                    <Button onClick = {handleCloseModal}>CANCEL</Button>
+                    <Button variant="contained" sx={{margin:1}} onClick = {handleConfirm}>OK</Button>
+                    <Button variant="contained" sx={{margin:1}} onClick = {handleCloseModal}>CANCEL</Button>
                   </div>
                 </Box>
         </Modal>

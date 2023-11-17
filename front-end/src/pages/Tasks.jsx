@@ -1,5 +1,4 @@
-// import { AuthenCheck } from '../../features/authentication/AuthenCheck';
-// import FetchFavorite from '../features/fetch-data/FetchFavorite';
+
 import { useEffect } from 'react';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';

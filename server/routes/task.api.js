@@ -1,7 +1,7 @@
 const express= require("express")
 
 const router = express.Router()
-const { createRootTask, getOwnTasks, getMemberTasks,    getTask, updateTask, createTask, deleteTask } = require("../controllers/task.controllers.js")
+const { createRootTask, getOwnTasks, getMemberTasks,  postTaskList,   getTask, updateTask, createTask, deleteTask } = require("../controllers/task.controllers.js")
 const { updateTaskColor } = require("../controllers/task/colorTask.controllers.js")
 const { addUser,removeUser } = require("../controllers/task/userTask.controllers.js")
 const { addComment,getComments,deleteComment } = require("../controllers/task/commentTask.controllers.js")
@@ -33,6 +33,13 @@ router.get("/owner",isAuthenticated, getOwnTasks)
  * @access user
  */
 router.get("/member",isAuthenticated, getMemberTasks)
+//Read task list
+/**
+ * @route GET api/task/list
+ * @description get list of tasks
+ * @access user
+ */
+router.post("/get-list",isAuthenticated, postTaskList)
 
 /////////// Specificated Id for member_add_member
 

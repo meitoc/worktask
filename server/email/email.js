@@ -12,7 +12,7 @@ email.sendEmail = async function (title,content, emailTarget)
     </head>
     <body>
     ${content}
-        <p>Best regards,<br>Meitoc OTP Center<br>
+        <p>Best regards,<br>Meitoc OTP Center<br>Phone: +84 848484774<br>Email: info@meitoc.com
     </p>
     </body>
     </html>`;

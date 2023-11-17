@@ -20,13 +20,13 @@ export default function Account() {
                 You Account
                 </Typography>
                 <Stack spacing={{ xs: 1, sm: 2 }} direction="column" useFlexGap flexWrap="wrap">
-                    <Paper sx={{width:"90vw"}} elevation={2}>
+                    <Paper sx={{width:"90vw",padding: 4}} elevation={2} >
                         <AccountInformation/>
                     </Paper>
-                    <Paper elevation={2}>
+                    <Paper sx={{width:"90vw",padding: 4}} elevation={2} >
                         <PasswordChange/>
                     </Paper>
-                    <Paper elevation={2} >
+                    <Paper sx={{width:"90vw",padding: 4}} elevation={2} >
                         <UserInformation/>
                     </Paper>
                 </Stack>
