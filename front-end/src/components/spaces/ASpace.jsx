@@ -9,14 +9,13 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import NativeSelect from '@mui/material/NativeSelect';
 
 import TextField from '@mui/material/TextField';
 import { deleteSpace, putSpace } from '../../sevice/api';
 import { useSelector } from 'react-redux';
 import ModalConfirm from '../modal/ModalConfirm';
+import { Divider } from '@mui/material';
+import { GithubPicker } from 'react-color';
 
 
 export default function ASpace(prop) {
@@ -81,9 +80,9 @@ export default function ASpace(prop) {
       }
       else setActiveSpace(true)
   }
-  const handleChangeColor = (event)=>{
-    const colorName=event.target.value
-    setSpaceColor(colors.find(element => element.name === colorName))
+  const handleChangeColor = (color)=>{
+    const backgroundColor=`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`;
+    setSpaceColor(colors.find(element => element.background === backgroundColor))
   }
   if(activeSpace===null) return null;
   else if(activeSpace===true) return (
@@ -122,13 +121,19 @@ export default function ASpace(prop) {
           title={
             editSpace?
             <TextField
+              inputProps={{
+                style: { color: spaceColor.text, fontWeight:"bold" }
+              }}
               id="name-input"
               fullWidth={true}
               placeholder="Space name"
               defaultValue={spaceName}
               onChange={(event)=>setSpaceName(event.target.value)}
             />
-            :showSpaceName
+            :<div style={{
+              overflowWrap: 'break-word',
+              maxWidth:"100%"
+            }}>{showSpaceName}</div>
             }
           subheader={<p style={{color:spaceColor.text}}>{`${prop.space.tasks?.length??0} tasks`}</p>}
           />
@@ -138,24 +143,17 @@ export default function ASpace(prop) {
           {
             editSpace?
             <>
-              <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                <InputLabel variant="standard" htmlFor="uncontrolled-native">
-                  Color
-                </InputLabel>
-                <NativeSelect
-                  defaultValue={"default"}
-                  inputProps={{
-                    name: 'age',
-                    id: 'uncontrolled-native',
-                  }}
-                  onChange={handleChangeColor}
-                >
-                  {colors.map(e => 
-                    <option style={{backgroundColor:e.background, color:e.text}} value={e.name} key={e.name}>{e.name}</option>
-                  )}
-                </NativeSelect>
-              </FormControl>
+               <GithubPicker
+                    colors={colors?.map(e=>e.background)}
+                    onChange={handleChangeColor}
+                    disableAlpha={true}
+                    className="github-color-picker"
+                />
+                <Divider style={{marginTop:15}} />
               <TextField
+                inputProps={{
+                  style:{color:spaceColor.text}
+                }}
                 id="description-input"
                 multiline={true}
                 maxRows={3}
@@ -166,9 +164,12 @@ export default function ASpace(prop) {
                 onChange={(event)=>setSpaceDescription(event.target.value)}
               />
             </>
-            : showSpaceDescription?.split('\n').map((e,i)=>
-            <Typography sx={{ fontSize: 14 }} color={spaceColor?.text} gutterBottom key={i}>{e}</Typography>
-            )
+            : <div style={{
+              overflowWrap: 'break-word',
+              maxWidth:"100%"
+            }}>
+              {showSpaceDescription?.split('\n').map((e,i)=> <Typography sx={{ fontSize: 14 }} color={spaceColor?.text} gutterBottom key={i}>{e}</Typography>)}
+            </div>
           }
           
           
@@ -177,7 +178,7 @@ export default function ASpace(prop) {
           {editSpace?
             <>
             <Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} onClick = {handleSubmitSpace}>SUBMIT CHANGE</Button>
-            <Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} onClick = {handleCancel}>CANCEL</Button>
+            <Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} onClick = {handleCancel} color="warning" >CANCEL</Button>
             </>
             :<Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} href={`http://localhost:5173/space/${prop.space?._id}`}>EXPLORE</Button>
           }

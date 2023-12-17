@@ -7,14 +7,17 @@ import ButtonBase from "@mui/material/ButtonBase";
 export default function ModalConfirm(prop) {
   const [openModal,setOpenModal] = useState(false)
   const handleOpenModal = ()=>{
+    if(prop.disabled!==true)
     setOpenModal(true)
   }
   const handleCloseModal = ()=>{
-    setOpenModal(false);
-    if(prop.cancel) prop.cancel();
+    if(prop.disabled!==true){
+      setOpenModal(false);
+      if(prop.cancel) prop.cancel();
+    }
   }
   const handleConfirm = ()=>{
-    if(prop.confirm) prop.confirm();
+    if(prop.disabled!==true) if(prop.confirm) prop.confirm();
   }
     return(
         <>
@@ -23,7 +26,7 @@ export default function ModalConfirm(prop) {
           <div onClick={handleOpenModal}>
             {prop.children}
           </div>
-          :<ButtonBase variant="text" onClick={handleOpenModal}>
+          :<ButtonBase style={prop.style} variant="text" onClick={handleOpenModal}>
             {prop.children}
           </ButtonBase>
         }
@@ -52,7 +55,7 @@ export default function ModalConfirm(prop) {
                   </p>
                   <div style={{display:"flex",justifyContent:"space-between"}}>
                     <Button variant="contained" sx={{margin:1}} onClick = {handleConfirm}>OK</Button>
-                    <Button variant="contained" sx={{margin:1}} onClick = {handleCloseModal}>CANCEL</Button>
+                    <Button variant="contained" sx={{margin:1}} onClick = {handleCloseModal} color="warning" >CANCEL</Button>
                   </div>
                 </Box>
         </Modal>

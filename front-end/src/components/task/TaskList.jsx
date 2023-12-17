@@ -1,7 +1,8 @@
 import  {  useState, useEffect } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
-import { Box, Fab, Stack, Zoom} from "@mui/material";
+import { Box, Fab, Paper, Skeleton, Zoom} from "@mui/material";
+import Grid from '@mui/material/Unstable_Grid2';
 import ATask from "./ATask";
 import { getTaskList, putSpace, putTask } from "../../sevice/api";
 import { useTheme } from "@emotion/react";
@@ -28,15 +29,15 @@ export default function TaskList(prop) {
           const taskStatus = {
             todo: {
               name: "Todo",
-              items: tasks?.filter(e=>e.status!=="processing" && e.status!=="done")
+              items: tasks?.filter(e=>e.status!=="processing" && e.status!=="done")??[]
             },
             processing: {
               name: "Processing",
-              items: tasks?.filter(e=>e.status==="processing")
+              items: tasks?.filter(e=>e.status==="processing")??[]
             },
             done: {
               name: "Done",
-              items: tasks?.filter(e=>e.status==="done")
+              items: tasks?.filter(e=>e.status==="done")??[]
             }
           };
           setTasks(tasks);
@@ -52,24 +53,38 @@ export default function TaskList(prop) {
   const updateTask = async (id,data)=>{
     console.log(id ,data)
     const response = await putTask(id,data);
-    if(response?.success===true) console.log(response)
-    else console.log("Failed to change data!")
+    if(response?.success===true) {
+      console.log(response);
+      return true;
+    }
+    else {
+      console.log("Failed to change task data!",data);
+      return false;
+    }
   }
   const updateSpace = async (id,data)=>{
     console.log(id ,data)
     const response = await putSpace(id,data);
-    if(response?.success===true) console.log(response)
-    else console.log("Failed to change data!")
+    if(response?.success===true) {
+      console.log(response);
+      return true;
+    }
+    else {
+      console.log("Failed to change space data!",data);
+      return false;
+    }
   }
   // FOR DRAP FUNCTION
-  const onDragEnd = (result, columns, setColumns) => {
+  const onDragEnd = async (result, columns, setColumns) => {
     console.log("RESULT",result)
     console.log("COLUMN", columns);
     console.log("SET COLUM", setColumns);
     if (!result.destination) return;
     const { source, destination } = result;
     let newColumn = null;
+    const oldColumn  = columns;
     if (source.droppableId !== destination.droppableId) {
+      if(columns[result.source.droppableId].items[result.source.index].edit_locked === true) return;
       const sourceColumn = columns[source.droppableId];
       const destColumn = columns[destination.droppableId];
       const sourceItems = [...sourceColumn.items];
@@ -88,7 +103,7 @@ export default function TaskList(prop) {
         }
       }
       setColumns( newColumn );
-      updateTask(result.draggableId,{status:destination.droppableId});//update on server for task status
+      if( (await updateTask(result.draggableId,{status:destination.droppableId})) === false) setColumns(oldColumn)
     } else {
       const column = columns[source.droppableId];
       const copiedItems = [...column.items];
@@ -110,120 +125,173 @@ export default function TaskList(prop) {
     const newTaskOder = [...todos,...processings,...dones]
     if(prop.onType==="space"){
       console.log("newOder Space",newTaskOder)
-      updateSpace(prop.parentId,{tasks:newTaskOder})
+      if( (await updateSpace(prop.onId,{tasks:newTaskOder})) === false ) setColumns(oldColumn)
       
     } else{
-      console.log("newOder",newTaskOder)
+      console.log("newOder Task",newTaskOder)
+      if( (await updateTask(prop.onId,{tasks:newTaskOder})) === false ) setColumns(oldColumn)
     }
   };
+  const paperStyle = {
+    padding: 10,
+    display: 'flex',
+    flexDirection:"column",
+    flexWrap: 'wrap',
+    borderRadius: 10,
+    width:"100%",
+    flexGrow: 1
+}
 
-
-  if(tasks===null) return null;
   return (
-    <Box padding={3} style={{ display: prop.display===true?"flex":"none", flexDirection:"column", justifyContent:"space-between",alignItems:"space-between"}}>
-      <div
-        style={{ display: prop.display===true?"flex":"none", flexWrap:"wrap", justifyContent: "center", height: "100%", overflow:"auto" }}
-      >
-        <DragDropContext
-          onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
-        >
-          <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap flexWrap="wrap">
-          {Object.entries(columns).map(([columnId, column]) => {
-            return (
-              <Droppable droppableId={columnId} key={columnId}>
-                    {(provided, snapshot) => {
-                      return (
-              <div
+    <Box padding={{ xs: 0, sm: 1, md: 2, lg: 3 }} style={{ display: prop.display===true?"flex":"none", flexDirection:"column", justifyContent:"space-between",alignItems:"space-between"}}>
+      <Grid container columns={24} width="100%" >
+        <Grid xs={24} sm={24} md={24} lg={24} >
+          <Paper elevation={3} style={paperStyle} >
+          {
+            tasks===null?
+            <>
+              <Skeleton />
+              <Skeleton animation="wave" />
+              <Skeleton animation={false} />
+            </>
+            :
+            <>
+            <Zoom
+                key='secondary'
+                in={true}
+                timeout={transitionDuration}
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  height:"100%",
-                  position:"re"
+                    transitionDelay: `${transitionDuration.exit}ms`,
                 }}
-                key={columnId}
+                unmountOnExit
+                onClick={()=>{setActiveAdd(true)}}
               >
-                <h2>{column.name}</h2>
+                <Fab sx={{position: 'static', top: 16, left: 16}} aria-label="Edit" color='secondary' >
+                    <AddIcon />
+                </Fab>
+              </Zoom>
+                <DragDropContext
+                  onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
+                >
+                  {/* <Stack spacing={1} direction="row" useFlexGap flexWrap="wrap" width="100%"> */}
+                  <Grid container columns={24} spacing={2} width="100%" >
+                  {Object.entries(columns).map(([columnId, column]) => {
+                    return (
+                      <Grid xs={24} sm={24} md={8} lg={8} key={columnId} >
+                      <Droppable droppableId={columnId} key={columnId}
+                        renderClone={(provided, snapshot, rubric) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            style={{
+                              userSelect: "none",
+                              padding: 5,
+                              margin: "0 0 8px 0",
+                              minHeight: "50px",
+                              cursor:"grab",
+                              width:"100%",
+                              display:"flex",
+                              flexDirection:"column",
+                              alignItems:"center",
+                              backgroundColor: snapshot.isDragging
+                                ? "rgba(10,10,10,0.5)"
+                                : "rgba(200,200,200,0.1)",
+                              color: "white",
+                              ...provided.draggableProps.style
+                            }}
+                          >
+                            <ATask task={column.items[rubric.source.index]} />
+                          </div>
+                        )}
+                      >
+                      {(provided, snapshot) => {
+                        return (
                         <div
-                          {...provided.droppableProps}
-                          ref={provided.innerRef}
                           style={{
-                            background: snapshot.isDraggingOver
-                              ? "lightblue"
-                              : "lightgrey",
-                            padding: 4,
-                            minWidth: 350,
-                            minHeight: 300,
-                            // maxHeight: "80vh",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
                             height:"100%",
-                            overflow:"auto",
-                            display:"flex",
-                            flexDirection:"column",
-                            alignItems:"center"
                           }}
+                          key={columnId}
                         >
-                          {column.items?.map((item, index) => {
-                            return (
-                              <Draggable
-                                key={item._id}
-                                draggableId={item._id}
-                                index={index}
-                                >
-                                {(provided, snapshot) => {
-                                  return (
-                                    <div
-                                      ref={provided.innerRef}
-                                      {...provided.draggableProps}
-                                      {...provided.dragHandleProps}
-                                      style={{
-                                        userSelect: "none",
-                                        padding: 16,
-                                        margin: "0 0 8px 0",
-                                        minHeight: "50px",
-                                        cursor:"grab",
-                                        backgroundColor: snapshot.isDragging
-                                          ? "#263B4A"
-                                          : "#456C86",
-                                        color: "white",
-                                        ...provided.draggableProps.style
-                                      }}
-                                    >
-                                      <ATask task={item} />
-                                    </div>
-                                  );
-                                }}
-                              </Draggable>
-                            );
-                          })}
-                          {columnId==="todo"?
-                            <AddTask onType="space" tasks={tasks} active={activeAdd} close={()=>setActiveAdd(null)} />
-                            :null}
-                          {provided.placeholder}
+                          <h2>{column.name}</h2>
+                          <div
+                            {...provided.droppableProps}
+                            ref={provided.innerRef}
+                            style={{
+                              background: snapshot.isDraggingOver
+                                ? "lightblue"
+                                : "lightgrey",
+                              padding: 2,
+                              width:"100%",
+                              minHeight: 300,
+                              height:"100%",
+                              overflow:"auto",
+                              display:"flex",
+                              flexDirection:"column",
+                              alignItems:"center",
+                              borderRadius:20
+                            }}
+                          >
+                            {column.items?.map((item, index) => {
+                              return (
+                                <Draggable
+                                  key={item._id}
+                                  draggableId={item._id}
+                                  index={index}
+                                  >
+                                  {(provided, snapshot) => {
+                                    return (
+                                      <div
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                        style={{
+                                          userSelect: "none",
+                                          padding: 5,
+                                          margin: "0 0 8px 0",
+                                          minHeight: "50px",
+                                          cursor:"grab",
+                                          width:"100%",
+                                          display:"flex",
+                                          flexDirection:"column",
+                                          alignItems:"center",
+                                          backgroundColor: snapshot.isDragging
+                                            ? "rgba(10,10,10,0.5)"
+                                            : "rgba(200,200,200,0.1)",
+                                          color: "white",
+                                          ...provided.draggableProps.style,
+                                        }}
+                                      >
+                                        <ATask onType={prop.onType==="space"?"space":"task"} task={item} />
+                                      </div>
+                                    );
+                                  }}
+                                </Draggable>
+                              );
+                            })}
+                            {provided.placeholder}
+                            {columnId==="todo"?
+                              <AddTask onType={prop.onType==="space"?"space":"task"} onId={prop.onId} tasks={tasks} active={activeAdd} close={()=>setActiveAdd(null)} />
+                              :null}
+                          </div>
                         </div>
-              </div>
-              );
-            }}
-          </Droppable>
-            );
-          })}
-          </Stack>
-        </DragDropContext>
-      </div>
-      <Zoom
-        key='secondary'
-        in={true}
-        timeout={transitionDuration}
-        style={{
-            transitionDelay: `${transitionDuration.exit}ms`,
-        }}
-        unmountOnExit
-        onClick={()=>{setActiveAdd(true)}}
-      >
-          <Fab sx={{position: 'static', bottom: 16, left: 16}} aria-label="Edit" color='secondary' >
-              <AddIcon />
-          </Fab>
-      </Zoom>
-      
+                        );
+                      }}
+                      </Droppable>
+                      </Grid>
+                    );
+                  })}
+                  </Grid>
+                  {/* </Stack> */}
+                </DragDropContext>
+            </>
+          }
+          </Paper>
+        </Grid>
+      </Grid>
     </Box>
   );
 }

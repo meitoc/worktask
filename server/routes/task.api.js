@@ -75,14 +75,14 @@ router.get("/id/:id/comment",isAuthenticated,getComments)
  * @description delete a comment
  * @access manager or owner of task
  */
-router.delete("/id/:id/comment",isAuthenticated,deleteComment)
+router.delete("/id/:id/comment/:commentId",isAuthenticated,deleteComment)
 
 /////////// Specificated Id for color
 
 //Update
 /**
- * @route PUT api/task/id/1234.../owner
- * @description add an owner
+ * @route PUT api/task/id/1234.../user
+ * @description add a user
  * @access user
  */
 router.put("/id/:id/user",isAuthenticated,addUser)
@@ -90,10 +90,10 @@ router.put("/id/:id/user",isAuthenticated,addUser)
 //Delete
 /**
  * @route DELETE api/task/id/1234.../owner
- * @description delete an owner
+ * @description delete a user
  * @access user
  */
-router.delete("/id/:id/user",isAuthenticated,removeUser)
+router.delete("/id/:id/user/:user",isAuthenticated,removeUser)
 
 /////////// Specificated Id for color
 
@@ -139,6 +139,50 @@ router.put("/id/:id",isAuthenticated,updateTask)
  */
 router.delete("/id/:id",isAuthenticated,deleteTask)
 
+////////////////////////
+const { createFileRecord, responsePresignedUrl, responseFileList, responseFileDetail, responseFileDeleted } = require("../controllers/task/fileTask.controllers.js")
+const { createPresignedUrlDownload, createPresignedUrlUpload, checkAWSFile, deleteAWSFile } = require("../aws/awsFile.js");
+const { taskAccessCheck } = require("../validators/file.validators.js");
+
+//Get a file url to dowwnload
+/**
+ * @route GET api/file/id/1234.../download
+ * @description download a file
+ * @access user
+ */
+router.post("/id/:id/file/download",isAuthenticated,taskAccessCheck,createPresignedUrlDownload,responsePresignedUrl)
+
+//Post a file // upload file step 1
+/**
+ * @route POST api/file/task/1234.../upload
+ * @description create a file
+ * @access user
+*/
+router.post("/id/:id/file/upload",isAuthenticated,taskAccessCheck,createFileRecord,createPresignedUrlUpload,responsePresignedUrl)
+
+//Delete a file
+/**
+ * @route GET api/file/id/1234.../delete
+ * @description delete a file
+ * @access user
+ */
+router.post("/id/:id/file/delete",isAuthenticated,taskAccessCheck,deleteAWSFile,responseFileDeleted)
+
+//Check a file after upload, this step must be done to active the file // upload file step 3 (step 2 is on client-AWS side)
+/**
+ * @route PUT api/file/task/1234...
+ * @description download a file
+ * @access user
+ */
+router.put("/id/:id/file",isAuthenticated,taskAccessCheck,checkAWSFile,responseFileDetail)
+
+//Get file list of task
+/**
+ * @route GET api/file/task/1234...
+ * @description download a file
+ * @access user
+ */
+router.get("/id/:id/file/",isAuthenticated,taskAccessCheck,responseFileList)
 
 //export
 module.exports= router

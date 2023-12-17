@@ -44,10 +44,10 @@ export default function LoginForm(prop) {
         }}
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
-        sx={{ ...style, width: "100vw", height: "100vh" , backgroundColor: "rgba(0,0,0,0.2)"}}
+        sx={{ ...style, width: "100%", height: "100vh" , backgroundColor: "rgba(0,0,0,0.2)"}}
       >
         <Box sx={{ ...style, maxWidth: '350px' }}>
-          <h2 id="parent-modal-title">{openPart=='login'?'Login':openPart=='otp'?'Submit OTP':openPart=='create_account'?'Create New Account':openPart=='create_account'?'Forgot Password':"Waiting"}</h2>
+          <h2 id="parent-modal-title">{openPart=='login'?'Login':openPart=='otp'?'Submit OTP':openPart=='create_account'?'Create New Account':openPart=='forgot_password'?'Forgot Password':"Waiting"}</h2>
             <Box >
               <div style={openPart==="login"?styleShow:styleHide} >
                 <Login goTo={setOpenPart} close={()=>setShowLoginForm(false)} open={()=>setShowLoginForm(true)} >
@@ -55,7 +55,7 @@ export default function LoginForm(prop) {
                 </Login>
               </div>
               <div style={openPart==="create_account"?styleShow:styleHide}>
-                <CreateAccount goTo={setOpenPart}close={()=>setShowLoginForm(false)} open={()=>setShowLoginForm(true)} >
+                <CreateAccount goTo={setOpenPart} close={()=>setShowLoginForm(false)} open={()=>setShowLoginForm(true)} >
 
                 </CreateAccount>
               </div>

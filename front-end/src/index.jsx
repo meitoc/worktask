@@ -81,7 +81,7 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "first-access/:accessString",
+        path: "url-login/:accessString",
         element: <FirstAccess />,
         errorElement: <ErrorPage />,
       },

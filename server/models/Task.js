@@ -19,9 +19,13 @@ const taskSchema = mongoose.Schema(
       managers: [{ type: mongoose.SchemaTypes.ObjectId, ref: "User" }],
       members: [{ type: mongoose.SchemaTypes.ObjectId, ref: "User" }],
     },
+    team:[{ type: mongoose.SchemaTypes.ObjectId, ref: "User" }],
     color: { type: mongoose.SchemaTypes.ObjectId, ref: "Color", required: true },
     active: {type: Boolean, required: true},
-    member_add_member:{type:Boolean, default: false}
+    order: {type: Number, default:0},
+    member_add_member:{type:Boolean, default: true},
+    access_locked:{type:Boolean, default: false},//owner can change
+    edit_locked:{type:Boolean, default: false},//manager and ower can change
   },
   {
     timestamps: true,

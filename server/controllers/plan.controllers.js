@@ -33,7 +33,7 @@ planController.createPlan = async(req,res,next)=>{
     }catch(err){
         //error
         if (err.code === 11000) {
-        return res.status(400).json({ errors:[{"type": "field", "value": req.body.code, msg: "Name is already exist!", path: "code", location:"body"}] });
+        return res.status(400).json({ errors:[{"type": "field", "value": req.body.code, message: "Name is already exist!", path: "code", location:"body"}] });
         }
         //show other error for admin
         next(err);
@@ -77,7 +77,7 @@ planController.getAllPlans=async(req,res,next)=>{
 
     }catch(err){
         //no show public
-        return res.status(400).json({ errors: [{msg: "Unkown error"}] });
+        return res.status(400).json({ errors: [{message: "Unkown error"}] });
     }
 }
 //Get a plan

@@ -109,7 +109,7 @@ export default function Layout() {
     return (
         <ThemeProvider theme={darkTheme}>
             <FetchUserData>
-              <Box display= 'flex' justifyContent='center'>
+              <Box display= 'flex' justifyContent='center' style={{overflowX: "hidden", width:"100vw"}}>
                   <CssBaseline />
                   <AppBar position="fixed" open={open}>
                       <Toolbar sx={{ display: 'flex', flexWrap: "noWrap" , justifyContent: 'space-between', }}>
@@ -151,10 +151,10 @@ export default function Layout() {
                       <Divider />
                       <NavigationList />
                   </Drawer>
-                  <Main open={open} style={{display: "flex", flexDirection:"column", alignItems:"center", width: mobile?drawerWidth:'100vw'}} >
+                  <Main open={open} style={{display: "flex", flexDirection:"column", alignItems:"center", width: mobile?drawerWidth:'100%'}} >
                       <DrawerHeader />
                       <Container
-                        maxWidth="100vw" 
+                        maxWidth="100%" 
                         sx={{
                             display: 'flex',
                             flexDirection:'column',

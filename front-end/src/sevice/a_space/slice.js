@@ -14,14 +14,14 @@ export const aSpaceSlice = createSlice({
         },
         updateASpace: (state, action) => {
             const data = action.payload;
-            console.log("UPDATE A SPACE COLOR", data);
+            console.log("UPDATE A SPACE", data);
             if(data) return {...state,...data};
             return state;
         },
         removeTaskFromASpace: (state, action) => {
             const taskId = action.payload;
             console.log("REMOVE A TASK FROM A SPACE", taskId);
-            if(taskId) return {...state,tasks:state.tasks?.filter(e=>e!==taskId)};
+            if(taskId && state!=null) return {...state,tasks:state?.tasks?.filter(e=>e!==taskId)};
             return state;
         }
     }

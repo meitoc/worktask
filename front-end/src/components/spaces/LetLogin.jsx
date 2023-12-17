@@ -6,7 +6,7 @@ export default function LetLogin () {
     return(
         <ButtonBase onClick={()=>setShowLoginForm(true)}>
             <img
-                style={{margin: "5px", maxHeight:"100vh", width:"100vw"}}
+                style={{margin: "5px", maxHeight:"100vh", width:"100%"}}
                 src={"/let-log-in.svg"}>
             </img>
         </ButtonBase>

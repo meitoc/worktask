@@ -8,10 +8,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import NativeSelect from '@mui/material/NativeSelect';
-
+import EditOffIcon from '@mui/icons-material/EditOff';
 import TextField from '@mui/material/TextField';
 import { deleteTask, putTask } from '../../sevice/api';
 import { useDispatch,useSelector } from 'react-redux';
@@ -20,6 +17,8 @@ import MoveToSpace from '../modal/MoveToSpace';
 import { removeTaskFromASpace } from '../../sevice/a_space/slice';
 import { removeTaskFromSpaces } from '../../sevice/spaces/slice';
 import { removeTaskFromATask } from '../../sevice/a_task/slice';
+import { GithubPicker } from 'react-color';
+import { Divider } from '@mui/material';
 
 
 export default function ATask(prop) {
@@ -27,7 +26,7 @@ export default function ATask(prop) {
   const task = prop.task
   const colors = useSelector(state => state.colors)
   const userInfo = useSelector(state => state.user_info)
-  const [activeTask, setActiveTask] = useState(true);
+  const [activeTask, setActiveTask] = useState(prop.task!==null);
   const [editTask, setEditTask] = useState(false);
   const [taskName, setTaskName] = useState(task?.name);
   const [taskColor, setTaskColor] = useState(task?.color);
@@ -84,14 +83,14 @@ export default function ATask(prop) {
       }
       else setActiveTask(true)
   }
-  const handleChangeColor = (event)=>{
-    const colorName=event.target.value
-    setTaskColor(colors.find(element => element.name === colorName))
+  const handleChangeColor = (color)=>{
+    const backgroundColor=`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`;
+    setTaskColor(colors.find(element => element.background === backgroundColor))
   }
   
   if(activeTask===null) return null;
   else if(activeTask===true) return (
-    <Card sx={{ width:300, minHeight:150, display:"flex", flexDirection:"column", justifyContent:"space-between", color:taskColor?.text, backgroundColor:taskColor?.background}}>
+    <Card sx={{ width:"100%", maxWidth:300, minHeight:150, borderRadius:5, display:"flex", flexDirection:"column", justifyContent:"space-between", color:taskColor?.text, backgroundColor:taskColor?.background}}>
         <CardHeader
           color={taskColor?.text}
           action={
@@ -111,19 +110,30 @@ export default function ATask(prop) {
                 }}
                 open={openMore}
                 onClose={handleCloseMore}
-                style={{display:"flex",flexDirection:"column"}}
                 >
-                <MenuItem onClick={handleEditTask}>Edit</MenuItem>
-                <ModalConfirm confirm={handleDeleteTask} cancel={handleCloseMore}
-                  title="Confirm to delete this task"
-                  text="Impotant: All child tasks on the task will be deleted!"
-                >
-                  <MenuItem >Delete task</MenuItem>
-                </ModalConfirm>
-                <MoveToSpace cancel={handleCloseMore} id={task._id} confirm={handleCloseMore}
-                >
-                  <MenuItem >Move to a space</MenuItem>
-                </MoveToSpace>
+                <MenuItem style={ {display: "flex",justifyContent: "center",alignItems: "center"}} onClick={handleEditTask}>Edit</MenuItem>
+                <Divider/>
+                {task?.users?.owners.some(e=>e.name===userInfo.name)?
+                      <ModalConfirm style={{width:"100%", height:"100%", display:"flex"}} confirm={handleDeleteTask} cancel={handleCloseMore}
+                      title="Confirm to delete this task"
+                      text="Impotant: All child tasks on the task will be deleted!"
+                      >
+                        <MenuItem >
+                          Delete task
+                        </MenuItem>
+                      </ModalConfirm>
+                  :null
+                }
+                <Divider/>
+                {prop.onType==="space"?
+                  <MoveToSpace cancel={handleCloseMore} id={task._id} confirm={handleCloseMore}
+                  >
+                    <MenuItem >
+                        Move to a space
+                    </MenuItem>
+                  </MoveToSpace>
+                  :null
+                }
               </Menu>
             </>
             
@@ -131,6 +141,9 @@ export default function ATask(prop) {
           title={
             editTask?
             <TextField
+              inputProps={{
+                style: { color: taskColor.text, fontWeight:"bold" }
+              }}
               id="name-input"
               fullWidth={true}
               placeholder="Task name"
@@ -145,34 +158,28 @@ export default function ATask(prop) {
           {
             editTask?
             <>
-              <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                <InputLabel variant="standard" htmlFor="uncontrolled-native">
-                  Color
-                </InputLabel>
-                <NativeSelect
-                  defaultValue={"default"}
-                  inputProps={{
-                    name: 'age',
-                    id: 'uncontrolled-native',
-                  }}
-                  onChange={handleChangeColor}
-                >
-                  {colors.map(e => 
-                    <option style={{backgroundColor:e.background, color:e.text}} value={e.name} key={e.name}>{e.name}</option>
-                  )}
-                </NativeSelect>
-              </FormControl>
-              
+               <GithubPicker
+                    colors={colors?.map(e=>e.background)}
+                    onChange={handleChangeColor}
+                    disableAlpha={true}
+                    className="github-color-picker"
+                />
+                <Divider style={{marginTop:15}} />
             </>
             : null
           }
-        <CardActions sx={{display:"flex", justifyContent:"task-between"}}>
+        <CardActions sx={{display:"flex", justifyContent:"space-between"}}>
           {editTask?
             <>
             <Button sx={{color:taskColor?.text, backgroundColor:taskColor?.frame}} onClick = {handleSubmitTask}>SUBMIT CHANGE</Button>
-            <Button sx={{color:taskColor?.text, backgroundColor:taskColor?.frame}} onClick = {handleCancel}>CANCEL</Button>
+            <Button sx={{color:taskColor?.text, backgroundColor:taskColor?.frame}} onClick = {handleCancel} color="warning" >CANCEL</Button>
             </>
             :<Button sx={{color:taskColor?.text, backgroundColor:taskColor?.frame}} href={`http://localhost:5173/task/${task?._id}`}>EXPLORE</Button>
+          }
+          {
+            task.edit_locked?
+            <EditOffIcon/>
+            :null
           }
         </CardActions>
   </Card>

@@ -15,7 +15,6 @@ export default function FetchTask(prop) {
       const fetchUser = async () =>{
         const response = await getTask(`${prop.id}`);  
         if(response?.success===true) {
-          console.log("HHHHHHHHHHH",response)
           dispatch(createATask(response.data));
           setNoteError(false)
         }

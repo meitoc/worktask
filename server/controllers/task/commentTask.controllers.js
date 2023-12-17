@@ -22,10 +22,11 @@ commentTaskController.addComment=async(req,res,next)=>{
         const {comment} = req.body;
         const {userId} = req.access;
         const foundTask = await Task.findOne({_id:taskId,active:true,$or:[{"users.owners":userId},{"users.managers":userId},{"users.members":userId}]})
-        if(!foundTask) return res.status(400).json({ errors: [{ msg: 'Can not add your comment!' }] }); 
-        const createdcomment = await Comment.create({user:userId,task:taskId,comment})
-        if(!createdcomment) return res.status(400).json({ errors: [{ msg: 'Can not add your comment!' }] }); 
-        sendResponse(res,200,true,{id:createdcomment._id},null,"Add comment success")
+        if(!foundTask) return res.status(400).json({ errors: [{ message: 'Can not add your comment!' }] }); 
+        const createdcomment = await Comment.create({user:userId,task:taskId,comment,active:true})
+        if(!createdcomment) return res.status(400).json({ errors: [{ message: 'Can not add your comment!' }] }); 
+        const foundComments = await Comment.findOne({_id:createdcomment?._id}).populate("user","name -_id").sort({ createdAt: 'desc' })
+        sendResponse(res,200,true,filterField(foundComments,showField),null,"Add comment success")
     }catch(err){
         next(err)
     }
@@ -43,8 +44,8 @@ commentTaskController.getComments=async(req,res,next)=>{
         const taskId = req.params.id;
         const {userId} = req.access;
         const foundTask = await Task.find({_id:taskId,active:true,$or:[{"users.owners":userId},{"users.managers":userId},{"users.members":userId}]})
-        if(!foundTask) return res.status(400).json({ errors: [{ msg: 'Can not get task comments!' }] }); 
-        const foundComments = await Comment.find({task:taskId}).populate("user","name -_id").sort({ createdAt: 'desc' })
+        if(!foundTask) return res.status(400).json({ errors: [{ message: 'Can not get task comments!' }] }); 
+        const foundComments = await Comment.find({task:taskId,active:true}).populate("user","name -_id").sort({ createdAt: 'desc' })
         const filterredComment = foundComments.map((e)=>{
             return filterField(e,showField);
         })
@@ -65,13 +66,12 @@ commentTaskController.deleteComment=async(req,res,next)=>{
         }
         //process
         const taskId = req.params.id;
-        const commentId = req.body.id;
+        const commentId = req.params.commentId;
         const {userId} = req.access;
-        const foundTask = await Task.find({_id:taskId,active:true,$or:[{"users.owners":userId},{"users.managers":userId}]})
-        //add condition later for function: manager can not delete owner comment
-        if(!foundTask) return res.status(400).json({ errors: [{ msg: 'Can not delete comment!' }] }); 
-        const foundComments = await Comment.deleteOne({_id:commentId, task:taskId});
-        if(!foundComments) return res.status(400).json({ errors: [{ msg: 'Can not delete comment!' }] }); 
+        const foundTask = await Task.find({_id:taskId,active:true,$or:[{"users.owners":userId},{"users.managers":userId},{"users.managers":userId}]})
+        if(!foundTask) return res.status(400).json({ errors: [{ message: 'Can not delete comment!' }] }); 
+        const foundComments = await Comment.findOneAndUpdate({_id:commentId, task:taskId},{active:false});
+        if(!foundComments) return res.status(400).json({ errors: [{ message: 'Can not delete comment!' }] }); 
         sendResponse(res,200,true,{id:commentId},null,"Get task comment success")
     }catch(err){
         next(err)

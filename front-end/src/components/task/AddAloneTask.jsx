@@ -4,23 +4,22 @@ import CardHeader from '@mui/material/CardHeader';
 import CardActions from '@mui/material/CardActions';
 import Button from '@mui/material/Button';
 import ButtonBase from '@mui/material/ButtonBase';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import NativeSelect from '@mui/material/NativeSelect';
 
 import TextField from '@mui/material/TextField';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { addToOwnerTasks } from '../../sevice/root_tasks/owner_tasks/slice';
 import { postTask } from '../../sevice/api';
+import { Divider } from '@mui/material';
+import { GithubPicker } from 'react-color';
 
 // import LostTask from './image/LostTask';
 export default function AddAloneTask() {
 
   const colors = useSelector(state => state.colors)
   const [activeTask, setActiveTask] = useState(null);
-  const [spaceName, setTaskName] = useState("");
-  const [spaceColor, setTaskColor] = useState({name:"default",frame:"rgb(100,100,150)",background:"rgb(200,200,255)",text:"rgb(10,10,0)"});
+  const [taskName, setTaskName] = useState("");
+  const [taskColor, setTaskColor] = useState({name:"default",frame:"rgb(100,100,150)",background:"rgb(200,200,255)",text:"rgb(10,10,0)"});
     
   const dispatch = useDispatch();
 
@@ -34,8 +33,8 @@ export default function AddAloneTask() {
   const handleSubmitTask = async () => {
       setActiveTask(false);
       const data={
-        name:spaceName,
-        color:spaceColor.name
+        name:taskName,
+        color:taskColor.name
       };
       const response = await postTask(data)
       if(response?.success===true){
@@ -50,43 +49,34 @@ export default function AddAloneTask() {
         setActiveTask(true);
       }
   }
-  const handleChangeColor = (event)=>{
-    const colorName=event.target.value
-    setTaskColor(colors.find(element => element.name === colorName))
+  const handleChangeColor = (color)=>{
+    const backgroundColor=`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`;
+    setTaskColor(colors.find(element => element.background === backgroundColor))
   }
     if(activeTask===true) return (
-      <Card sx={{ width:300, minHeight:150, display:"flex", flexDirection:"column", justifyContent:"space-between", color:spaceColor?.text, backgroundColor:spaceColor?.background}}>
+      <Card sx={{ width:300, minHeight:150, display:"flex", flexDirection:"column", justifyContent:"space-between", color:taskColor?.text, backgroundColor:taskColor?.background}}>
         <CardHeader
         title={
           <TextField
-          sx={{fontWeight:"bold"}}
+            inputProps={{
+              style: { color: taskColor.text, fontWeight:"bold" }
+            }}
             id="name-input"
             fullWidth={true}
             placeholder="Task name"
             onChange={(event)=>setTaskName(event.target.value)}
           />}
         />
-      
-        <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-          <InputLabel variant="standard" htmlFor="uncontrolled-native">
-            Color
-          </InputLabel>
-          <NativeSelect
-            defaultValue={"default"}
-            inputProps={{
-              name: 'age',
-              id: 'uncontrolled-native',
-            }}
-            onChange={handleChangeColor}
-          >
-            {colors.map(e => 
-              <option style={{backgroundColor:e.background, color:e.text}} value={e.name} key={e.name}>{e.name}</option>
-            )}
-          </NativeSelect>
-        </FormControl>
+        <GithubPicker
+          colors={colors?.map(e=>e.background)}
+          onChange={handleChangeColor}
+          disableAlpha={true}
+          className="github-color-picker"
+        />
+        <Divider style={{marginTop:15}} />
       <CardActions sx={{display:"flex", justifyContent:"space-between"}}>
-        <Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} onClick = {handleSubmitTask}>SUBMIT NEW TASK</Button>
-        <Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} onClick = {handleCanel}>CANCEL</Button>
+        <Button sx={{color:taskColor?.text, backgroundColor:taskColor?.frame}} onClick = {handleSubmitTask}>SUBMIT NEW TASK</Button>
+        <Button sx={{color:taskColor?.text, backgroundColor:taskColor?.frame}} onClick = {handleCanel} color="warning" >CANCEL</Button>
       </CardActions>
     </Card>);
   else if(activeTask===null) return (

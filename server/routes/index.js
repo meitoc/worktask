@@ -32,4 +32,7 @@ router.use("/space",spaceRouter)
 const taskRouter = require("./task.api.js")
 router.use("/task",taskRouter)
 
+const fileRouter = require("./file.api.js")
+router.use("/file",fileRouter)
+
 module.exports = router;

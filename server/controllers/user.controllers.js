@@ -6,6 +6,8 @@ const UserInfo = require("../models/UserInfo.js")
 const Access = require("../models/Access.js");
 // const { response } = require("express");
 const email = require("../email/email.js");
+const { filterField } = require("../tools/filterData.js");
+const showField = {name:1};
 
 const {FRONTEND_URL} = process.env;
 
@@ -42,7 +44,7 @@ userController.createUser=async(req,res,next)=>{
         }
         const existUser = await User.findOne({$or:[{name:newUser.name},{email:newUser.email}]})
         if(existUser) 
-        return res.status(400).json({ errors: [{ msg: 'User existed or unvalable!' }] });
+        return res.status(400).json({ errors: [{ message: 'User existed or unvalable!' }] });
     else try{
             //create UserInfo
             const createdInfo= await UserInfo.create({})
@@ -76,7 +78,7 @@ userController.createUser=async(req,res,next)=>{
                 const deleteUser= await User.deleteOne({_id:createdUser._id})
                 //delete Access
                 const deleteAccess = await Access.deleteOne({_id:createdAccess._id});
-                return res.status(400).json({ errors: [{ msg: 'Try other email or try later!' }] });
+                return res.status(400).json({ errors: [{ message: 'Try other email or try later!' }] });
             }
             //response with secure password
             const responseUser={
@@ -101,7 +103,7 @@ userController.getAUser=async(req,res,next)=>{
         const userFound= req.query.info==="true" ?
         await User.findOne(filter).populate("information")
         :await User.find(filter);
-        if(userFound===null) return res.status(400).json({ errors: [{ msg: 'No user be found!' }] }); 
+        if(userFound===null) return res.status(400).json({ errors: [{ message: 'No user be found!' }] }); 
         const filterredUser = req.query.info==="true" ?
             {name: userFound.name, email: userFound.email?userFound.email:"", phone:userFound.phone?userFound.phone:"", information: userFound.information?userFound.information:{}}
             : {name: userFound.name, email: userFound.email?userFound.email:"", phone:userFound.phone?userFound.phone:""};
@@ -112,82 +114,82 @@ userController.getAUser=async(req,res,next)=>{
 }
 //Get all user
 userController.getAllUser=async(req,res,next)=>{
-    const filter = {active:true}
     try{
-        const userFound= req.query.info==="true" ?
-        await User.find(filter).populate("information")
-        :await User.find(filter);
-        if(userFound===null) return res.status(400).json({ errors: [{ msg: 'No user be found!' }] }); 
-        const filterredUser = req.query.info==="true" ?
-            userFound.map(e=>{return {name: e.name, email: e.email?e.email:"", phone:e.phone?e.phone:"", information: e.information?e.information:{}}})
-            : userFound.map(e=>{return {name: e.name, email: e.email?e.email:"", phone:e.phone?e.phone:""}});
-        sendResponse(res,200,true,{data:filterredUser},null,"Found list of users success")
+        const {name,real_name} =req.query;
+        if(real_name){
+            const filter={
+                real_name: { $regex: real_name, $options: 'i' },
+            }
+            const userInfoFound = await UserInfo.find(filter);
+            const idList = userInfoFound.map(e=>e._id)
+            const userFound= await User.find({ information: { $in: idList },active:true });
+            const filterredUser = userFound.map(e=>filterField(e,showField))
+            sendResponse(res,200,true,{users:filterredUser},null,"Found list of users success")
+        }
+        else if(name){
+            const filter={
+                name: { $regex: name, $options: 'i' },
+                active: true,
+            }
+            const userFound= await User.find(filter);
+            const filterredUser = userFound.map(e=>filterField(e,showField))
+            sendResponse(res,200,true,{users:filterredUser},null,"Found list of users success")
+        }
+        else return res.status(400).json({ errors: [{ message: 'No user be found!' }] }); 
     }catch(err){
         next(err)
     }
 }
 //Update a user
-userController.updateUserByName=async(req,res,next)=>{
+userController.updateUser=async(req,res,next)=>{
     
     try{
         //check body by express-validator
-        await param('name').notEmpty().withMessage('Empty user name!').run(req);
-        if(req.body.email){//update email
+        const {userId} =  req.access
+        if(req.body.email) {//update email
             await body('email').isEmail().withMessage('Invalid email!').run(req);
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
             }
 
-            const {real_name,
-                gender,
-                birthday,
-                organization,
-                position,
-                avatar,
-                location,
-                experiences} = req.body;
-
-            const name = req.params.name;
             //no secure now
             //add update for OTP and AccessSession
-            const updated= await User.findOneAndUpdate({name},updateInfo)
+            const updated= await User.findOneAndUpdate({_id:userId, active: true},updateInfo)
             // const updated= await User.findOneAndUpdate({name,password},updateInfo)
             if(updated) {
-                sendResponse(res,200,true,{data:{new_email}},null,"Update user success")
+                sendResponse(res,200,true,{new_email},null,"Update user success")
                 // sendResponse(res,200,true,{data:{new_email:email}},null,"Send OTP")
-            }
-            else {
+            } else {
                 //send an email for warning
-                return res.status(400).json({ errors:[{"type": "field", "value": new_email, msg: "Invalid login info!", path: "password", location:"body"}] });
+                return res.status(400).json({ errors:[{"type": "field", "value": new_email, message: "Invalid login info!", path: "password", location:"body"}] });
             }
         } else {//update password
-            await body('password')
-                .isLength({ min: 8, max: 64 }).withMessage('Password must be between 8 and 64 characters!')
-                .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/)
-                .withMessage('Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character!')
-                .run(req);
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
-
-            const name = req.params.name;
-            const new_password = req.body.password;
-            const updateInfo = {new_password};
-            //no secure now
-            //add update for OTP and AccessSession
-            const updated= await User.findOneAndUpdate({name},updateInfo)
-            // const updated= await User.findOneAndUpdate({name,password},updateInfo)
-            if(updated) {
-                sendResponse(res,200,true,{data:{new_password}},null,"Update user success")
-                // sendResponse(res,200,true,{data:{new_email:email}},null,"Send OTP")
-            }
-            else {
-                //send an email for warning
-                return res.status(400).json({ errors:[{"type": "field", "value": password, msg: "Invalid login info!", path: "password", location:"body"}] });
-            }
+        await body('password')
+            .isLength({ min: 8, max: 64 }).withMessage('Password must be between 8 and 64 characters!')
+            .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/)
+            .withMessage('Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character!')
+            .run(req);
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
         }
+
+        const new_password = req.body.password;
+        const updateInfo = {new_password};
+        //no secure now
+        //add update for OTP and AccessSession
+        const updated= await User.findOneAndUpdate({_id:userId,active:true},updateInfo)
+        // const updated= await User.findOneAndUpdate({name,password},updateInfo)
+        if(updated) {
+            sendResponse(res,200,true,{new_password},null,"Update user success")
+            // sendResponse(res,200,true,{data:{new_email:email}},null,"Send OTP")
+        }
+        else {
+            //send an email for warning
+            return res.status(400).json({ errors:[{"type": "field", "value": password, message: "Invalid login info!", path: "password", location:"body"}] });
+        }
+    }
     }catch(err){
         next(err)
     }
@@ -210,7 +212,7 @@ userController.deleteUserByName=async(req,res,next)=>{
             //hide updated for secure
             sendResponse(res,200,true,{},null,"Delete user success");
         }
-        else return res.status(400).json({ errors: [{ msg: 'No matched data' }] });
+        else return res.status(400).json({ errors: [{ message: 'No matched data' }] });
     }catch(err){
         next(err)
     }

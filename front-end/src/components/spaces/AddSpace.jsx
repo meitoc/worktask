@@ -5,15 +5,14 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import ButtonBase from '@mui/material/ButtonBase';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import NativeSelect from '@mui/material/NativeSelect';
 
 import TextField from '@mui/material/TextField';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { addToSpaces } from '../../sevice/spaces/slice';
 import { postSpace } from '../../sevice/api';
+import { Divider } from '@mui/material';
+import { GithubPicker } from 'react-color';
 
 // import LostSpace from './image/LostSpace';
 export default function AddSpace() {
@@ -56,55 +55,50 @@ export default function AddSpace() {
         setActiveSpace(true);
       }
   }
-  const handleChangeColor = (event)=>{
-    const colorName=event.target.value
-    setSpaceColor(colors.find(element => element.name === colorName))
+  const handleChangeColor = (color)=>{
+    const backgroundColor=`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`;
+    setSpaceColor(colors.find(element => element.background === backgroundColor))
   }
-    if(activeSpace===true) return (
-      <Card sx={{borderRadius:4, width:300, minHeight:350, display:"flex", flexDirection:"column", justifyContent:"space-between", color:spaceColor?.text, backgroundColor:spaceColor?.background}}>
-        <CardHeader
-        title={
-          <TextField
-          sx={{fontWeight:"bold"}}
-            id="name-input"
-            fullWidth={true}
-            placeholder="Space name"
-            onChange={(event)=>setSpaceName(event.target.value)}
-          />}
-        />
-      
-      <CardContent>
-        <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-          <InputLabel variant="standard" htmlFor="uncontrolled-native">
-            Color
-          </InputLabel>
-          <NativeSelect
-            defaultValue={"default"}
-            inputProps={{
-              name: 'age',
-              id: 'uncontrolled-native',
-            }}
-            onChange={handleChangeColor}
-          >
-            {colors.map(e => 
-              <option style={{backgroundColor:e.background, color:e.text}} value={e.name} key={e.name}>{e.name}</option>
-            )}
-          </NativeSelect>
-        </FormControl>
+  if(activeSpace===true) return (
+    <Card sx={{borderRadius:4, width:300, minHeight:350, display:"flex", flexDirection:"column", justifyContent:"space-between", color:spaceColor?.text, backgroundColor:spaceColor?.background}}>
+      <CardHeader
+      title={
         <TextField
-            id="outlined-multiline-flexible"
-            multiline
-            maxRows={4}
-            minRows={3}
-            fullWidth={true}
-            placeholder="Description"
-            onChange={(event)=>setSpaceDescription(event.target.value)}
-          />
-      </CardContent>
-      <CardActions sx={{display:"flex", justifyContent:"space-between"}}>
-        <Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} onClick = {handleSubmitSpace}>SUBMIT NEW SPACE</Button>
-        <Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} onClick = {handleCanel}>CANCEL</Button>
-      </CardActions>
+          inputProps={{
+            style: { color: spaceColor.text, fontWeight:"bold" }
+          }}
+          id="name-input"
+          fullWidth={true}
+          placeholder="Space name"
+          onChange={(event)=>setSpaceName(event.target.value)}
+        />}
+      />
+    
+    <CardContent>
+      <GithubPicker
+        colors={colors?.map(e=>e.background)}
+        onChange={handleChangeColor}
+        disableAlpha={true}
+        className="github-color-picker"
+      />
+      <Divider style={{marginTop:15}} />
+      <TextField
+          inputProps={{
+            style: { color: spaceColor.text }
+          }}
+          id="outlined-multiline-flexible"
+          multiline
+          maxRows={4}
+          minRows={3}
+          fullWidth={true}
+          placeholder="Description"
+          onChange={(event)=>setSpaceDescription(event.target.value)}
+        />
+    </CardContent>
+    <CardActions sx={{display:"flex", justifyContent:"space-between"}}>
+      <Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} onClick = {handleSubmitSpace}>SUBMIT NEW SPACE</Button>
+      <Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} onClick = {handleCanel} color="warning" >CANCEL</Button>
+    </CardActions>
     </Card>);
   else {
     if(activeSpace===null) return (

@@ -1,60 +1,38 @@
-import { useContext, useState } from "react";
-import { ContextStatus } from "../../App";
+import { useState } from "react";
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-// import MenuItem from '@mui/material/MenuItem';
-// import Box from '@mui/material/Box';
 import ChangeAccountInfo from "../info-change/ChangeAccountInfo";
-// import Avatar from '@mui/material/Avatar';
-// chang this function later for security
-import addUserData from "../../features/fetch-data/addUserData";
-import SubmitOTP from "./SubmitOTP";
-import { useDispatch, useSelector } from "react-redux";
-import { updateUserEmail } from "../../sevice/user_info/slice";
+import {  useSelector } from "react-redux";
+import { putUpdateUser } from "../../sevice/api";
 
 const styleShow={display: 'flex', flexDirection: 'column', alignItems: 'center'};
 const styleHide={display: 'none'};
 
 export default function AccountInformation() {
-    const {setUserData} = useContext(ContextStatus); 
-    const dispatch = useDispatch();
     const userInfo = useSelector(state=>state.user_info)
-
-    // const [username, setUsername] = useState(userInfo.username);
-    // const [showUsername, setShowUsername] = useState(username);
-    // const [doneSubmitUsername, setDoneSubmitUsername] = useState(undefined);
-    // const [openModalUsername, setOpenModalUsername] = useState(false);
-    
-    const [email, setEmail] = useState(userInfo.email);
+    const email = userInfo.email;
     const [showEmail, setShowEmail] = useState(email);
     const [doneSubmitEmail, setDoneSubmitEmail] = useState(undefined);
     const [openModalEmail, setOpenModalEmail] = useState(false);
+    const [emailError, setEmailError] = useState(false);
     
-    
-    
-    const [sessionOTP, setSessionOTP] = useState("");
-
-    const handleSubmit = (setOpenModal,setDoneSubmit,dataName,dataValue) => {
-        setOpenModal(true);
-        setDoneSubmit("");
-        async function checkResults() {
-            try {
-                const result = await addUserData(dataName, dataValue);
-                if (result.status !== true) {
-                    setDoneSubmit(false);
+    const handleSubmit = async () => {
+        if(email!==showEmail){
+            setDoneSubmitEmail(false);
+            const result = await putUpdateUser({showEmail});
+                if (result?.status === true) {
+                    setDoneSubmitEmail(true);
                 } else {
-                    setSessionOTP(result.waiting_key)
-                    setDoneSubmit(true);
+                    setDoneSubmitEmail(undefined);
                 }
-            } catch (error) {
-              console.error(error);
-              setDoneSubmit(false);
-            }
-          }
-            checkResults();
-      
+        } else setEmailError(true)
     };
+    const handleChangeEmail = (event)=>{
+        setShowEmail(event.target.value)
+        if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(event.target.value) && email!=showEmail) setEmailError(false)
+        else setEmailError(true)
+    }
     return  (
         <>
             <Typography variant="h5" gutterBottom>
@@ -68,7 +46,7 @@ export default function AccountInformation() {
             </Typography>
             <ChangeAccountInfo
                 buttonName={email===undefined?"Add":"Change"} title="Account information"
-                note={doneSubmitEmail===true?"":`After click submit, we will send you an OTP code via ${userInfo.email==undefined || userInfo.phone==undefined?"email.":"phone."}`}
+                note={doneSubmitEmail===true?"":`We will send you a URL via new email. Please access the URL to confirm.`}
                 open={openModalEmail}
             >
                 <div style={doneSubmitEmail!==true?styleShow:styleHide}>
@@ -79,7 +57,8 @@ export default function AccountInformation() {
                         id="outlined-required"
                         label="Email"
                         value={showEmail}
-                        onChange={(event)=>setShowEmail(event.target.value)}
+                        onChange={handleChangeEmail}
+                        error={emailError}
                     />
                     <Typography sx={{display:(doneSubmitEmail===false?"block":"none"),margin:2, width:270}} variant="caption" gutterBottom>
                         Sorry! Something went be wrong. Try again or wait a minute.
@@ -93,16 +72,12 @@ export default function AccountInformation() {
                         Submit
                     </Button>
                 </div>
-                <SubmitOTP show={doneSubmitEmail===true} session={sessionOTP} fn={()=>{
-                    setDoneSubmitEmail(undefined);
-                    setUserData({...userInfo,email:showEmail});
-                    setEmail(showEmail);
-                    setOpenModalEmail(false);
-                    dispatch(updateUserEmail())
-                }} />
+                <div style={doneSubmitEmail===true?styleShow:styleHide}>
+                    <Typography variant="caption" gutterBottom>
+                        An email have been send to your new email address!
+                    </Typography>
+                </div>
             </ChangeAccountInfo>
-            
-            
         </>
     );
 }

@@ -7,6 +7,7 @@ import PasswordChange from "../components/account/PasswordChange";
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import { useSelector } from "react-redux";
+import UserAvatar from "../components/account/UserAvatar";
 // import Avatar from '@mui/material/Avatar';
 // chang this function later for security
 
@@ -20,6 +21,9 @@ export default function Account() {
                 You Account
                 </Typography>
                 <Stack spacing={{ xs: 1, sm: 2 }} direction="column" useFlexGap flexWrap="wrap">
+                    <Paper sx={{width:"90vw",padding: 4}} elevation={2} >
+                        <UserAvatar/>
+                    </Paper>
                     <Paper sx={{width:"90vw",padding: 4}} elevation={2} >
                         <AccountInformation/>
                     </Paper>

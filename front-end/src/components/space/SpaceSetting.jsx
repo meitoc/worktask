@@ -1,9 +1,10 @@
-import { Box, Button, FormControl, InputLabel, NativeSelect, Typography } from "@mui/material";
+import { Box, Button, Divider, Paper, Typography } from "@mui/material";
 import ModalConfirm from "../modal/ModalConfirm";
 import { deleteSpace, putSpaceColor } from "../../sevice/api";
 import { useDispatch, useSelector } from "react-redux";
 import { updateASpace } from "../../sevice/a_space/slice";
 import { createBrowserHistory } from "history";
+import { GithubPicker } from "react-color";
 
 export default function SpaceSetting(prop) {
     const dispatch = useDispatch();
@@ -19,9 +20,9 @@ export default function SpaceSetting(prop) {
           window.location.reload();
         }
       }
-      const handleChangeColor = async (event)=>{
-        const colorName=event.target.value
-        const newColor = colors.find(element => element.name === colorName);
+      const handleChangeColor = async (color)=>{
+        const backgroundColor=`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`;
+        const newColor = colors.find(element => element.background === backgroundColor);
         const prevColor = space.color;
         if(newColor?.name!==space?.color?.name) {
             dispatch(updateASpace({color:newColor}))
@@ -29,39 +30,40 @@ export default function SpaceSetting(prop) {
             if(response?.success!==true) dispatch(updateASpace({color:prevColor}));
         }
       }
+      const paperStyle = {
+        padding: 10,
+        display: 'flex',
+        flexDirection:"column",
+        flexWrap: 'wrap',
+        borderRadius: 10,
+        width:"100%",
+        flexGrow: 1
+    }
     return(
         <Box padding={3} style={{ display: prop.display===true?"flex":"none", flexDirection:"column", justifyContent:"space-between"}}>
-            <Typography variant="h6" margin={1}gutterBottom >
-                Change space color
-            </Typography>
-            <FormControl sx={{ m: 1, minWidth: 120, margin: 1 }} size="small" >
-                <InputLabel variant="standard" htmlFor="uncontrolled-native">
-                    Color
-                </InputLabel>
-                <NativeSelect
-                    defaultValue={space?.color?.name}
-                    inputProps={{
-                        name: 'age',
-                        id: 'uncontrolled-native',
-                    }}
+            <Paper elevation={3} style={paperStyle} >
+                <Typography variant="h6" margin={1}gutterBottom >
+                    Change space color
+                </Typography>
+                <GithubPicker
+                    colors={colors?.map(e=>e.background)}
                     onChange={handleChangeColor}
-                >
-                    {colors?.map(e => 
-                        <option style={{backgroundColor:e.background, color:e.text}} value={e.name} key={e.name}>{e.name}</option>
-                    )}
-                </NativeSelect>
-            </FormControl>
-            <Typography variant="h6" margin={1}gutterBottom >
-                Delete this space
-            </Typography>
-            <Box margin={1}>
-                <ModalConfirm confirm={handleDeleteSpace}
-                    title="Confirm to delete this space"
-                    text="All tasks on the space will be moved to Alone Tasks."
-                    >
-                    <Button variant="contained">Delete space</Button>
-                </ModalConfirm>
-            </Box>
+                    disableAlpha={true}
+                    className="github-color-picker"
+                />
+                <Divider style={{marginTop:15}} />
+                <Typography variant="h6" margin={1}gutterBottom >
+                    Delete this space
+                </Typography>
+                <Box margin={1}>
+                    <ModalConfirm confirm={handleDeleteSpace}
+                        title="Confirm to delete this space"
+                        text="All tasks on the space will be moved to Alone Tasks."
+                        >
+                        <Button variant="contained">Delete space</Button>
+                    </ModalConfirm>
+                </Box>
+            </Paper>
         </Box>
     )
 }

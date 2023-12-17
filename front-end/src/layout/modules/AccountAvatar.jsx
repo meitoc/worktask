@@ -28,7 +28,7 @@ export default function AccountAvatar() {
             <Avatar 
               sx={{ width: 27, height: 27}}
               alt={userInfo.name}
-              src=""//Change this later to view
+              src={userInfo.information?.avatar??""}
             
             /> 
           </Button>

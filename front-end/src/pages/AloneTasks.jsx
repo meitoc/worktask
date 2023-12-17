@@ -26,38 +26,38 @@ export default function AloneTasks() {
   const userInfo = useSelector(state => state.user_info)
   const dispatch = useDispatch();
   return (
-  <FetchSpacesTasks>
     <AuthenCheck>
-    {userInfo && Array.isArray(ownerTasks) && Array.isArray(memberTasks)?
-    <>
+      <FetchSpacesTasks>
+        {userInfo && Array.isArray(ownerTasks) && Array.isArray(memberTasks)?
+        <>
 
-        <Typography variant="h4" gutterBottom>
-          Alone Tasks
-        </Typography>
-        <Box backgroundColor="rgba(125,125,125,0.1)" padding={4} borderRadius={5} width='100vw' margin={2}>
-          <Typography variant="h5" gutterBottom>
-            You own:
-          </Typography>
-          <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap flexWrap="wrap">
-            {filteredOwnerTask.length>0 && filteredOwnerTask.map((e)=> e.active!==false?(<ATask fnUpdate={(input)=>dispatch(addToOwnerTasks(input))} fnDelete={(input)=>dispatch(removeOwnerTask(input))} task={e} key={e._id} />):null)}
-            <AddAloneTask />
-          </Stack>
-        </Box>
-        {filteredMemberTask.length>0?
-        <Box backgroundColor="rgba(125,125,125,0.1)" padding={4} borderRadius={5} width='100vw' margin={2}>
-          <Typography variant="h5" gutterBottom>
-            Shared to you:
-          </Typography>
-          <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap flexWrap="wrap">
-            {filteredMemberTask.map((e)=> e.active!==false?(<ATask fnUpdate={(input)=>dispatch(addToMemberTasks(input))} fnDelete={(input)=>dispatch(removeMemberTask(input))} task={e} key={e._id} />):null)}
-          </Stack>
-        </Box>
-        :null
-        }
-    </>
-  :<CircularProgress />
-  }
-  </AuthenCheck>
-  </FetchSpacesTasks>
+            <Typography variant="h4" gutterBottom>
+              Alone Tasks
+            </Typography>
+            <Box backgroundColor="rgba(125,125,125,0.1)" padding={4} borderRadius={5} width='100%' margin={2}>
+              <Typography variant="h5" gutterBottom>
+                You own:
+              </Typography>
+              <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap flexWrap="wrap">
+                {filteredOwnerTask.length>0 && filteredOwnerTask.map((e)=> e.active!==false?(<ATask onType="space"fnUpdate={(input)=>dispatch(addToOwnerTasks(input))} fnDelete={(input)=>dispatch(removeOwnerTask(input))} task={e} key={e._id} />):null)}
+                <AddAloneTask />
+              </Stack>
+            </Box>
+            {filteredMemberTask.length>0?
+            <Box backgroundColor="rgba(125,125,125,0.1)" padding={4} borderRadius={5} width='100%' margin={2}>
+              <Typography variant="h5" gutterBottom>
+                Shared to you:
+              </Typography>
+              <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap flexWrap="wrap">
+                {filteredMemberTask.map((e)=> e.active!==false?(<ATask onType="space" fnUpdate={(input)=>dispatch(addToMemberTasks(input))} fnDelete={(input)=>dispatch(removeMemberTask(input))} task={e} key={e._id} />):null)}
+              </Stack>
+            </Box>
+            :null
+            }
+        </>
+      :<CircularProgress />
+      }
+      </FetchSpacesTasks>
+    </AuthenCheck>
   )
 }

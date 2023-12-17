@@ -25,9 +25,9 @@ colorSpaceController.updateSpaceColor=async(req,res,next)=>{
         const {userId} = req.access;
         const colorName = req.body.name;
         const foundColor = await Color.findOne({name: colorName});
-        if(!foundColor) return res.status(400).json({ errors: [{ msg: 'Can not update the space color!' }] }); 
+        if(!foundColor) return res.status(400).json({ errors: [{ message: 'Can not update the space color!' }] }); 
         const updatedSpace = await Space.findOneAndUpdate({_id:spaceId,user: userId},{color:foundColor._id});
-        if(!updatedSpace) return res.status(400).json({ errors: [{ msg: 'Can not update the space color!' }] }); 
+        if(!updatedSpace) return res.status(400).json({ errors: [{ message: 'Can not update the space color!' }] }); 
         sendResponse(res,200,true,{data:filterField(foundColor,showField)},null,"Change color success")
     }catch(err){
         next(err)

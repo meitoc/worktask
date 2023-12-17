@@ -15,7 +15,7 @@ import Box from '@mui/material/Box';
 import SpaceSetting from './SpaceSetting';
 import { useSelector } from 'react-redux';
 import TaskList from '../task/TaskList';
-import SpaceDescription from './SpaceDescription';
+import SpaceDetail from './SpaceDetail';
 // import TabPanel from './TabPanel';
 
 
@@ -55,37 +55,10 @@ export default function SpaceFloatMenu() {
     setValue(index);
   };
 
-  // const transitionDuration = {
-  //   enter: theme.transitions.duration.enteringScreen,
-  //   exit: theme.transitions.duration.leavingScreen,
-  // };
-
-  // const fabs = [
-    
-  //   {
-  //     color: 'secondary',
-  //     sx: fabStyle,
-  //     icon: <EditIcon />,
-  //     label: 'Edit',
-  //   },
-  //   {
-  //     color: 'primary',
-  //     sx: fabStyle,
-  //     icon: <AddIcon />,
-  //     label: 'Add',
-  //   },
-  //   {
-  //     color: 'inherit',
-  //     sx: { ...fabStyle, ...fabGreenStyle },
-  //     icon: <UpIcon />,
-  //     label: 'Expand',
-  //   },
-  // ];
-
   return (
     <Box
       sx={{
-        bgcolor: 'background.paper',
+        // bgcolor: 'background.paper',
         width: "100%",
         position: 'relative',
         minHeight: 200,
@@ -101,8 +74,8 @@ export default function SpaceFloatMenu() {
           variant="fullWidth"
           aria-label="action tabs example"
         >
-          <Tab label="Description" {...a11yProps(0)} />
-          <Tab label="Tasks" {...a11yProps(1)} />
+          <Tab label="Tasks" {...a11yProps(0)} />
+          <Tab label="Detail" {...a11yProps(1)} />
           <Tab label="Setting" {...a11yProps(2)} />
         </Tabs>
       </AppBar>
@@ -111,8 +84,8 @@ export default function SpaceFloatMenu() {
         index={value}
         onChangeIndex={handleChangeIndex}
       >
-        <SpaceDescription display={value===0} />
-        <TaskList onType="space" parentId={space._id} tasks={space.tasks??[]} display={value===1} ></TaskList>
+        <TaskList onType="space" onId={space._id} tasks={space.tasks??[]} display={value===0} ></TaskList>
+        <SpaceDetail display={value===1} />
         <SpaceSetting display={value===2} />
       </SwipeableViews>
     </Box>

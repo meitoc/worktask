@@ -9,8 +9,10 @@ import BasicASpace from "../spaces/BasicASpace";
 import { addTaskToASpace } from "../../sevice/spaces/slice";
 import { putTaskToSpace } from "../../sevice/api";
 import { removeTaskFromASpace } from "../../sevice/a_space/slice";
+import { createBrowserHistory } from "history";
 
 export default function MoveToSpace(prop) {
+  const history = createBrowserHistory();
   const dispatch = useDispatch();
   const spaces = useSelector(state=>state.spaces);
   const [openModal,setOpenModal] = useState(false);
@@ -22,7 +24,7 @@ export default function MoveToSpace(prop) {
     setOpenModal(false);
     prop.cancel();
   }
-  const handleConfirm = async ()=>{
+  const handleConfirm = async (gotoSpace)=>{
     if(takeSpace!==null){
       const data={task:prop.id};
       const response = await putTaskToSpace(data,takeSpace._id);
@@ -31,6 +33,10 @@ export default function MoveToSpace(prop) {
         prop.confirm();
         dispatch(addTaskToASpace({task:prop.id,space:takeSpace._id}));
         dispatch(removeTaskFromASpace(prop.id))
+        if(gotoSpace===true) {
+          history.push(`/space/${takeSpace._id}`);
+          window.location.reload();
+        }
       }
     }
   }
@@ -61,15 +67,16 @@ export default function MoveToSpace(prop) {
                 }}>
                   <h2 id="parent-modal-title">Move to space</h2>
                   <div id="parent-modal-description">
-                    <Box maxHeight={"80vh"} maxWidth={"100vw"} overflow="auto" >
+                    <Box maxHeight={"80vh"} maxWidth={"100%"} overflow="auto" >
                     <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap flexWrap="wrap">
                       {spaces?.map((e)=> e.active!==false && !e.tasks?.includes(prop.id) ?(<BasicASpace display={e?._id===takeSpace?._id} space={e} key={e._id} onClick={()=>{setTakeSpace(e)}} />):null)}
                     </Stack>
                     </Box>
                   </div>
-                  <div style={{display:"flex",justifyContent:"space-between"}}>
+                  <div style={{display:"flex",justifyContent:"start"}}>
                     <Button variant="contained" sx={{margin:1}} onClick = {handleConfirm}>OK</Button>
-                    <Button variant="contained" sx={{margin:1}} onClick = {handleCloseModal}>CANCEL</Button>
+                    <Button variant="contained" sx={{margin:1}} onClick = {()=>handleConfirm(true)}>OK THEN GO TO SPACE</Button>
+                    <Button variant="contained" sx={{margin:1}} onClick = {handleCloseModal} color="warning" >CANCEL</Button>
                   </div>
                 </Box>
         </Modal>

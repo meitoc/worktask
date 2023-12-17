@@ -1,7 +1,7 @@
 const express= require("express")
 
 const router = express.Router()
-const {createSpace, getAllSpaces, deleteSpace, getSpace,updateSpace} = require("../controllers/space.controllers.js")
+const {createSpace, getAllSpaces, deleteSpace, getSpace,updateSpace , updateSpaces} = require("../controllers/space.controllers.js")
 const {updateSpaceColor} = require("../controllers/space/colorSpace.controllers.js")
 const {addSpaceTask, removeSpaceTask} = require("../controllers/space/taskSpace.controllers.js")
 const { isAuthenticated } = require("../auth/authorization.js")
@@ -50,6 +50,13 @@ router.delete("/id/:id",isAuthenticated,deleteSpace)
  */
 router.put("/id/:id",isAuthenticated,updateSpace)
 
+//Update spaces order
+/**
+ * @route POST api/space
+ * @description create a space
+ * @access owner user
+ */
+router.put("/",isAuthenticated, updateSpaces)
 /////////// Specificated Id for color
 
 //Update

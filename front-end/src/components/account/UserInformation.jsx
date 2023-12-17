@@ -5,10 +5,10 @@ import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import Box from '@mui/material/Box';
 import ChangeAccountInfo from "../info-change/ChangeAccountInfo";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { putUserInfo } from "../../sevice/api";
+import { updateUserInformation } from "../../sevice/user_info/slice";
 
-const styleShow={display: 'flex', flexDirection: 'column', alignItems: 'center'};
-const styleHide={display: 'none'};
 
 function isLeapYear(year) {
     if ((year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0)) return 1;
@@ -33,19 +33,21 @@ function parseBirthday(str) {
         year: 2000
     };
 }
-const startYear = 1940;
-const endYear = 2023;
+const currentDate = new Date();
+const endYear = currentDate.getFullYear();
+const startYear = endYear-100;
 const years = Array.from({ length: endYear - startYear + 1 }, (_, index) => startYear + index);
 const dayOfMonth = [[31,28,31,30,31,30,31,31,30,31,30,31],[31,29,31,30,31,30,31,31,30,31,30,31]];
-export default function UserInformation(prop) {
+export default function UserInformation() {
+    const dispatch = useDispatch();
     const userInfo = useSelector(state=>state.user_info)
 
     let userInfoBirthday=parseBirthday(userInfo.birthday);
     
-    const [savedRealname, setSavedRealname] = useState(userInfo?.information?.real_name??"");
-    const [savedGender, setSavedGender] = useState(userInfo?.information?.gender??"Male");
-    const [savedBirthday, setSavedBirthday] = useState(userInfo?.information?.birthday??"");
-    const [savedOrganization, setSavedOrganization] = useState(userInfo.information?.organization??"");
+    const savedRealname= userInfo?.information?.real_name??"";
+    const savedGender = userInfo?.information?.gender??"Male";
+    const savedBirthday = userInfo?.information?.birthday??"";
+    const savedOrganization = userInfo?.information?.organization??"";
 
     const [dayBirth,setDayBirth] = useState(userInfoBirthday.day);
     const [monthBirth,setMonthBirth] = useState(userInfoBirthday.month);
@@ -66,12 +68,13 @@ export default function UserInformation(prop) {
         async function checkResults() {
             try {
                 let collectResult={real_name,gender,birthday:`${dayBirth}/${monthBirth}/${yearBirth}`,organization};
-                const response = await prop.fnUpdate(collectResult);
-                if (response.success===true) {
-                    setDoneSubmit(false);
+                const response = await putUserInfo(collectResult);
+                if (response?.success===true) {
+                    dispatch(updateUserInformation(collectResult))
+                    setDoneSubmit(true);
+                    setOpenModal(false);
                 } else {
                     setDoneSubmit(undefined);
-                    setOpenModal(false);
                 }
             } catch (error) {
               console.error(error);
@@ -105,7 +108,7 @@ export default function UserInformation(prop) {
                 submit={handleSubmit}
                 open = {openModal===true} 
             >
-                <div style={doneSubmit!==true?styleShow:styleHide}>
+                <div>
                     <TextField
                         disabled={doneSubmit===""}
                         sx={{margin:2, width:270}}

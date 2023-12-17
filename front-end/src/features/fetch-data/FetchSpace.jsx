@@ -15,7 +15,6 @@ export default function FetchSpace(prop) {
       const fetchUser = async () =>{
         const response = await getSpace(`${prop.id}`);  
         if(response?.success===true) {
-          console.log("HHHHHHHHHHH",response)
           dispatch(createASpace(response.data));
           setNoteError(false)
         }

@@ -26,7 +26,7 @@ export const userInfoSlice = createSlice({
         updateUserInformation: (state, action) => {
             const newUserInfo=action.payload;
             console.log("UPDATE USER EMAIL", newUserInfo);
-            if(newUserInfo && state) return {...state,information:newUserInfo};
+            if(newUserInfo && state) return {...state,information:{...state.information,...newUserInfo}};
             return state;
         },
     }

@@ -9,7 +9,7 @@ import Box from '@mui/material/Box';
 import TaskSetting from './TaskSetting';
 import { useSelector } from 'react-redux';
 import TaskList from '../task/TaskList';
-import TaskDescription from './TaskDescription';
+import TaskDetail from './TaskDetail';
 
 
 function a11yProps(index) {
@@ -47,37 +47,10 @@ export default function TaskFloatMenu() {
     setValue(index);
   };
 
-  // const transitionDuration = {
-  //   enter: theme.transitions.duration.enteringScreen,
-  //   exit: theme.transitions.duration.leavingScreen,
-  // };
-
-  // const fabs = [
-    
-  //   {
-  //     color: 'secondary',
-  //     sx: fabStyle,
-  //     icon: <EditIcon />,
-  //     label: 'Edit',
-  //   },
-  //   {
-  //     color: 'primary',
-  //     sx: fabStyle,
-  //     icon: <AddIcon />,
-  //     label: 'Add',
-  //   },
-  //   {
-  //     color: 'inherit',
-  //     sx: { ...fabStyle, ...fabGreenStyle },
-  //     icon: <UpIcon />,
-  //     label: 'Expand',
-  //   },
-  // ];
-
   return (
     <Box
       sx={{
-        bgcolor: 'background.paper',
+        // bgcolor: 'background.paper',
         width: "100%",
         position: 'relative',
         minHeight: 200,
@@ -93,8 +66,8 @@ export default function TaskFloatMenu() {
           variant="fullWidth"
           aria-label="action tabs example"
         >
-          <Tab label="Description" {...a11yProps(0)} />
-          <Tab label="Tasks" {...a11yProps(1)} />
+          <Tab label="Detail" {...a11yProps(0)} />
+          <Tab label="Child Tasks" {...a11yProps(1)} />
           <Tab label="Setting" {...a11yProps(2)} />
         </Tabs>
       </AppBar>
@@ -103,8 +76,8 @@ export default function TaskFloatMenu() {
         index={value}
         onChangeIndex={handleChangeIndex}
       >
-        <TaskDescription display={value===0} />
-        <TaskList onType="task" parentId={task._id} tasks={task.tasks??[]} display={value===1} ></TaskList>
+        <TaskDetail display={value===0} />
+        <TaskList onType="task" onId={task._id} tasks={task.tasks??[]} display={value===1} ></TaskList>
         <TaskSetting display={value===2} />
       </SwipeableViews>
     </Box>

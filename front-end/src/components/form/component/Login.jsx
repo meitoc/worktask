@@ -43,7 +43,6 @@ export default function Login(prop) {
             if(emailOrUsername===true) data.email = `${loginName}`;
             else data.name = `${loginName}`;
             const response = await postLogin(data)
-            console.log("ASSSSSSSSSSS",response)
             if(response?.success===true){
                 if(response.data?.session) {
                     localStorage.setItem('loginSession',response.data.session);

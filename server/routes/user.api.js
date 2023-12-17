@@ -1,6 +1,6 @@
 const express= require("express")
 const router = express.Router()
-const {createUser, getAllUser, getAUser, updateUserByName ,deleteUserByName} = require("../controllers/user.controllers.js")
+const {createUser, getAllUser, getAUser, updateUser ,deleteUserByName} = require("../controllers/user.controllers.js")
 
 const { isAuthenticated,isAdminAuthenticated } = require("../auth/authorization.js")
 
@@ -8,7 +8,7 @@ const { isAuthenticated,isAdminAuthenticated } = require("../auth/authorization.
 /**
  * @route GET api/user/
  * @description get list of users
- * @access secure: admin
+ * @access secure: admin,user
  */
 router.get("/",isAuthenticated,getAllUser)
 
@@ -28,15 +28,15 @@ router.get("/:name",isAuthenticated,getAUser)
  * all change have been via OTP auth
  */
 router.post("/",createUser)
+
 //Update
 /**
- * @route PUT api/user/abc
+ * @route PUT api/user/
  * @description secure: admin, user
  * change this when build a bot
- * only bot can change
- * all change have been via OTP auth
+ * only update password
  */
-router.put("/:name", isAdminAuthenticated,updateUserByName )
+router.put("/", isAuthenticated,updateUser )
 //Delete
 /**
  * @route DELETE api/user/abc

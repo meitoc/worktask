@@ -6,7 +6,9 @@ const spaceSchema = mongoose.Schema(
     description: { type: String, default: "" },
     tasks: [{ type: mongoose.SchemaTypes.ObjectId, ref: "Task" }],
     user: { type: mongoose.SchemaTypes.ObjectId, ref: "User", required: true },
-    color: { type: mongoose.SchemaTypes.ObjectId, ref: "Color", required: true }
+    color: { type: mongoose.SchemaTypes.ObjectId, ref: "Color", required: true },
+    active: {type: Boolean,required:true},
+    order: {type: Number,default:0}
   },
   {
     timestamps: true,
