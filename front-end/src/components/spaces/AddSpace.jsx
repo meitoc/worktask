@@ -60,7 +60,7 @@ export default function AddSpace() {
     setSpaceColor(colors.find(element => element.background === backgroundColor))
   }
   if(activeSpace===true) return (
-    <Card sx={{borderRadius:4, width:300, minHeight:350, display:"flex", flexDirection:"column", justifyContent:"space-between", color:spaceColor?.text, backgroundColor:spaceColor?.background}}>
+    <Card sx={{ width:"100%", maxWidth:300, minHeight:150, borderRadius:5, display:"flex", flexDirection:"column", justifyContent:"space-between", color:spaceColor?.text, backgroundColor:spaceColor?.background}}>
       <CardHeader
       title={
         <TextField
@@ -96,21 +96,21 @@ export default function AddSpace() {
         />
     </CardContent>
     <CardActions sx={{display:"flex", justifyContent:"space-between"}}>
-      <Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} onClick = {handleSubmitSpace}>SUBMIT NEW SPACE</Button>
+      <Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} onClick = {handleSubmitSpace}>SUBMIT</Button>
       <Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} onClick = {handleCanel} color="warning" >CANCEL</Button>
     </CardActions>
     </Card>);
   else {
     if(activeSpace===null) return (
-    <Card sx={{ borderRadius:4, width:300, minHeight:350, display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
+    <Card sx={{ width:"100%", maxWidth:300, minHeight:150, borderRadius:5, display:"flex", flexDirection:"column", justifyContent:"space-between"}}> 
       <ButtonBase onClick={shandleAddSpace} >
-        <img style={{width:"200px"}} src='http://localhost:5173/add-space.svg'></img>
+        <img style={{width:"100%", maxHeight:200}} src='http://localhost:5173/add-space.svg'></img>
       </ButtonBase>
     </Card>
     );
     else return (
-    <Card sx={{ borderRadius:4, width:300, minHeight:350, display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
-        <img style={{width:"200px"}} src='http://localhost:5173/lost-space.svg'></img>
+    <Card sx={{ width:"100%", maxWidth:300, minHeight:150, borderRadius:5, display:"flex", flexDirection:"column", justifyContent:"space-between"}}>
+      <img style={{width:"100%", maxHeight:200}} src='http://localhost:5173/lost-space.svg'></img>
     </Card>
     );
   }

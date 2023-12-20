@@ -33,7 +33,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
     flexGrow: 1,
     // width: window.innerWidth,
-    padding: theme.spacing(4),
+    paddingTop: 10,
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -109,7 +109,7 @@ export default function Layout() {
     return (
         <ThemeProvider theme={darkTheme}>
             <FetchUserData>
-              <Box display= 'flex' justifyContent='center' style={{overflowX: "hidden", width:"100vw"}}>
+              <Box display= 'flex' justifyContent='center' style={{overflowX: "hidden", width:"100%"}}>
                   <CssBaseline />
                   <AppBar position="fixed" open={open}>
                       <Toolbar sx={{ display: 'flex', flexWrap: "noWrap" , justifyContent: 'space-between', }}>
@@ -154,13 +154,14 @@ export default function Layout() {
                   <Main open={open} style={{display: "flex", flexDirection:"column", alignItems:"center", width: mobile?drawerWidth:'100%'}} >
                       <DrawerHeader />
                       <Container
-                        maxWidth="100%" 
-                        sx={{
-                            display: 'flex',
-                            flexDirection:'column',
-                            // justifyContent: 'center',
-                            alignItems: 'center',
-                      }}>
+                        style={{
+                          width:"100%", 
+                          display: 'flex',
+                          flexDirection:'column',
+                          // justifyContent: 'center',
+                          alignItems: 'center',
+                      }}
+                      >
                         <Outlet />
                       </Container>
                       {showLoginForm?(<LoginForm goBack={false}/>):null}

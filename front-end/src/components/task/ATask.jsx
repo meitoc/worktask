@@ -112,9 +112,8 @@ export default function ATask(prop) {
                 onClose={handleCloseMore}
                 >
                 <MenuItem style={ {display: "flex",justifyContent: "center",alignItems: "center"}} onClick={handleEditTask}>Edit</MenuItem>
-                <Divider/>
                 {task?.users?.owners.some(e=>e.name===userInfo.name)?
-                      <ModalConfirm style={{width:"100%", height:"100%", display:"flex"}} confirm={handleDeleteTask} cancel={handleCloseMore}
+                    <ModalConfirm style={{width:"100%", height:"100%", display:"flex"}} confirm={handleDeleteTask} cancel={handleCloseMore}
                       title="Confirm to delete this task"
                       text="Impotant: All child tasks on the task will be deleted!"
                       >
@@ -124,7 +123,6 @@ export default function ATask(prop) {
                       </ModalConfirm>
                   :null
                 }
-                <Divider/>
                 {prop.onType==="space"?
                   <MoveToSpace cancel={handleCloseMore} id={task._id} confirm={handleCloseMore}
                   >

@@ -9,6 +9,7 @@ import { useTheme } from "@emotion/react";
 import Comment from "./Comment";
 import FetchComments from "../../features/fetch-data/FetchComments";
 import FileList from "./FileList";
+import Chart from "./Chart";
 import FetchFiles from "../../features/fetch-data/FetchFiles";
 import AddIcon from '@mui/icons-material/Add';
 
@@ -65,7 +66,7 @@ export default function TaskDetail(prop) {
         if(response?.success!==true ) setTaskStatus(oldTaskStatus);
     };
     return(
-        <Box padding={{ xs: 1, sm: 2, md: 3, lg: 3 }} style={{ display: prop.display===true?"flex":"none", flexDirection:"column", justifyContent:"space-between",alignItems:"space-between",width:"100%" }}>
+        <Box padding={{ xs: 1, sm: 2, md: 3, lg: 3 }} style={{ display: prop.display===true?"flex":"none", flexDirection:"column", justifyContent:"space-between",alignItems:"center",width:"100%" }}>
             <Grid container columns={24} spacing={2} width="100%">
                 <Grid  xs={24} sm={24} md={12} lg={8} > 
                     <Paper elevation={3} style={{...paperStyle,flexShrink:0}} >
@@ -93,7 +94,7 @@ export default function TaskDetail(prop) {
                                     placeholder="Task descriptiom"
                                     value={showTaskDescription}
                                     onChange={handleSetDescription}
-                                    minRows={5}
+                                    minRows={2}
                                 />
                                 <Box sx={{display:"flex", alignItems:"task-between"}}>
                                     <Button sx={{margin:1}} variant="contained" onClick={handleSubmit}>Save</Button>
@@ -126,6 +127,11 @@ export default function TaskDetail(prop) {
                                 </Zoom>
                             </>
                         }
+                    </Paper>
+                    <Paper elevation={3} style={{...paperStyle,flexGrow:10,marginTop:10}} >
+                        <Typography variant="h5">Chart</Typography>
+                        <Divider sx={{marginBottom:2}}/>
+                        <Chart />
                     </Paper>
                 </Grid>
                 <Grid  xs={24} sm={24} md={12} lg={8}>

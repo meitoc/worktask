@@ -86,7 +86,7 @@ export default function ASpace(prop) {
   }
   if(activeSpace===null) return null;
   else if(activeSpace===true) return (
-    <Card sx={{ borderRadius:4, width:300, minHeight:350, display:"flex", flexDirection:"column", justifyContent:"space-between", color:spaceColor?.text, backgroundColor:spaceColor?.background}}>
+    <Card sx={{ width:"100%", maxWidth:300, minHeight:150, borderRadius:5, display:"flex", flexDirection:"column", justifyContent:"space-between", color:spaceColor?.text, backgroundColor:spaceColor?.background}}>
         <CardHeader
           color={spaceColor?.text}
           action={

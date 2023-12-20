@@ -18,18 +18,24 @@ import Divider from '@mui/material/Divider';
 
 import { ContextStatus } from '../../App';
 import { useSelector } from 'react-redux';
+import { Badge } from '@mui/material';
 
 
 
 export default function NavigationList() {
     const userInfo = useSelector(state=>state.user_info);
+    const memberTasks = useSelector(state => state.member_tasks);
+    const spaces = useSelector(state => state.spaces);
+    const numberSharedTask = memberTasks.length??0
+    const numberAloneTask = memberTasks?.filter(task=>!spaces?.some(space=>space?.tasks?.includes(task._id))).length??0
     const {mobile, handleDrawerClose, setShowLoginForm} = useContext(ContextStatus);
     const navList = [
         // viewByLogin: true: only be shown when logged in / false: only be shown when logged out / not set: always be shown
         {text:'Home page', link: "", icon: (<WhatshotIcon />), viewByLogin: false},
         {text:'Login to use', fn: ()=>setShowLoginForm(true), icon: (<LoginIcon />), viewByLogin: false},
         {text:'Spaces', link: "/", icon: (<RocketLaunchIcon />), viewByLogin: true},
-        {text:'Alone Tasks', link: "/alone-tasks", icon: (<AssignmentIcon />), viewByLogin: true},
+        {text:'Alone Shared Tasks', link: "/alone-shared-tasks", icon: (<Badge badgeContent={numberSharedTask} color="primary"><AssignmentIcon /></Badge>), viewByLogin: true},
+        {text:'Your Alone Tasks', link: "/your-alone-tasks", icon: (<Badge badgeContent={numberAloneTask} color="primary"><AssignmentIcon /></Badge>), viewByLogin: true},
         {icon:(<Divider />)},
         {text:'Help', link: "/help", icon: (<HelpIcon />)},
         {text:'About Us', link: "/about-us", icon: (<InfoIcon />)},

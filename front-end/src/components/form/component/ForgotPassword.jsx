@@ -3,7 +3,7 @@
 
 import { Button, TextField } from "@mui/material"
 import { useState } from "react"
-import { Link } from "react-router-dom";
+import Link from '@mui/material/Link';
 import { postForgotPassword } from "../../../sevice/api";
 
 

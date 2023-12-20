@@ -8,16 +8,20 @@ import { getTaskList, putSpace, putTask } from "../../sevice/api";
 import { useTheme } from "@emotion/react";
 import AddIcon from '@mui/icons-material/Add';
 import AddTask from "./AddTask";
+import { useDispatch, useSelector } from "react-redux";
+import { updateTasks } from "../../sevice/tasks/slice";
 
 
 
 export default function TaskList(prop) {
+  const dispatch = useDispatch()
   const theme = useTheme();
   const transitionDuration = {
       enter: theme.transitions.duration.enteringScreen,
       exit: theme.transitions.duration.leavingScreen,
     };
-  const [tasks,setTasks] = useState(null);
+  // const [tasks,setTasks] = useState(null);
+  const tasks = useSelector(state=>state.tasks)
   const [columns, setColumns] = useState(null);
   const [activeAdd, setActiveAdd] = useState(null);
 
@@ -40,25 +44,25 @@ export default function TaskList(prop) {
               items: tasks?.filter(e=>e.status==="done")??[]
             }
           };
-          setTasks(tasks);
+          // setTasks(tasks);
+          dispatch(updateTasks(tasks))
           setColumns(taskStatus)
         } else {
-          setTasks([]);
+          dispatch(updateTasks([]))
+          // setTasks([]);
         }
     }
     if(Array.isArray(prop.tasks)) fetchTasks();
-  }, [prop.tasks]);
+  }, [prop.tasks,dispatch]);
 
   // 
   const updateTask = async (id,data)=>{
     console.log(id ,data)
     const response = await putTask(id,data);
     if(response?.success===true) {
-      console.log(response);
       return true;
     }
     else {
-      console.log("Failed to change task data!",data);
       return false;
     }
   }
@@ -70,7 +74,6 @@ export default function TaskList(prop) {
       return true;
     }
     else {
-      console.log("Failed to change space data!",data);
       return false;
     }
   }
@@ -122,16 +125,21 @@ export default function TaskList(prop) {
     const todos=newColumn?.todo?.items?.map(e=>e._id);
     const processings=newColumn?.processing?.items?.map(e=>e._id);
     const dones=newColumn?.done?.items?.map(e=>e._id);
+    if (source.droppableId !== destination.droppableId) {//do this only when changed a task status
+      const newTasksDetail = [...newColumn.todo.items.map(e=>{return {...e,status:"todo"}}),...newColumn.processing.items.map(e=>{return {...e,status:"processing"}}),...newColumn.done.items.map(e=>{return {...e,status:"done"}})];
+      dispatch(updateTasks(newTasksDetail))
+    }
     const newTaskOder = [...todos,...processings,...dones]
     if(prop.onType==="space"){
-      console.log("newOder Space",newTaskOder)
+      console.log("newOder Space",newColumn)
       if( (await updateSpace(prop.onId,{tasks:newTaskOder})) === false ) setColumns(oldColumn)
       
     } else{
-      console.log("newOder Task",newTaskOder)
+      console.log("newOder Task",newColumn)
       if( (await updateTask(prop.onId,{tasks:newTaskOder})) === false ) setColumns(oldColumn)
     }
   };
+
   const paperStyle = {
     padding: 10,
     display: 'flex',
@@ -143,12 +151,12 @@ export default function TaskList(prop) {
 }
 
   return (
-    <Box padding={{ xs: 0, sm: 1, md: 2, lg: 3 }} style={{ display: prop.display===true?"flex":"none", flexDirection:"column", justifyContent:"space-between",alignItems:"space-between"}}>
+    <Box padding={{ xs: 0, sm: 1, md: 2, lg: 3 }} style={{ display: prop.display===true?"flex":"none", flexDirection:"column", justifyContent:"space-between",alignItems:"center"}}>
       <Grid container columns={24} width="100%" >
         <Grid xs={24} sm={24} md={24} lg={24} >
           <Paper elevation={3} style={paperStyle} >
           {
-            tasks===null?
+            columns===null?
             <>
               <Skeleton />
               <Skeleton animation="wave" />
@@ -187,16 +195,17 @@ export default function TaskList(prop) {
                             style={{
                               userSelect: "none",
                               padding: 5,
-                              margin: "0 0 8px 0",
+                              margin: 0,
                               minHeight: "50px",
                               cursor:"grab",
                               width:"100%",
                               display:"flex",
                               flexDirection:"column",
                               alignItems:"center",
+                              borderRadius:20,
                               backgroundColor: snapshot.isDragging
                                 ? "rgba(10,10,10,0.5)"
-                                : "rgba(200,200,200,0.1)",
+                                : "rgba(220,220,220,0.01)",
                               color: "white",
                               ...provided.draggableProps.style
                             }}
@@ -223,11 +232,10 @@ export default function TaskList(prop) {
                             style={{
                               background: snapshot.isDraggingOver
                                 ? "lightblue"
-                                : "lightgrey",
+                                : "rgba(100,100,100,0.1)",
                               padding: 2,
                               width:"100%",
                               minHeight: 300,
-                              height:"100%",
                               overflow:"auto",
                               display:"flex",
                               flexDirection:"column",
@@ -251,16 +259,17 @@ export default function TaskList(prop) {
                                         style={{
                                           userSelect: "none",
                                           padding: 5,
-                                          margin: "0 0 8px 0",
+                                          margin: 0,
                                           minHeight: "50px",
                                           cursor:"grab",
                                           width:"100%",
                                           display:"flex",
                                           flexDirection:"column",
                                           alignItems:"center",
+                                          borderRadius:20,
                                           backgroundColor: snapshot.isDragging
                                             ? "rgba(10,10,10,0.5)"
-                                            : "rgba(200,200,200,0.1)",
+                                            : "rgba(220,220,220,0.01)",
                                           color: "white",
                                           ...provided.draggableProps.style,
                                         }}

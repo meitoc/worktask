@@ -19,25 +19,11 @@ function a11yProps(index) {
   };
 }
 
-// const fabStyle = {
-//   position: 'absolute',
-//   bottom: 16,
-//   right: 16,
-// };
-
-// const fabGreenStyle = {
-//   color: 'common.white',
-//   bgcolor: green[500],
-//   '&:hover': {
-//     bgcolor: green[600],
-//   },
-// };
 
 export default function TaskFloatMenu() {
   const task = useSelector(state=>state.a_task)
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
-  // const [descriptionEdit, setDescriptionEdit] = React.useState(true);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -50,14 +36,15 @@ export default function TaskFloatMenu() {
   return (
     <Box
       sx={{
-        // bgcolor: 'background.paper',
         width: "100%",
-        position: 'relative',
         minHeight: 200,
         maxHeigt:"100%"
       }}
     >
-      <AppBar position="static" color="default">
+      <AppBar 
+        position="static"
+        color="default"
+      >
         <Tabs
           value={value}
           onChange={handleChange}

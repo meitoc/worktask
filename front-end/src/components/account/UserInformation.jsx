@@ -42,8 +42,7 @@ export default function UserInformation() {
     const dispatch = useDispatch();
     const userInfo = useSelector(state=>state.user_info)
 
-    let userInfoBirthday=parseBirthday(userInfo.birthday);
-    
+    let userInfoBirthday=parseBirthday(userInfo.information.birthday);
     const savedRealname= userInfo?.information?.real_name??"";
     const savedGender = userInfo?.information?.gender??"Male";
     const savedBirthday = userInfo?.information?.birthday??"";

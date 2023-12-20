@@ -64,7 +64,7 @@ export default function TaskSetting(prop) {
         }
     }
     return(
-        <Box padding={{ xs: 1, sm: 2, md: 3, lg: 3 }} style={{ display: prop.display===true?"flex":"none", flexDirection:"column", justifyContent:"space-between",alignItems:"space-between",width:"100%" }}>
+        <Box padding={{ xs: 1, sm: 2, md: 3, lg: 3 }} style={{ display: prop.display===true?"flex":"none", flexDirection:"column", justifyContent:"space-between",alignItems:"center",width:"100%" }}>
         <Grid container columns={24} spacing={2} width="100%" >
             <Grid xs={24} sm={24} md={12} lg={8} >
                 <Paper elevation={3} style={paperStyle} >

@@ -95,7 +95,7 @@ export default function DetailTask() {
                 
               </Breadcrumbs>
             </div>
-            <Box backgroundColor={task?.color?.background}  borderRadius={{ xs: 1, sm: 2, md: 4, lg: 6 }} width='100%' margin={2} style={{display:"flex", flexDirrection:"column",overflowX: "hidden"}} >
+            <Box backgroundColor={task?.color?.background}  borderRadius={{ xs: 1, sm: 2, md: 4, lg: 6 }} width='100%' margin={{ xs: 1, sm: 2, md: 4, lg: 6 }} style={{display:"flex", flexDirrection:"column", overflowX: "hidden"}} >
               <TaskFloatMenu></TaskFloatMenu>
             </Box>  
           </>

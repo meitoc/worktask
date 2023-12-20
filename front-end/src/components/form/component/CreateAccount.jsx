@@ -20,7 +20,7 @@ export default function CreateAccount(prop) {
     const [createPasswordError,setCreatePasswordError] = useState(false);
 
     const [showPassword,setShowPassword] = useState(true);
-    const [disableLoginInput,setDisableLoginInput] = useState("");
+    const [disableLoginInput,setDisableLoginInput] = useState(false);
 
      //function for create new account
   const createAccount = async () => {

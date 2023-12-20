@@ -21,7 +21,8 @@ import AboutUs from "./pages/AboutUs";
 import DetailSpace from "./pages/DetailSpace";
 import DetailTask from "./pages/DetailTask";
 import Spaces from "./pages/Spaces";
-import AloneTasks from "./pages/AloneTasks";
+import AloneOwnerTasks from "./pages/AloneOwnerTasks";
+import AloneSharedTasks from "./pages/AloneSharedTasks";
 import FirstAccess from "./pages/FirstAccess";
 
 const router = createBrowserRouter([
@@ -36,8 +37,13 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "alone-tasks",
-        element: <AloneTasks />,
+        path: "your-alone-tasks",
+        element: <AloneOwnerTasks />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "alone-shared-tasks",
+        element: <AloneSharedTasks />,
         errorElement: <ErrorPage />,
       },
       {

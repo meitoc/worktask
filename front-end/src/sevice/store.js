@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 
 import { aTaskSlice } from './a_task/slice'
+import { tasksSlice } from './tasks/slice'
 import { commentsSlice } from './comments/slice'
 import { spacesSlice } from './spaces/slice'
 import { aSpaceSlice } from './a_space/slice'
@@ -19,6 +20,7 @@ const store = configureStore({
         member_tasks: rootMemberTaskSlice.reducer,
         owner_tasks: rootOwnerTasksSlice.reducer,
         a_task: aTaskSlice.reducer,
+        tasks: tasksSlice.reducer,
         spaces: spacesSlice.reducer,
         a_space: aSpaceSlice.reducer,
         colors: colorsSlice.reducer,
