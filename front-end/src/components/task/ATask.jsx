@@ -19,6 +19,7 @@ import { removeTaskFromSpaces } from '../../sevice/spaces/slice';
 import { removeTaskFromATask } from '../../sevice/a_task/slice';
 import { GithubPicker } from 'react-color';
 import { Divider } from '@mui/material';
+import { FRONT_END_BASE_URL } from '../../sevice/server';
 
 
 export default function ATask(prop) {
@@ -172,7 +173,7 @@ export default function ATask(prop) {
             <Button sx={{color:taskColor?.text, backgroundColor:taskColor?.frame}} onClick = {handleSubmitTask}>SUBMIT CHANGE</Button>
             <Button sx={{color:taskColor?.text, backgroundColor:taskColor?.frame}} onClick = {handleCancel} color="warning" >CANCEL</Button>
             </>
-            :<Button sx={{color:taskColor?.text, backgroundColor:taskColor?.frame}} href={`http://localhost:5173/task/${task?._id}`}>EXPLORE</Button>
+            :<Button sx={{color:taskColor?.text, backgroundColor:taskColor?.frame}} href={`${FRONT_END_BASE_URL}/task/${task?._id}`}>EXPLORE</Button>
           }
           {
             task.edit_locked?
@@ -184,7 +185,7 @@ export default function ATask(prop) {
   );
   else return (
     <Card sx={{width:300, minHeight:100, display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
-      <img style={{maxHeight:150}} src='http://localhost:5173/lost-task.svg'></img>
+      <img style={{maxHeight:150}} src='${FRONT_END_BASE_URL}/lost-task.svg'></img>
       </Card>
   );
   

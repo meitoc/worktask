@@ -13,6 +13,7 @@ import { addToSpaces } from '../../sevice/spaces/slice';
 import { postSpace } from '../../sevice/api';
 import { Divider } from '@mui/material';
 import { GithubPicker } from 'react-color';
+import { FRONT_END_BASE_URL } from '../../sevice/server';
 
 // import LostSpace from './image/LostSpace';
 export default function AddSpace() {
@@ -104,13 +105,13 @@ export default function AddSpace() {
     if(activeSpace===null) return (
     <Card sx={{ width:"100%", maxWidth:300, minHeight:150, borderRadius:5, display:"flex", flexDirection:"column", justifyContent:"space-between"}}> 
       <ButtonBase onClick={shandleAddSpace} >
-        <img style={{width:"100%", maxHeight:200}} src='http://localhost:5173/add-space.svg'></img>
+        <img style={{width:"100%", maxHeight:200}} src={`${FRONT_END_BASE_URL}/add-space.svg`}></img>
       </ButtonBase>
     </Card>
     );
     else return (
     <Card sx={{ width:"100%", maxWidth:300, minHeight:150, borderRadius:5, display:"flex", flexDirection:"column", justifyContent:"space-between"}}>
-      <img style={{width:"100%", maxHeight:200}} src='http://localhost:5173/lost-space.svg'></img>
+      <img style={{width:"100%", maxHeight:200}} src={`${FRONT_END_BASE_URL}/lost-space.svg`}></img>
     </Card>
     );
   }
