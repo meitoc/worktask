@@ -17,13 +17,14 @@ userController.createUser=async(req,res,next)=>{
     try{
         //check body by express-validator
         console.log(req.body)
-        await body('name')
+        await body('user')
             .matches(/^[a-z][a-z0-9_]{4,}$/)
             .withMessage('Name must start with a letter and contain only lowercase letters, numbers, and underscores!')
             .run(req);
         await body('email').isEmail().withMessage('Invalid email!').run(req);
         await body('password')
-            .isLength({ min: 8, max: 64 }).withMessage('Password must be between 8 and 64 characters!')
+            .isLength({ min: 8, max: 64 })
+            .withMessage('Password must be between 8 and 64 characters!')
             .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/)
             .withMessage('Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character!')
             .run(req);
@@ -38,7 +39,7 @@ userController.createUser=async(req,res,next)=>{
         
         
         const newUser = {
-            name:req.body.name,
+            name:req.body.user,
             email:req.body.email,
             active: false,
             password

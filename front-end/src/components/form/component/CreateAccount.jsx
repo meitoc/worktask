@@ -26,7 +26,7 @@ export default function CreateAccount(prop) {
   const createAccount = async () => {
     if(createEmail && createUser && createPassword && !(createEmailError||createUserError||createPasswordError)){
         setDisableLoginInput(true);
-        const data = {email:`${createUser}`.toLowerCase, user: `${createUser}`, password: `${createPassword}`};
+        const data = {email:`${createEmail}`.toLowerCase(), user: `${createUser}`.toLowerCase(), password: `${createPassword}`};
         const response = await postCreateUser(data)
             if(response?.success===true){
                 prop.goTo('waiting');
