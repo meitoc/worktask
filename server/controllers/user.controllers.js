@@ -16,6 +16,7 @@ const userController={}
 userController.createUser=async(req,res,next)=>{
     try{
         //check body by express-validator
+        console.log(req.body)
         await body('name')
             .matches(/^[a-z][a-z0-9_]{4,}$/)
             .withMessage('Name must start with a letter and contain only lowercase letters, numbers, and underscores!')
