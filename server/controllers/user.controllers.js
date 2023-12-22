@@ -170,22 +170,25 @@ userController.updateUser=async(req,res,next)=>{
         } else {//update password
         await body('password')
             .isLength({ min: 8, max: 64 }).withMessage('Password must be between 8 and 64 characters!')
-            .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/)
-            .withMessage('Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character!')
+            .matches(/[a-z]/).withMessage("Contain at least one lowercase letter!")
+            .matches(/[A-Z]/).withMessage( "Contain at least one upprtcase letter!")
+            .matches(/[0-9]/).withMessage( "Contain at least one degit!")
+            .matches(/[!@#$%^&*(),.?":{}|<>]/).withMessage("Contain at least one special character!")
             .run(req);
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const new_password = req.body.password;
-        const updateInfo = {new_password};
+        const salt = await bcrypt.genSalt(10);
+        const password = await bcrypt.hash(`${req.body.password}`, salt);
+        const updateInfo = {password};
         //no secure now
         //add update for OTP and AccessSession
         const updated= await User.findOneAndUpdate({_id:userId,active:true},updateInfo)
         // const updated= await User.findOneAndUpdate({name,password},updateInfo)
         if(updated) {
-            sendResponse(res,200,true,{new_password},null,"Update user success")
+            sendResponse(res,200,true,{password},null,"Update user success")
             // sendResponse(res,200,true,{data:{new_email:email}},null,"Send OTP")
         }
         else {
