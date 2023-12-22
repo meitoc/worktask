@@ -36,6 +36,7 @@ async function uploadPublicAWSFile(req, res, next) {
     ContentType: req.file.mimetype
   };
   try {
+    console.log(uploadParams)
     const uploadCommand = new PutObjectCommand(uploadParams);
     const response = await S3.send(uploadCommand);
     if(!response) return res.status(400).json({ errors:[{"type": "data", message: "Invalid file!"}] });

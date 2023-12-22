@@ -25,9 +25,10 @@ import { Badge } from '@mui/material';
 export default function NavigationList() {
     const userInfo = useSelector(state=>state.user_info);
     const memberTasks = useSelector(state => state.member_tasks);
+    const ownerTasks = useSelector(state => state.owner_tasks);
     const spaces = useSelector(state => state.spaces);
-    const numberSharedTask = memberTasks.length??0
-    const numberAloneTask = memberTasks?.filter(task=>!spaces?.some(space=>space?.tasks?.includes(task._id))).length??0
+    const numberSharedTask = memberTasks?.filter(task=>!spaces?.some(space=>space?.tasks?.includes(task._id))).length??0
+    const numberAloneTask = ownerTasks?.filter(task=>!spaces?.some(space=>space?.tasks?.includes(task._id))).length??0
     const {mobile, handleDrawerClose, setShowLoginForm} = useContext(ContextStatus);
     const navList = [
         // viewByLogin: true: only be shown when logged in / false: only be shown when logged out / not set: always be shown

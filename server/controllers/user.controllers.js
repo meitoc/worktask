@@ -23,10 +23,8 @@ userController.createUser=async(req,res,next)=>{
             .run(req);
         await body('email').isEmail().withMessage('Invalid email!').run(req);
         await body('password')
-            .isLength({ min: 8, max: 64 })
-            .withMessage('Password must be between 8 and 64 characters!')
-            .matches(/[a-z]/)
-            .withMessage("Contain at least one lowercase letter!")
+            .isLength({ min: 8, max: 64 }).withMessage('Password must be between 8 and 64 characters!')
+            .matches(/[a-z]/).withMessage("Contain at least one lowercase letter!")
             .matches(/[A-Z]/).withMessage( "Contain at least one upprtcase letter!")
             .matches(/[0-9]/).withMessage( "Contain at least one degit!")
             .matches(/[!@#$%^&*(),.?":{}|<>]/).withMessage("Contain at least one special character!")
