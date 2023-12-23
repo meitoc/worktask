@@ -9,15 +9,15 @@ const showField = {_id:1,users:1,name:1,status:1,description:1,parent_task:1,tre
 
 const taskController={};
 //load parents tree
-async function loadTree(_id) {
+async function loadTree(_id,userId) {
     const foundTree =[]
-    const foundItem = await Task.findOne({_id},{_id:1, name:1, parent_task:1})
+    const foundItem = await Task.findOne({_id,$or:[{'users.members':userId},{'users.managers':userId,access_locked:false},{'users.members':userId,access_locked:false}]},{_id:1, name:1, parent_task:1})
     .populate("users.owners users.managers users.members","name active -_id")
     .populate("color","name background frame text -_id");
     if(foundItem) {
         foundTree.push({_id:foundItem._id.toString(),name:foundItem.name})
         if(foundItem.parent_task) {
-            const parent = await loadTree(foundItem.parent_task);
+            const parent = await loadTree(foundItem.parent_task,userId);
             foundTree.push(...parent)
         }
     }
@@ -252,7 +252,7 @@ taskController.updateTask=async(req,res,next)=>{
             .populate("color","name frame background text -_id")
             .sort({ order:1, createdAt: sortByTime });
             if(!updatedTask) return res.status(400).json({ errors: [{ message: 'Can not update the task with owner role!' }] }); 
-            updatedTask.tree = await loadTree(updatedTask.parent_task);
+            updatedTask.tree = await loadTree(updatedTask.parent_task,userId);
             updatedTask.tasks = await loadTasks(updatedTask._id);
             sendResponse(res,200,true,filterField(updatedTask,showField),null,"Change data success")
         }
@@ -263,7 +263,7 @@ taskController.updateTask=async(req,res,next)=>{
             .populate("color","name frame background text -_id")
             .sort({ order:1, createdAt: sortByTime });
             if(!updatedTask) return res.status(400).json({ errors: [{ message: 'Can not update the task with manager role!' }] }); 
-            updatedTask.tree = await loadTree(updatedTask.parent_task);
+            updatedTask.tree = await loadTree(updatedTask.parent_task,userId);
             updatedTask.tasks = await loadTasks(updatedTask._id);
             sendResponse(res,200,true,filterField(updatedTask,showField),null,"Change data success")
         }
@@ -276,7 +276,7 @@ taskController.updateTask=async(req,res,next)=>{
             if(!updatedTask) {
                 return res.status(400).json({ errors: [{ message: 'Can not update the task with member role!' }] }); 
             }
-            updatedTask.tree = await loadTree(updatedTask.parent_task);
+            updatedTask.tree = await loadTree(updatedTask.parent_task,userId);
             updatedTask.tasks = await loadTasks(updatedTask._id);
             sendResponse(res,200,true,filterField(updatedTask,showField),null,"Change data success")
         }
@@ -306,7 +306,7 @@ taskController.getTask=async(req,res,next)=>{
             .populate("color","name frame background text -_id")
             .sort({ order:1, createdAt: sortByTime })
         if(!foundTask) return res.status(400).json({ errors: [{ message: 'Wrong task id!' }] });
-        foundTask.tree = await loadTree(foundTask.parent_task);
+        foundTask.tree = await loadTree(foundTask.parent_task,userId);
         foundTask.tasks = await loadTasks(foundTask._id);
         sendResponse(res,200,true,filterField(foundTask,showField),null,"Found list of task success")
     }catch(err){
@@ -341,7 +341,7 @@ taskController.postTaskList=async(req,res,next)=>{
                 .populate("color","name frame background text -_id")
                 .sort({ order:1, createdAt: sortByTime })
             if(!foundTask) return null;
-            foundTask.tree = await loadTree(foundTask.parent_task);
+            foundTask.tree = await loadTree(foundTask.parent_task,userId);
             const filterredTask = filterField(foundTask,showField);
             return filterredTask;
         }

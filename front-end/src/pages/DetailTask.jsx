@@ -86,7 +86,7 @@ export default function DetailTask() {
                       if (event.key === "Enter" || event.key === "Done") handleSubmitName()
                     }}
                   />
-                  {task.edit_locked===true && userRole!=="owner"?null:
+                  {task.edit_locked===true || userRole==="member"?null:
                   <EditIcon style={{cursor:"pointer",display:editName?"none":"block"}} onClick={()=>{setEditName(true)}} />
                   }
                   <CheckCircleIcon color="success" style={{cursor:"pointer",display:editName?"block":"none"}} onClick={handleSubmitName} />
