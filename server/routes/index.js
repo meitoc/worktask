@@ -35,4 +35,7 @@ router.use("/task",taskRouter)
 const fileRouter = require("./file.api.js")
 router.use("/file",fileRouter)
 
+const notifyRouter = require("./notify.api.js")
+router.use("/notify",notifyRouter)
+
 module.exports = router;

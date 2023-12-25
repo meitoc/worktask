@@ -4,6 +4,7 @@ const Task = require("../models/Task.js")
 const Space = require("../models/Space.js");
 const Color = require("../models/Color");
 const { filterField } = require("../tools/filterData.js");
+const { addNotify } = require("./notify.controllers.js");
 
 const showField = {_id:1,users:1,name:1,status:1,description:1,parent_task:1,tree:1,tasks:1, color:1,order:1,member_add_member:1,access_locked:1,edit_locked:1,createdAt:1,updatedAt:1};
 
@@ -278,10 +279,24 @@ taskController.updateTask=async(req,res,next)=>{
             }
             updatedTask.tree = await loadTree(updatedTask.parent_task,userId);
             updatedTask.tasks = await loadTasks(updatedTask._id);
+            req.notify={
+                task:taskId,
+                user:userId,
+                sendTo:[...updatedTask.users.owners,...updatedTask.users.managers,...updatedTask.users.members].pull(userId),
+                readBy:[],
+                action:'update',
+                item:['status'],
+                // itemComment,
+                // itemOwner,
+                // itemMember,
+                // itemFile,
+                itemStatus: updatedTask.status,
+            }
+            await addNotify(req,res,next)
             sendResponse(res,200,true,filterField(updatedTask,showField),null,"Change data success")
         }
         else return res.status(400).json({ errors: [{ message: 'Wrong task id!' }] });
-
+        
     }catch(err){
         next(err)
     }

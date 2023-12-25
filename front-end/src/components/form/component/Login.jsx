@@ -33,12 +33,13 @@ export default function Login(prop) {
         const isUsername = /^[a-z][a-z0-9_]{4,}$/.test(input.replace(/\./g, '').toLowerCase());
         if(isUsername) return false;
         else return null;
-      }
+    }
       
     const checkLogin = async (loginName, password) => {
         setDisableLoginInput(true);
         const emailOrUsername = isEmailOrUsername(loginName)
-        if(emailOrUsername!==null){
+        if(password.length<8 || password.length>64 || !(/[a-z]/.test(password)) || !(/[A-Z]/.test(password)) || !(/[0-9]/.test(password)) || !(/[!@#$%^&*(),.?":{}|<>]/.test(password))) setNote( "Wrong password or user name!");
+        else if(emailOrUsername!==null ){
             const data = {password: `${password}`}
             if(emailOrUsername===true) data.email = `${loginName}`;
             else data.name = `${loginName}`;

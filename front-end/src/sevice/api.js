@@ -710,7 +710,24 @@ async function postAvatar(imageFile) {
     return null;
   }
 }
-
+//Noify
+/////////USER
+async function getNotify() {
+  const session = localStorage.getItem('loginSession');
+  if (!session) return null;
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+      accept: 'application/json',
+      Authorization: `Bearer ${session}`,
+    }
+    const response = await axios.get(`${BACK_END_BASE_URL}/api/notify`, {headers});
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
 export {
   putSpaces,
   getSpaces, getSpace,postSpace,putSpace,deleteSpace,
@@ -732,4 +749,5 @@ export {
   putFileToServer,
   putRecheckFile,
   postAvatar,
+  getNotify,
 };

@@ -26,6 +26,8 @@ import { Outlet } from 'react-router-dom';
 // import CheckUserSession from '../features/authentication/CheckUserSession';
 import FetchUserData from '../features/fetch-data/FetchUserData';
 import LoginForm from '../components/form/LoginForm';
+import Notify from './modules/Notify';
+import { useSelector } from 'react-redux';
 
 let drawerWidth = 240;
 
@@ -79,6 +81,8 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 export default function Layout() {
+  const userInfo = useSelector(state=>state.user_info)
+  const { setShowLoginForm} = React.useContext(ContextStatus);
     const { darkMode,mobile, setMobile, showLoginForm}= React.useContext(ContextStatus);
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
@@ -124,9 +128,15 @@ export default function Layout() {
                       </IconButton>
                       <Logo />
                       <Box
-                          sx={{display: "flex", flexWrap: "nowrap"}}
+                          sx={{display: "flex", alignItems:"center", flexWrap: "nowrap"}}
                       >
-                          <AccountAvatar />
+                        {userInfo?
+                          <>
+                            <Notify />
+                            <AccountAvatar />
+                          </>
+                          : <p onClick={()=>setShowLoginForm(true)} style={{cursor: 'pointer'}}>Login</p>
+                        }
                       </Box>
                       </Toolbar>
                   </AppBar>
@@ -151,15 +161,16 @@ export default function Layout() {
                       <Divider />
                       <NavigationList />
                   </Drawer>
-                  <Main open={open} style={{display: "flex", flexDirection:"column", alignItems:"center", width: mobile?drawerWidth:'100%'}} >
+                  <Main open={open} style={{display: "flex", flexDirection:"column", alignItems:"center", width: mobile?drawerWidth:'100%' }} >
                       <DrawerHeader />
                       <Container
+                        maxWidth="100%"
                         style={{
-                          width:"100%", 
                           display: 'flex',
                           flexDirection:'column',
-                          // justifyContent: 'center',
                           alignItems: 'center',
+                          padding:0,
+                          margin:0
                       }}
                       >
                         <Outlet />

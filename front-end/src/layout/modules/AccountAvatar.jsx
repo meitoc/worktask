@@ -1,16 +1,13 @@
 import { Link } from 'react-router-dom';
-import { useContext,useState } from 'react';
+import { useState } from 'react';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-// import Badge from '@mui/material/Badge';
-// import { styled } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
-import { ContextStatus } from '../../App';
 import { useSelector } from 'react-redux';
 
 export default function AccountAvatar() {
-    const { setShowLoginForm} = useContext(ContextStatus);
+
     const userInfo = useSelector(state=>state.user_info)
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -21,8 +18,6 @@ export default function AccountAvatar() {
       setAnchorEl(null);
     };
     return (
-      <>
-        {userInfo?
         <>
           <Button  onClick={handleClick} >
             <Avatar 
@@ -64,9 +59,5 @@ export default function AccountAvatar() {
             </Link>
           </Menu>
         </>
-        :
-          <p onClick={()=>setShowLoginForm(true)} style={{cursor: 'pointer'}}>Login</p>}
-      
-      </>
     );
 }

@@ -8,6 +8,7 @@ export default function Setting() {
     const {darkMode, setDarkMode} = useContext(ContextStatus);
     return (<>
     <Box
+    width="100%"
         sx={{
             display: 'flex',
             flexDirection: 'column',
@@ -15,12 +16,11 @@ export default function Setting() {
             flexWrap: 'wrap',
             '& > :not(style)': {
             m: 1,
-            width: '90vw',
             padding: 2
             },
         }}
     >
-        <Paper elevation={2}>
+        <Paper elevation={2} style={{width:"100%"}}>
             <p>SETTING DARK MODE</p>
             <Switch
                     checked={darkMode}

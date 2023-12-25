@@ -20,6 +20,7 @@ export default function TaskDetail(prop) {
         exit: theme.transitions.duration.leavingScreen,
     };
     const task = useSelector(state=>state.a_task)
+    const userName = useSelector(state=>state.user_info.name)
     const dispatch = useDispatch()
     const taskDescription = task?.description??"";
     const [showTaskDescription, setShowTaskDescription] = useState(task?.description??"")
@@ -79,6 +80,7 @@ export default function TaskDetail(prop) {
                             onChange={handleChangeStatus}
                             aria-label="Platform"
                             fullWidth={true}
+                            disabled={task.edit_locked===true &&  task.users?.members?.some(e=>e.name===userName)}
                             >
                             <ToggleButton value="todo" style={taskStatus=="todo" ? {color:task?.color?.text, backgroundColor:task?.color?.background}:null}>Todo</ToggleButton>
                             <ToggleButton value="processing" style={taskStatus=="processing" ? {color:task?.color?.text, backgroundColor:task?.color?.background}:null}>Processing</ToggleButton>

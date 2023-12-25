@@ -67,6 +67,7 @@ export default function Spaces() {
                         margin: "0 0 8px 0",
                         minHeight: "50px",
                         cursor:"grab",
+                        borderRadius:20,
                         backgroundColor: snapshot.isDragging
                           ? "rgba(10,10,10,0.5)"
                           : "rgba(200,200,200,0.1)",
@@ -116,6 +117,7 @@ export default function Spaces() {
                                           margin: 0,
                                           minHeight: "50px",
                                           cursor:"grab",
+                                          borderRadius:20,
                                           backgroundColor: snapshot.isDragging
                                             ? "rgba(10,10,10,0.5)"
                                             : "rgba(200,200,200,0.1)",

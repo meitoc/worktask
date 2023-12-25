@@ -17,7 +17,7 @@ export default function AboutUs() {
                 flexWrap: 'wrap',
                 '& > :not(style)': {
                 m: 1,
-                width: '90vw',
+                width: '100%',
                 padding: 2
                 },
             }}
