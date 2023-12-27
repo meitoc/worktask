@@ -3,7 +3,7 @@
 Readme Version 0.0.1
 2023-12-27
 This project help people create, manager and check tasts via tree model.
-Unlimit version with out payment method.
+Unlimited version with out payment method.
 
 The user which logged in can be called "he" on this document.
 
@@ -173,7 +173,7 @@ Use AWS S2 funtion to upload and download file
   - [x] Day and time
   - [x] User did
   - [x] Action
-  - [x] Item been attacked
+  - [x] Item been affected
   - [ ] Read notify color and unread notify color
 - Create new notify when
   - [x] Other user change task status
@@ -193,11 +193,11 @@ Show confirm box to notice the user when he change, delete a impotant infomation
 
 ## a. GIT and platform to deploy
 
+- Use a hosting or VPS to build on
 - [x] Front-end on folder "front-end"
 
 - Use a hosting or VPS to build on
   - [x] Back-end on folder "server"
-- Use a hosting or VPS to build on
   - [x] Add environment variables
   - [x] Run server
 
