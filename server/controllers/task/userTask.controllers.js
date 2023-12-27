@@ -3,6 +3,7 @@ const { query, body, param, validationResult } = require('express-validator');
 const Task = require("../../models/Task.js")
 const User = require("../../models/User.js");
 const { filterField } = require("../../tools/filterData.js");
+const { addNotify } = require("../notify.controllers.js");
 
 const userTaskController={};
 
@@ -94,8 +95,29 @@ userTaskController.addUser=async(req,res,next)=>{
             await addToTaskAndChilds(updatedTask1._id,{"users.owners": userId},{$pull:{"users.owners":userAddId,"users.members":userAddId},$addToSet:{"users.managers":userAddId}})
             :await addToAllTaskOnTree(updatedTask1._id,{"users.owners": userId},{$pull:{"users.managers":userAddId,"users.members":userAddId},$addToSet:{"users.owners":userAddId}});
         }
-        
-        sendResponse(res,200,true,{user:userAddName,totalChangedChildTask},null,"Change data success")
+        if(updatedTask.access_locked===true) sendResponse(res,200,true,{user:userAddName,totalChangedChildTask},null,"Change data success")
+        const notify={
+            task:taskId,
+            user:userId,
+            sendTo:[...updatedTask.users.owners?.map(e=>e._id),...updatedTask.users.managers?.map(e=>e._id),...updatedTask.users.members?.map(e=>e._id)].filter(u=>u!==userId),
+            item:userAddRole,
+            readBy:[],
+            action:'add',
+        }
+        switch (userAddRole) {
+            case "owner":
+              notify.itemOwner = userAddId;
+              break;
+            case "manager":
+              notify.itemManager = userAddId;
+              break;
+            case "member":
+              notify.itemMember = userAddId;
+              break;
+          }
+        req.notify=notify;
+        const sendNotify = await addNotify(req)
+        if(sendNotify===true) sendResponse(res,200,true,{user:userAddName,totalChangedChildTask},null,"Change data success")
     }catch(err){
         next(err)
     }

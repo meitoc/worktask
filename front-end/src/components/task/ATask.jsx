@@ -113,7 +113,7 @@ export default function ATask(prop) {
                 onClose={handleCloseMore}
                 >
                 <MenuItem style={ {display: "flex",justifyContent: "center",alignItems: "center"}} onClick={handleEditTask}>Edit</MenuItem>
-                {task?.users?.owners.some(e=>e.name===userInfo.name)?
+                {task?.users?.owners.some(e=>e.name===userInfo.name) || task?.users?.managers.some(e=>e.name===userInfo.name)?
                     <ModalConfirm style={{width:"100%", height:"100%", display:"flex"}} confirm={handleDeleteTask} cancel={handleCloseMore}
                       title="Confirm to delete this task"
                       text="Impotant: All child tasks on the task will be deleted!"

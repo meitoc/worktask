@@ -22,7 +22,7 @@ export default function AddSpace() {
   const [activeSpace, setActiveSpace] = useState(null);
   const [spaceName, setSpaceName] = useState("");
   const [spaceDescription, setSpaceDescription] = useState("");
-  const [spaceColor, setSpaceColor] = useState({name:"default",frame:"rgb(100,100,150)",background:"rgb(200,200,255)",text:"rgb(10,10,0)"});
+  const [spaceColor, setSpaceColor] = useState({name:"default",frame:"rgb(100,100,150)",background:"rgb(210,210,255)",text:"rgb(10,10,0)"});
     
   const dispatch = useDispatch();
 
@@ -46,7 +46,7 @@ export default function AddSpace() {
           console.log("Created space")
           setSpaceName("");
           setSpaceDescription("");
-          setSpaceColor({name:"default",frame:"rgb(100,100,150)",background:"rgb(200,200,255)",text:"rgb(10,10,0)"});
+          setSpaceColor({name:"default",frame:"rgb(100,100,150)",background:"rgb(210,210,255)",text:"rgb(10,10,0)"});
           setActiveSpace(null)
           dispatch(addToSpaces(response.data))
       }
@@ -105,13 +105,13 @@ export default function AddSpace() {
     if(activeSpace===null) return (
     <Card sx={{ width:"100%", maxWidth:300, minHeight:150, borderRadius:5, display:"flex", flexDirection:"column", justifyContent:"space-between"}}> 
       <ButtonBase onClick={shandleAddSpace} >
-        <img style={{width:"100%", maxHeight:200}} src={`${FRONT_END_BASE_URL}/add-space.svg`}></img>
+        <img style={{width:"100%", maxHeight:210}} src={`${FRONT_END_BASE_URL}/add-space.svg`}></img>
       </ButtonBase>
     </Card>
     );
     else return (
     <Card sx={{ width:"100%", maxWidth:300, minHeight:150, borderRadius:5, display:"flex", flexDirection:"column", justifyContent:"space-between"}}>
-      <img style={{width:"100%", maxHeight:200}} src={`${FRONT_END_BASE_URL}/lost-space.svg`}></img>
+      <img style={{width:"100%", maxHeight:20}} src={`${FRONT_END_BASE_URL}/lost-space.svg`}></img>
     </Card>
     );
   }

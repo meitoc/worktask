@@ -60,6 +60,7 @@ export default function AddTask(prop) {
         };
         const response = await postTaskOnTask(task?._id,data)
         if(response?.success===true){
+          console.log("PPPPPPPPPPPPPPPP",response.data)
           dispatch(updateATask(response?.data))
           setTaskColor({name:"default",frame:"rgb(100,100,150)",background:"rgb(200,200,255)",text:"rgb(10,10,0)"});
           setTaskName("");

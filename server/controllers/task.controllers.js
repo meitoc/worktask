@@ -5,6 +5,7 @@ const Space = require("../models/Space.js");
 const Color = require("../models/Color");
 const { filterField } = require("../tools/filterData.js");
 const { addNotify } = require("./notify.controllers.js");
+const { notify } = require("../routes/notify.api.js");
 
 const showField = {_id:1,users:1,name:1,status:1,description:1,parent_task:1,tree:1,tasks:1, color:1,order:1,member_add_member:1,access_locked:1,edit_locked:1,createdAt:1,updatedAt:1};
 
@@ -12,7 +13,7 @@ const taskController={};
 //load parents tree
 async function loadTree(_id,userId) {
     const foundTree =[]
-    const foundItem = await Task.findOne({_id,$or:[{'users.members':userId},{'users.managers':userId,access_locked:false},{'users.members':userId,access_locked:false}]},{_id:1, name:1, parent_task:1})
+    const foundItem = await Task.findOne({_id,$or:[{'users.owners':userId},{'users.managers':userId,access_locked:false},{'users.members':userId,access_locked:false}]},{_id:1, name:1, parent_task:1})
     .populate("users.owners users.managers users.members","name active -_id")
     .populate("color","name background frame text -_id");
     if(foundItem) {
@@ -185,7 +186,7 @@ taskController.createTask=async(req,res,next)=>{
             .populate("color","name frame background text -_id")
             .sort({ order:1, createdAt: sortByTime })
         if(!reFoundTask) return res.status(400).json({ errors: [{ message: 'Wrong task id!' }] });
-        reFoundTask.tree = await loadTree(reFoundTask.parent_task);
+        reFoundTask.tree = await loadTree(reFoundTask.parent_task,userId);
         reFoundTask.tasks = await loadTasks(reFoundTask._id);
         sendResponse(res,200,true,filterField(reFoundTask,showField),null,"Found list of task success")
     }catch(err){
@@ -247,55 +248,46 @@ taskController.updateTask=async(req,res,next)=>{
         }
         //All request on beyonding authority will be reject by below lines
         //Update owner information
-        if(Object.keys(updateOwner).length > 0){
-            const updatedTask = await Task.findOneAndUpdate({_id:taskId,active:true,"users.owners": userId},{...updateMember,...updateManager,...updateOwner},{new:true})
-            .populate("users.owners users.managers users.members","name active -_id")
-            .populate("color","name frame background text -_id")
-            .sort({ order:1, createdAt: sortByTime });
-            if(!updatedTask) return res.status(400).json({ errors: [{ message: 'Can not update the task with owner role!' }] }); 
-            updatedTask.tree = await loadTree(updatedTask.parent_task,userId);
-            updatedTask.tasks = await loadTasks(updatedTask._id);
-            sendResponse(res,200,true,filterField(updatedTask,showField),null,"Change data success")
+        const updatedTask =
+            (Object.keys(updateOwner).length > 0)?
+                await Task.findOneAndUpdate({_id:taskId,active:true,"users.owners": userId},{...updateMember,...updateManager,...updateOwner},{new:true})
+                    .populate("users.owners users.managers users.members","name active -_id")
+                    .populate("color","name frame background text -_id")
+                    .sort({ order:1, createdAt: sortByTime })
+            :(Object.keys(updateManager).length > 0)?
+                await Task.findOneAndUpdate({_id:taskId,active:true,$or:[{"users.owners": userId}, {"users.managers": userId,access_locked:false}]},{...updateMember,...updateManager},{new:true})
+                    .populate("users.owners users.managers users.members","name active -_id")
+                    .populate("color","name frame background text -_id")
+                    .sort({ order:1, createdAt: sortByTime })
+            :(Object.keys(updateMember).length > 0)?
+                await Task.findOneAndUpdate({_id:taskId,active:true,$or:[{"users.owners": userId}, {"users.managers": userId,access_locked:false}, {"users.members": userId,access_locked:false,edit_locked:false}]},updateMember,{new:true})
+                    .populate("users.owners users.managers users.members","name active")
+                    .populate("color","name frame background text -_id")
+                    .sort({ order:1, createdAt: sortByTime })
+            :false;
+        if(!updatedTask) {
+            return res.status(400).json({ errors: [{ message: 'Can not update the task!' }] }); 
         }
-        //update manager information
-        else if(Object.keys(updateManager).length > 0){
-            const updatedTask = await Task.findOneAndUpdate({_id:taskId,active:true,$or:[{"users.owners": userId}, {"users.managers": userId,access_locked:false}]},{...updateMember,...updateManager},{new:true})
-            .populate("users.owners users.managers users.members","name active -_id")
-            .populate("color","name frame background text -_id")
-            .sort({ order:1, createdAt: sortByTime });
-            if(!updatedTask) return res.status(400).json({ errors: [{ message: 'Can not update the task with manager role!' }] }); 
-            updatedTask.tree = await loadTree(updatedTask.parent_task,userId);
-            updatedTask.tasks = await loadTasks(updatedTask._id);
-            sendResponse(res,200,true,filterField(updatedTask,showField),null,"Change data success")
+        updatedTask.tree = await loadTree(updatedTask.parent_task,userId);
+        updatedTask.tasks = await loadTasks(updatedTask._id);
+        //send notify
+        if(updatedTask.access_locked===true) sendResponse(res,200,true,filterField(updatedTask,showField),null,"Change data success");
+        const notify={
+            task:taskId,
+            user:userId,
+            sendTo:[...updatedTask.users.owners?.map(e=>e._id),...updatedTask.users.managers?.map(e=>e._id),...updatedTask.users.members?.map(e=>e._id)].filter(u=>u!==userId),
+            readBy:[],
+            action:'change',
+            item:'status',
+            // itemComment,
+            // itemOwner,
+            // itemMember,
+            // itemFile,
+            itemStatus: updatedTask.status,
         }
-        //update normal informations
-        else if(Object.keys(updateMember).length > 0){
-            const updatedTask = await Task.findOneAndUpdate({_id:taskId,active:true,$or:[{"users.owners": userId}, {"users.managers": userId,access_locked:false}, {"users.members": userId,access_locked:false,edit_locked:false}]},updateMember,{new:true})
-            .populate("users.owners users.managers users.members","name active -_id")
-            .populate("color","name frame background text -_id")
-            .sort({ order:1, createdAt: sortByTime });
-            if(!updatedTask) {
-                return res.status(400).json({ errors: [{ message: 'Can not update the task with member role!' }] }); 
-            }
-            updatedTask.tree = await loadTree(updatedTask.parent_task,userId);
-            updatedTask.tasks = await loadTasks(updatedTask._id);
-            req.notify={
-                task:taskId,
-                user:userId,
-                sendTo:[...updatedTask.users.owners,...updatedTask.users.managers,...updatedTask.users.members].pull(userId),
-                readBy:[],
-                action:'update',
-                item:['status'],
-                // itemComment,
-                // itemOwner,
-                // itemMember,
-                // itemFile,
-                itemStatus: updatedTask.status,
-            }
-            await addNotify(req,res,next)
-            sendResponse(res,200,true,filterField(updatedTask,showField),null,"Change data success")
-        }
-        else return res.status(400).json({ errors: [{ message: 'Wrong task id!' }] });
+        req.notify=notify;
+        const sendNotify = await addNotify(req)
+        if(sendNotify===true) sendResponse(res,200,true,filterField(updatedTask,showField),null,"Change data success")
         
     }catch(err){
         next(err)

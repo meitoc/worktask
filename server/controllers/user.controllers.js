@@ -183,6 +183,7 @@ userController.updateUser=async(req,res,next)=>{
         const salt = await bcrypt.genSalt(10);
         const password = await bcrypt.hash(`${req.body.password}`, salt);
         const updateInfo = {password};
+        console.log(password)
         //no secure now
         //add update for OTP and AccessSession
         const updated= await User.findOneAndUpdate({_id:userId,active:true},updateInfo)
