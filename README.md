@@ -7,11 +7,9 @@ Unlimit version with out payment method.
 
 The user which logged in can be called "he" on this document.
 
-## 1. Description
+# 1. User story
 
-### 1.1. User story
-
-#### a. User acess
+## a. User acess
 
 - Common requirement
 
@@ -46,12 +44,12 @@ The user which logged in can be called "he" on this document.
 
 - [ ] Google Authorization
 
-### b.Plan
+## b.Plan
 
 Now, this function haven't build.
 Only for website admin for settup limit of function which use can use.
 
-### c. User Infomation
+## c. User Infomation
 
 - Public information.
 
@@ -66,7 +64,7 @@ Only for website admin for settup limit of function which use can use.
   - [x] Birthday
   - [x] Organization
 
-### d. Space list
+## d. Space list
 
 This is an object to group root tasks for the user. When he delete a space, all task will be go to "Your Alone Task" and "Alone Shared Task"
 Space list is THE HOME PAGE if the user logged in
@@ -85,27 +83,27 @@ Space list contents all space the user owns
   - [x] Shared task have ✊ before it's name
   - [x] Own task have 🤠 before it's name
 
-### e. Space detail
+## e. Space detail
 
 - [x] Secret access
 
-#### Tasks (list of task)
+### Tasks (list of task)
 
 - User can:
   - [x] View status, name (on top of page), color of each child task
   - [x] Change status, name (on top of page), color of each child task
   - [x] Delete Child task
 
-#### Detail
+### Detail
 
 - [x] User can add or change decription of space
 
-#### Setting
+### Setting
 
 - [x] User can change space color
 - [x] User can delete space
 
-### f. Task detail
+## f. Task detail
 
 - [x] Secret access
 
@@ -118,7 +116,7 @@ Space list contents all space the user owns
   - [x] Upload file to the task
   - [x] View a chart for status of child task
 
-#### Child task
+### Child task
 
 This is a list of task which inside the task (lower level)
 
@@ -127,7 +125,7 @@ This is a list of task which inside the task (lower level)
   - [x] Change status, name (on top of page), color of each child task
   - [x] Delete Child task
 
-#### Setting
+### Setting
 
 - The user can change
   - [x] Change task color
@@ -140,11 +138,11 @@ This is a list of task which inside the task (lower level)
   - [x] The task managers can add other to member if "allow member add member" setting is on.
   - [x] The task member can add other to user if "allow member add member" setting is on.
 
-### g. Upload file
+## g. Upload file
 
 - [x] Public file and secure files can access by 2 separate domain.
 
-#### Public file
+### Public file
 
 Only avatar is public file
 
@@ -152,7 +150,7 @@ Only avatar is public file
 - [x] Before upload the image must be cut to square size, covert on the server
 - [x] Image data go via the server
 
-#### Secure file
+### Secure file
 
 All file upload to a task just only can be download by member, manager and owwner of that task
 Use AWS S2 funtion to upload and download file
@@ -161,7 +159,7 @@ Use AWS S2 funtion to upload and download file
 - [x] Expiry time: 10 minutes
 - [x] Data go directly to AWS S2 server
 
-### h. Notify
+## h. Notify
 
 - Access
   - [x] Secret access
@@ -183,7 +181,7 @@ Use AWS S2 funtion to upload and download file
   - [ ] Other user add a comment
   - [ ] Other user add, delete a file
 
-### i. Confirm
+## i. Confirm
 
 Show confirm box to notice the user when he change, delete a impotant infomation
 
@@ -191,39 +189,40 @@ Show confirm box to notice the user when he change, delete a impotant infomation
 - [x] Delete a task
 - [x] Delete a file
 
-## 2.Setting up
+# 2.Setting up
 
-- - [x] Front-end on folder "front-end"
+## a. GIT and platform to deploy
+
+- [x] Front-end on folder "front-end"
 
 - Use a hosting or VPS to build on
   - [x] Back-end on folder "server"
 - Use a hosting or VPS to build on
-  - [x] Back-end and front-end use 2 seperate sub-domains or 2 seperate base url
   - [x] Add environment variables
   - [x] Run server
 
-## 3.Domain
+## b. Domain
 
 ### Front-end
 
-task.{BASEURL}/
-Example: task.meitoc.net/
+- [x] task.{BASEURL}/
+      Example: task.meitoc.net/
 
 ### Back-end
 
-taskapi2.{BASEURL}/api/
-Example: taskapi2.meitoc.net/api
+- [x] taskapi2.{BASEURL}/api/
+      Example: taskapi2.meitoc.net/api
 
 ### Public file
 
-task-file.{BASEURL}/
-Example: task-file.meitoc.net/
+- [x] task-file.{BASEURL}/
+      Example: task-file.meitoc.net/
 
 ### Secure file
 
-Domain is provided by AWS S3
+- [x] Domain is provided by AWS S3
 
-## 4. Testing
+# 3. Testing
 
-use Postman for testing
+Use Postman for testing
 contact to me: lequan.bmc@gmail.com to receive the Postman request list
