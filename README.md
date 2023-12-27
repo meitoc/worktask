@@ -202,10 +202,26 @@ Show confirm box to notice the user when he change, delete a impotant infomation
   - [x] Add environment variables
   - [x] Run server
 
-## 3.Using
+## 3.Domain
 
-{BASEURL}/api/
-Example: domain.com/api
+### Front-end
+
+task.{BASEURL}/
+Example: task.meitoc.net/
+
+### Back-end
+
+taskapi2.{BASEURL}/api/
+Example: taskapi2.meitoc.net/api
+
+### Public file
+
+task-file.{BASEURL}/
+Example: task-file.meitoc.net/
+
+### Secure file
+
+Domain is provided by AWS S3
 
 ## 4. Testing
 
