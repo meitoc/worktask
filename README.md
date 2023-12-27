@@ -16,7 +16,7 @@ The user which logged in can be called "he" on this document.
   - [x] User subcribe the account by enter: email, password and user name
   - [x] Email and username are unique
 
-- Email authorization
+- Email Authentication
 
 * Creating an account
 
@@ -42,7 +42,7 @@ The user which logged in can be called "he" on this document.
 * Requirement for forgot password
   - [x] He enter his email, the sever sends a link to his email
 
-- [ ] Google Authorization
+- [ ] Google Authentication
 
 ## b.Plan
 
@@ -127,7 +127,7 @@ This is a list of task which inside the task (lower level)
 
 ### Setting
 
-- The user can change
+- The user can
   - [x] Change task color
   - [x] Allow member add member (if he is a manager or an owner of the task)
   - [x] Lock accessing to the task only an owner of the task
