@@ -19,11 +19,11 @@ async function loadAWSFile(req, res, next) {
   };
 
   try {
-    const response = await getSignedUrl(S3, new GetObjectCommand(params), { expiresIn: 3600 });
+    const response = await getSignedUrl(S3, new GetObjectCommand(params), { expiresIn: 600 });
     console.log(response)
     res.send(response);
   } catch (err) {
-    res.status(500).send('Lỗi khi tương tác với Amazon S3');
+    res.status(500).send('Error to connect to Amazon S3');
   }
 }
 
@@ -52,7 +52,7 @@ async function createPresignedUrlUpload(req, res, next) {
       Bucket: AWS_SECURE_BUCKET,
       Key: `task/${req.params.id}/${req.file}/${req.body.name}`,
     };
-    const response = await getSignedUrl(S3, new PutObjectCommand(uploadParams), { expiresIn: 3600 })
+    const response = await getSignedUrl(S3, new PutObjectCommand(uploadParams), { expiresIn: 600 })
     if(!response) return res.status(400).json({ errors:[{"type": "data", message: "Invalid file!"}] });
     req.result=response;
     next();
@@ -67,7 +67,7 @@ async function createPresignedUrlDownload(req, res, next) {
       Bucket: AWS_SECURE_BUCKET,
       Key: `task/${req.params.id}/${req.body._id}/${req.body.name}`,
     };
-    const response = await getSignedUrl(S3, new GetObjectCommand(uploadParams), { expiresIn: 3600 })
+    const response = await getSignedUrl(S3, new GetObjectCommand(uploadParams), { expiresIn: 600 })
     if(!response) return res.status(400).json({ errors:[{"type": "data", message: "Invalid file!"}] });
     req.result=response;
     next();

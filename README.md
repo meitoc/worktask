@@ -140,7 +140,28 @@ This is a list of task which inside the task (lower level)
   - [x] The task managers can add other to member if "allow member add member" setting is on.
   - [x] The task member can add other to user if "allow member add member" setting is on.
 
-### g. Notify
+### g. Upload file
+
+- [x] Public file and secure files can access by 2 separate domain.
+
+#### Public file
+
+Only avatar is public file
+
+- [x] Use AWS S2 funtion to upload a file
+- [x] Before upload the image must be cut to square size, covert on the server
+- [x] Image data go via the server
+
+#### Secure file
+
+All file upload to a task just only can be download by member, manager and owwner of that task
+Use AWS S2 funtion to upload and download file
+
+- [x] Use Pre-signed URL
+- [x] Expiry time: 10 minutes
+- [x] Data go directly to AWS S2 server
+
+### h. Notify
 
 - Access
   - [x] Secret access
@@ -155,13 +176,14 @@ This is a list of task which inside the task (lower level)
   - [x] User did
   - [x] Action
   - [x] Item been attacked
+  - [ ] Read notify color and unread notify color
 - Create new notify when
   - [x] Other user change task status
-        [ ] Other user add, delete a user
-        [ ] Other user add a comment
-        [ ] Other user add, delete a file
+  - [ ] Other user add, delete a user
+  - [ ] Other user add a comment
+  - [ ] Other user add, delete a file
 
-### h. Confirm
+### i. Confirm
 
 Show confirm box to notice the user when he change, delete a impotant infomation
 
