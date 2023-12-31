@@ -1,4 +1,3 @@
-// import * as React from "react";
 import * as ReactDOM from "react-dom/client";
 import {
   createBrowserRouter,
@@ -24,6 +23,7 @@ import Spaces from "./pages/Spaces";
 import AloneOwnerTasks from "./pages/AloneOwnerTasks";
 import AloneSharedTasks from "./pages/AloneSharedTasks";
 import FirstAccess from "./pages/FirstAccess";
+import Policy from "./pages/Policy";
 
 const router = createBrowserRouter([
   {
@@ -89,6 +89,11 @@ const router = createBrowserRouter([
       {
         path: "url-login/:accessString",
         element: <FirstAccess />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: "policy",
+        element: <Policy />,
         errorElement: <ErrorPage />,
       },
     ]

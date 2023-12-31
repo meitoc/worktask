@@ -13,7 +13,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import HelpIcon from '@mui/icons-material/Help';
-
+import PolicyIcon from '@mui/icons-material/Policy';
 import Divider from '@mui/material/Divider';
 
 import { ContextStatus } from '../../App';
@@ -38,6 +38,7 @@ export default function NavigationList() {
         {text:'Alone Shared Tasks', link: "/alone-shared-tasks", icon: (<Badge badgeContent={numberSharedTask} color="primary"><AssignmentIcon /></Badge>), viewByLogin: true},
         {text:'Your Alone Tasks', link: "/your-alone-tasks", icon: (<Badge badgeContent={numberAloneTask} color="primary"><AssignmentIcon /></Badge>), viewByLogin: true},
         {icon:(<Divider />)},
+        {text:'Policy', link: "/policy", icon: (<PolicyIcon />)},
         {text:'Help', link: "/help", icon: (<HelpIcon />)},
         {text:'About Us', link: "/about-us", icon: (<InfoIcon />)},
     ];
@@ -63,7 +64,6 @@ export default function NavigationList() {
             </ListItemButton>
         )
     }
-    console.log(userInfo,"XXXXXXXX")
     return (
         <>
             <List>

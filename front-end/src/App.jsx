@@ -1,7 +1,8 @@
 import * as React from 'react';
 import Layout from './layout/Layout';
 // import { Helmet } from 'react-helmet';
-
+import { GoogleOAuthProvider } from '@react-oauth/google';
+const {VITE_GOOGLE_OAUTH_CLIENT_ID} = import.meta.env
 export const ContextStatus = React.createContext();
 
 export default function App() {
@@ -53,7 +54,9 @@ export default function App() {
         viewWidth, setViewWidth,
         showLoginForm, setShowLoginForm
         }}>
-            <Layout />
+            <GoogleOAuthProvider clientId={VITE_GOOGLE_OAUTH_CLIENT_ID}>
+                <Layout />
+            </GoogleOAuthProvider>
         </ContextStatus.Provider>
     );
 }

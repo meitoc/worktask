@@ -42,7 +42,7 @@ The user which logged in can be called "he" on this document.
 * Requirement for forgot password
   - [x] He enter his email, the sever sends a link to his email
 
-- [ ] Google Authentication
+- [x] Google Authentication
 
 ## b.Plan
 

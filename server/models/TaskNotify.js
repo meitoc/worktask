@@ -7,7 +7,7 @@ const taskNotifySchema = mongoose.Schema(
     sendTo: [{ type: mongoose.SchemaTypes.ObjectId, ref: "User" }],
     readBy: [{ type: mongoose.SchemaTypes.ObjectId, ref: "User" }],
     action: { type: String, enum:["add", "change", "delete"], default: "change" },
-    item: { type: String, enum:["comment", "owner", "manager", "member", "file","status"]},
+    item: { type: String, enum:["comment", "owner", "manager", "member", "file","status","child order"]},
     itemComment: { type: mongoose.SchemaTypes.ObjectId, ref: "Comment" },
     itemOwner: { type: mongoose.SchemaTypes.ObjectId, ref: "User" },
     itemManager: { type: mongoose.SchemaTypes.ObjectId, ref: "User" },

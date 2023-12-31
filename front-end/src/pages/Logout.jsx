@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { deleteUser } from '../sevice/user_info/slice';
 import { getLogout } from '../sevice/api';
 import GoToHomePage from '../components/small-component/GoToHomePage';
-
+import { googleLogout } from '@react-oauth/google';
 export default function Logout() {
     const dispatch = useDispatch();
     const history = createBrowserHistory();
@@ -19,11 +19,12 @@ export default function Logout() {
         requestLogout();
         dispatch(deleteUser())
         localStorage.setItem('loginSession',"");
+        googleLogout();
         history.push("/");
         window.location.reload();
     }
     ,[history,dispatch])
-    
+
     return(<GoToHomePage/>);
     
 }

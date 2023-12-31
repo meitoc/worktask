@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { BACK_END_BASE_URL } from './server';
+const {VITE_BACK_END_BASE_URL} = import.meta.env
 /////////SPACE
 //update space oder
 async function putSpaces(data) {
@@ -12,7 +12,7 @@ async function putSpaces(data) {
       Authorization: `Bearer ${session}`
     }
     const body = JSON.stringify(data);
-    const response = await axios.put(`${BACK_END_BASE_URL}/api/space/`,body, {headers});
+    const response = await axios.put(`${VITE_BACK_END_BASE_URL}/api/space/`,body, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -29,7 +29,7 @@ async function getSpaces() {
       accept: 'application/json',
       Authorization: `Bearer ${session}`
     }
-    const response = await axios.get(`${BACK_END_BASE_URL}/api/space`,{headers});
+    const response = await axios.get(`${VITE_BACK_END_BASE_URL}/api/space`,{headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -45,7 +45,7 @@ async function getSpace(id) {
       accept: 'application/json',
       Authorization: `Bearer ${session}`
     }
-    const response = await axios.get(`${BACK_END_BASE_URL}/api/space/id/${id}`,{headers});
+    const response = await axios.get(`${VITE_BACK_END_BASE_URL}/api/space/id/${id}`,{headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -63,7 +63,7 @@ async function postSpace(data) {
       Authorization: `Bearer ${session}`
     }
     const body = JSON.stringify(data);
-    const response = await axios.post(`${BACK_END_BASE_URL}/api/space`,body, {headers});
+    const response = await axios.post(`${VITE_BACK_END_BASE_URL}/api/space`,body, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -81,7 +81,7 @@ async function putSpace(id,data) {
       Authorization: `Bearer ${session}`
     }
     const body = JSON.stringify(data);
-    const response = await axios.put(`${BACK_END_BASE_URL}/api/space/id/${id}`,body, {headers});
+    const response = await axios.put(`${VITE_BACK_END_BASE_URL}/api/space/id/${id}`,body, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -97,7 +97,7 @@ async function deleteSpace(id) {
       accept: 'application/json',
       Authorization: `Bearer ${session}`
     }
-    const response = await axios.delete(`${BACK_END_BASE_URL}/api/space/id/${id}`, {headers});
+    const response = await axios.delete(`${VITE_BACK_END_BASE_URL}/api/space/id/${id}`, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -115,7 +115,7 @@ async function putSpaceColor(id,data) {
       Authorization: `Bearer ${session}`
     }
     const body = JSON.stringify(data);
-    const response = await axios.put(`${BACK_END_BASE_URL}/api/space/id/${id}/color`,body, {headers});
+    const response = await axios.put(`${VITE_BACK_END_BASE_URL}/api/space/id/${id}/color`,body, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -132,7 +132,7 @@ async function getColors() {
       accept: 'application/json',
       Authorization: `Bearer ${session}`
     }
-    const response = await axios.get(`${BACK_END_BASE_URL}/api/color`,{headers});
+    const response = await axios.get(`${VITE_BACK_END_BASE_URL}/api/color`,{headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -149,7 +149,7 @@ async function getUserInfo() {
       accept: 'application/json',
       Authorization: `Bearer ${session}`
     }
-    const response = await axios.get(`${BACK_END_BASE_URL}/api/user-info`,{headers});
+    const response = await axios.get(`${VITE_BACK_END_BASE_URL}/api/user-info`,{headers});
     return response.data;
   } catch (error) {
     localStorage.removeItem('loginSession')
@@ -160,13 +160,14 @@ async function getUserInfo() {
 async function getOtherUserInfo(userName) {
   const session = localStorage.getItem('loginSession');
   if (!session) return null;
+  //prevent multi request
   try {
     const headers = {
       'Content-Type': 'application/json',
       accept: 'application/json',
       Authorization: `Bearer ${session}`
     }
-    const response = await axios.get(`${BACK_END_BASE_URL}/api/user/${userName}/info`,{headers});
+    const response = await axios.get(`${VITE_BACK_END_BASE_URL}/api/user/${userName}/info`,{headers});
     return response.data;
   } catch (error) {
     localStorage.removeItem('loginSession')
@@ -184,7 +185,7 @@ async function putUserInfo(data) {
       Authorization: `Bearer ${session}`
     }
     const body = JSON.stringify(data);
-    const response = await axios.put(`${BACK_END_BASE_URL}/api/user-info`,body,{headers});
+    const response = await axios.put(`${VITE_BACK_END_BASE_URL}/api/user-info`,body,{headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -201,7 +202,7 @@ async function getCheckAccess() {
       accept: 'application/json',
       Authorization: `Bearer ${session}`
     }
-    const response = await axios.get(`${BACK_END_BASE_URL}/api/access/check`,{headers});
+    const response = await axios.get(`${VITE_BACK_END_BASE_URL}/api/access/check`,{headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -217,7 +218,7 @@ async function getLogout() {
       accept: 'application/json',
       Authorization: `Bearer ${session}`
     }
-    const response = await axios.get(`${BACK_END_BASE_URL}/api/access/logout`,{headers});
+    const response = await axios.get(`${VITE_BACK_END_BASE_URL}/api/access/logout`,{headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -231,7 +232,7 @@ async function postLogin(data) {
       accept: 'application/json',
     }
     const body = JSON.stringify(data);
-    const response = await axios.post(`${BACK_END_BASE_URL}/api/access/login`,body, {headers});
+    const response = await axios.post(`${VITE_BACK_END_BASE_URL}/api/access/login`,body, {headers});
     console.log("Login",response)
     return response.data;
   } catch (error) {
@@ -245,7 +246,7 @@ async function getFirstAccess(string) {
       'Content-Type': 'application/json',
       accept: 'application/json',
     }
-    const response = await axios.get(`${BACK_END_BASE_URL}/api/access/url-login/${string}`,{headers});
+    const response = await axios.get(`${VITE_BACK_END_BASE_URL}/api/access/url-login/${string}`,{headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -259,7 +260,23 @@ async function postForgotPassword(data) {
       accept: 'application/json',
     }
     const body = JSON.stringify(data);
-    const response = await axios.post(`${BACK_END_BASE_URL}/api/access/forgot-password`,body,{headers});
+    const response = await axios.post(`${VITE_BACK_END_BASE_URL}/api/access/forgot-password`,body,{headers});
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+/////////GOOGLE LOGIN
+async function postGoogleLogin(data) {
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+      accept: 'application/json',
+    }
+    const body = JSON.stringify(data);
+    const response = await axios.post(`${VITE_BACK_END_BASE_URL}/api/google-login`,body, {headers});
+    console.log("GoogleLogin",response)
     return response.data;
   } catch (error) {
     console.error(error);
@@ -277,7 +294,7 @@ async function getUser(type,value) {
       Authorization: `Bearer ${session}`,
     }
     if(!type || !value) return null;
-    const response = await axios.get(`${BACK_END_BASE_URL}/api/user?${type}=${value}`, {headers});
+    const response = await axios.get(`${VITE_BACK_END_BASE_URL}/api/user?${type}=${value}`, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -291,7 +308,7 @@ async function postCreateUser(data) {
       accept: 'application/json',
     }
     const body = JSON.stringify(data);
-    const response = await axios.post(`${BACK_END_BASE_URL}/api/user`,body, {headers});
+    const response = await axios.post(`${VITE_BACK_END_BASE_URL}/api/user`,body, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -308,7 +325,7 @@ async function putUpdateUser(data) {
       Authorization: `Bearer ${session}`
     }
     const body = JSON.stringify(data);
-    const response = await axios.put(`${BACK_END_BASE_URL}/api/user`,body, {headers});
+    const response = await axios.put(`${VITE_BACK_END_BASE_URL}/api/user`,body, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -325,7 +342,7 @@ async function getOwnerTasks() {
       accept: 'application/json',
       Authorization: `Bearer ${session}`
     }
-    const response = await axios.get(`${BACK_END_BASE_URL}/api/task/owner`,{headers});
+    const response = await axios.get(`${VITE_BACK_END_BASE_URL}/api/task/owner`,{headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -341,7 +358,7 @@ async function getMemberTasks() {
       accept: 'application/json',
       Authorization: `Bearer ${session}`
     }
-    const response = await axios.get(`${BACK_END_BASE_URL}/api/task/member`,{headers});
+    const response = await axios.get(`${VITE_BACK_END_BASE_URL}/api/task/member`,{headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -357,7 +374,7 @@ async function getTask(id) {
       accept: 'application/json',
       Authorization: `Bearer ${session}`
     }
-    const response = await axios.get(`${BACK_END_BASE_URL}/api/task/id/${id}`,{headers});
+    const response = await axios.get(`${VITE_BACK_END_BASE_URL}/api/task/id/${id}`,{headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -374,7 +391,7 @@ async function postTask(data) {
       Authorization: `Bearer ${session}`
     }
     const body = JSON.stringify(data);
-    const response = await axios.post(`${BACK_END_BASE_URL}/api/task`,body, {headers});
+    const response = await axios.post(`${VITE_BACK_END_BASE_URL}/api/task`,body, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -392,7 +409,7 @@ async function postTaskOnTask(taskId,data) {
       Authorization: `Bearer ${session}`
     }
     const body = JSON.stringify(data);
-    const response = await axios.post(`${BACK_END_BASE_URL}/api/task/id/${taskId}`,body, {headers});
+    const response = await axios.post(`${VITE_BACK_END_BASE_URL}/api/task/id/${taskId}`,body, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -409,7 +426,7 @@ async function getTaskList(array) {
       Authorization: `Bearer ${session}`
     }
     const body = JSON.stringify({tasks:array});
-    const response = await axios.post(`${BACK_END_BASE_URL}/api/task/get-list`,body, {headers});
+    const response = await axios.post(`${VITE_BACK_END_BASE_URL}/api/task/get-list`,body, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -427,7 +444,7 @@ async function putTask(id,data) {
       Authorization: `Bearer ${session}`
     }
     const body = JSON.stringify(data);
-    const response = await axios.put(`${BACK_END_BASE_URL}/api/task/id/${id}`,body, {headers});
+    const response = await axios.put(`${VITE_BACK_END_BASE_URL}/api/task/id/${id}`,body, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -443,7 +460,7 @@ async function deleteTask(id) {
       accept: 'application/json',
       Authorization: `Bearer ${session}`
     }
-    const response = await axios.delete(`${BACK_END_BASE_URL}/api/task/id/${id}`, {headers});
+    const response = await axios.delete(`${VITE_BACK_END_BASE_URL}/api/task/id/${id}`, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -461,7 +478,7 @@ async function putTaskUser(id,data) {
       Authorization: `Bearer ${session}`
     }
     const body = JSON.stringify(data);
-    const response = await axios.put(`${BACK_END_BASE_URL}/api/task/id/${id}/user`,body, {headers});
+    const response = await axios.put(`${VITE_BACK_END_BASE_URL}/api/task/id/${id}/user`,body, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -477,7 +494,7 @@ async function deleteTaskUser(id,data) {
       accept: 'application/json',
       Authorization: `Bearer ${session}`
     }
-    const response = await axios.delete(`${BACK_END_BASE_URL}/api/task/id/${id}/user/${data.user}`, {headers});
+    const response = await axios.delete(`${VITE_BACK_END_BASE_URL}/api/task/id/${id}/user/${data.user}`, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -495,7 +512,7 @@ async function putTaskColor(id,data) {
       Authorization: `Bearer ${session}`
     }
     const body = JSON.stringify(data);
-    const response = await axios.put(`${BACK_END_BASE_URL}/api/task/id/${id}/color`,body, {headers});
+    const response = await axios.put(`${VITE_BACK_END_BASE_URL}/api/task/id/${id}/color`,body, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -513,7 +530,7 @@ async function putTaskToSpace(data,spaceId) {
       Authorization: `Bearer ${session}`
     }
     const body = JSON.stringify(data);
-    const response = await axios.put(`${BACK_END_BASE_URL}/api/space/id/${spaceId}/task`,body, {headers});
+    const response = await axios.put(`${VITE_BACK_END_BASE_URL}/api/space/id/${spaceId}/task`,body, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -529,7 +546,7 @@ async function putTaskToSpace(data,spaceId) {
 //       accept: 'application/json',
 //       Authorization: `Bearer ${session}`
 //     }
-//     const response = await axios.delete(`${BACK_END_BASE_URL}/api/space/id/${spaceId}/task/${taskId}`, {headers});
+//     const response = await axios.delete(`${VITE_BACK_END_BASE_URL}/api/space/id/${spaceId}/task/${taskId}`, {headers});
 //     return response.data;
 //   } catch (error) {
 //     console.error(error);
@@ -546,7 +563,7 @@ async function getComments(taskId) {
       accept: 'application/json',
       Authorization: `Bearer ${session}`
     }
-    const response = await axios.get(`${BACK_END_BASE_URL}/api/task/id/${taskId}/comment`,{headers});
+    const response = await axios.get(`${VITE_BACK_END_BASE_URL}/api/task/id/${taskId}/comment`,{headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -563,7 +580,7 @@ async function postComment(data,taskId) {
       Authorization: `Bearer ${session}`
     }
     const body = JSON.stringify(data);
-    const response = await axios.post(`${BACK_END_BASE_URL}/api/task/id/${taskId}/comment`,body, {headers});
+    const response = await axios.post(`${VITE_BACK_END_BASE_URL}/api/task/id/${taskId}/comment`,body, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -579,7 +596,7 @@ async function deleteComment(commentId,taskId) {
       accept: 'application/json',
       Authorization: `Bearer ${session}`
     }
-    const response = await axios.delete(`${BACK_END_BASE_URL}/api/task/id/${taskId}/comment/${commentId}`,{headers});
+    const response = await axios.delete(`${VITE_BACK_END_BASE_URL}/api/task/id/${taskId}/comment/${commentId}`,{headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -597,7 +614,7 @@ async function getFiles(taskId) {
       accept: 'application/json',
       Authorization: `Bearer ${session}`
     }
-    const response = await axios.get(`${BACK_END_BASE_URL}/api/task/id/${taskId}/file`,{headers});
+    const response = await axios.get(`${VITE_BACK_END_BASE_URL}/api/task/id/${taskId}/file`,{headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -615,7 +632,7 @@ async function deleteFile(taskId,data) {
       Authorization: `Bearer ${session}`
     }
     const body = JSON.stringify(data);
-    const response = await axios.post(`${BACK_END_BASE_URL}/api/task/id/${taskId}/file/delete`,body,{headers});
+    const response = await axios.post(`${VITE_BACK_END_BASE_URL}/api/task/id/${taskId}/file/delete`,body,{headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -633,7 +650,7 @@ async function postTakeDownloadUrl(taskId,data) {
       Authorization: `Bearer ${session}`
     }
     const body = JSON.stringify(data);
-    const response = await axios.post(`${BACK_END_BASE_URL}/api/task/id/${taskId}/file/download`,body,{headers});
+    const response = await axios.post(`${VITE_BACK_END_BASE_URL}/api/task/id/${taskId}/file/download`,body,{headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -652,7 +669,7 @@ async function postTakeUploadUrl(taskId,data) {
       Authorization: `Bearer ${session}`
     }
     const body = JSON.stringify(data);
-    const response = await axios.post(`${BACK_END_BASE_URL}/api/task/id/${taskId}/file/upload`,body, {headers});
+    const response = await axios.post(`${VITE_BACK_END_BASE_URL}/api/task/id/${taskId}/file/upload`,body, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -686,7 +703,7 @@ async function putRecheckFile(taskId,data) {
         Authorization: `Bearer ${session}`
       }
       const body = JSON.stringify(data);
-      const response = await axios.put(`${BACK_END_BASE_URL}/api/task/id/${taskId}/file`,body, {headers});
+      const response = await axios.put(`${VITE_BACK_END_BASE_URL}/api/task/id/${taskId}/file`,body, {headers});
       return response.data;
     } catch (error) {
       console.error(error);
@@ -703,7 +720,7 @@ async function postAvatar(imageFile) {
       accept: 'application/json',
       Authorization: `Bearer ${session}`
     }
-    const response = await axios.post(`${BACK_END_BASE_URL}/api/file/avatar`,body, {headers});
+    const response = await axios.post(`${VITE_BACK_END_BASE_URL}/api/file/avatar`,body, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -721,7 +738,7 @@ async function getNotify() {
       accept: 'application/json',
       Authorization: `Bearer ${session}`,
     }
-    const response = await axios.get(`${BACK_END_BASE_URL}/api/notify`, {headers});
+    const response = await axios.get(`${VITE_BACK_END_BASE_URL}/api/notify`, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -735,6 +752,7 @@ export {
   getColors,
   getUserInfo,getOtherUserInfo, putUserInfo,
   getCheckAccess, getLogout, postLogin, getFirstAccess, postForgotPassword,
+  postGoogleLogin,
   getUser,
   postCreateUser, putUpdateUser,
   getOwnerTasks, getMemberTasks, getTask, postTask, postTaskOnTask, putTask, deleteTask, getTaskList,

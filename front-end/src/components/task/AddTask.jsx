@@ -12,7 +12,7 @@ import { updateASpace } from '../../sevice/a_space/slice';
 import { updateATask } from '../../sevice/a_task/slice';
 import { GithubPicker } from 'react-color';
 import { Divider } from '@mui/material';
-import { FRONT_END_BASE_URL } from '../../sevice/server';
+const {VITE_FRONT_END_BASE_URL} = import.meta.env
 
 // import LostTask from './image/LostTask';
 export default function AddTask(prop) {
@@ -104,7 +104,7 @@ export default function AddTask(prop) {
     </Card>);
   else if(activeTask===false) return (
   <Card sx={{ width:300, minHeight:100, display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
-      <img style={{maxHeight:150}} src={`${FRONT_END_BASE_URL}/lost-task.svg`}></img>
+      <img style={{maxHeight:150}} src={`${VITE_FRONT_END_BASE_URL}/lost-task.svg`}></img>
   </Card>
   );
   else return null;

@@ -12,7 +12,7 @@ import { addToOwnerTasks } from '../../sevice/root_tasks/owner_tasks/slice';
 import { postTask } from '../../sevice/api';
 import { Divider } from '@mui/material';
 import { GithubPicker } from 'react-color';
-import { FRONT_END_BASE_URL } from '../../sevice/server';
+const {VITE_FRONT_END_BASE_URL} = import.meta.env
 
 // import LostTask from './image/LostTask';
 export default function AddAloneTask() {
@@ -83,13 +83,13 @@ export default function AddAloneTask() {
   else if(activeTask===null) return (
   <Card sx={{ width:300, minHeight:50, display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
     <ButtonBase onClick={handleAddTask} >
-      <img style={{width:150}} src={`${FRONT_END_BASE_URL}/add-alone-task.svg`}></img>
+      <img style={{width:150}} src={`${VITE_FRONT_END_BASE_URL}/add-alone-task.svg`}></img>
     </ButtonBase>
   </Card>
   );
   else return (
   <Card sx={{ width:300, minHeight:100, display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
-      <img style={{maxHeight:150}} src={`${FRONT_END_BASE_URL}/lost-task.svg`}></img>
+      <img style={{maxHeight:150}} src={`${VITE_FRONT_END_BASE_URL}/lost-task.svg`}></img>
   </Card>
   );
 }

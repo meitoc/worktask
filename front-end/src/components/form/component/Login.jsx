@@ -9,10 +9,10 @@ import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { postLogin } from '../../../sevice/api';
+import { postGoogleLogin, postLogin } from '../../../sevice/api';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../../../sevice/user_info/slice';
-
+import { useGoogleLogin } from '@react-oauth/google';
 export default function Login(prop) {
     const dispatch = useDispatch();
     const [loginUser,setLoginUser] = useState(null);
@@ -66,6 +66,21 @@ export default function Login(prop) {
         }
         setDisableLoginInput(false);
     }
+    const login = useGoogleLogin({
+        onSuccess: async(tokenResponse) => {
+            const response =  await postGoogleLogin(tokenResponse);
+            if(response?.success===true) {
+                if(response.data?.session) {
+                    localStorage.setItem('loginSession',response.data.session);
+                    dispatch(updateUser(response.data.data));
+                    console.log("Logged in")
+                    prop.close()
+                    setDisableLoginInput(false);
+                    console.log("Server: You'r logged in.");
+                }
+            }
+        }
+      });
     return(
         <>
         <TextField
@@ -111,6 +126,15 @@ export default function Login(prop) {
         >
             Login
         </Button>
+        <Button
+            variant="outlined"
+            sx={{margin:2, width:270}}
+            disabled={disableLoginInput}
+            onClick={() => login()}
+        >
+            Login with Google
+        </Button>
+        
         <Button
             variant="outlined"
             sx={{margin:2, width:270}}

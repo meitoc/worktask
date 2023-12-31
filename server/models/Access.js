@@ -9,7 +9,7 @@ const accessSchema = mongoose.Schema(
     email_otp_status: { type: Boolean, default:true},
     session: { type: String, required: true , unique: true},
     user: { type: mongoose.SchemaTypes.ObjectId, ref: "User", unique: true },
-    role: { type: String, enum:["manager","user"], required: true },
+    role: { type: String, enum:["manager","user"], required: true, default:"user" },
     tried_time: { type: Number, enum:[0,1,2,3], default:0 },
     active: { type: Boolean, default: true},
     locked_from: { type: Date},

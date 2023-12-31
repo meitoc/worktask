@@ -11,6 +11,9 @@ router.get('/', function(req, res, next) {
 const accessRouter = require("./access.api.js")
 router.use("/access",accessRouter)
 
+const googleLoginRouter = require("./googleLogin.api.js")
+router.use("/google-login",googleLoginRouter)
+
 const userInfoRouter = require("./userinfo.api.js")
 router.use("/user-info",userInfoRouter)
 

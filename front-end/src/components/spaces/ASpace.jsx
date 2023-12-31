@@ -16,7 +16,7 @@ import { useSelector } from 'react-redux';
 import ModalConfirm from '../modal/ModalConfirm';
 import { Divider } from '@mui/material';
 import { GithubPicker } from 'react-color';
-import { FRONT_END_BASE_URL } from '../../sevice/server';
+const {VITE_FRONT_END_BASE_URL} = import.meta.env
 
 
 export default function ASpace(prop) {
@@ -181,14 +181,14 @@ export default function ASpace(prop) {
             <Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} onClick = {handleSubmitSpace}>SUBMIT CHANGE</Button>
             <Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} onClick = {handleCancel} color="warning" >CANCEL</Button>
             </>
-            :<Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} href={`${FRONT_END_BASE_URL}/space/${prop.space?._id}`}>EXPLORE</Button>
+            :<Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} href={`${VITE_FRONT_END_BASE_URL}/space/${prop.space?._id}`}>EXPLORE</Button>
           }
         </CardActions>
   </Card>
   );
   else return (
     <Card sx={{ borderRadius:4, width:300, display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
-      <img style={{width:"200px"}} src='${FRONT_END_BASE_URL}/lost-space.svg'></img>
+      <img style={{width:"200px"}} src='${VITE_FRONT_END_BASE_URL}/lost-space.svg'></img>
       </Card>
   );
   

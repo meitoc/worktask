@@ -51,12 +51,10 @@ export default function LoginForm(prop) {
             <Box >
               <div style={openPart==="login"?styleShow:styleHide} >
                 <Login goTo={setOpenPart} close={()=>setShowLoginForm(false)} open={()=>setShowLoginForm(true)} >
-
                 </Login>
               </div>
               <div style={openPart==="create_account"?styleShow:styleHide}>
                 <CreateAccount goTo={setOpenPart} close={()=>setShowLoginForm(false)} open={()=>setShowLoginForm(true)} >
-
                 </CreateAccount>
               </div>
               <div style={openPart==="forgot_password"?styleShow:styleHide}>

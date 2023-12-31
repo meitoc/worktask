@@ -270,12 +270,13 @@ taskController.updateTask=async(req,res,next)=>{
         }
         updatedTask.tree = await loadTree(updatedTask.parent_task,userId);
         updatedTask.tasks = await loadTasks(updatedTask._id);
-        //send notify
-        if(updatedTask.access_locked===true) sendResponse(res,200,true,filterField(updatedTask,showField),null,"Change data success");
+        //send notify only when change status
+        if(updatedTask.tasks && updatedTask.tree)sendResponse(res,200,true,filterField(updatedTask,showField),null,"Change data success");
+        // if( updatedTask.access_locked===true ) 
         const notify={
             task:taskId,
             user:userId,
-            sendTo:[...updatedTask.users.owners?.map(e=>e._id),...updatedTask.users.managers?.map(e=>e._id),...updatedTask.users.members?.map(e=>e._id)].filter(u=>u!==userId),
+            sendTo:[...updatedTask.users.owners?.map(e=>e._id),...updatedTask.users.managers?.map(e=>e._id),...updatedTask.users.members?.map(e=>e._id)],
             readBy:[],
             action:'change',
             item:'status',
@@ -283,11 +284,16 @@ taskController.updateTask=async(req,res,next)=>{
             // itemOwner,
             // itemMember,
             // itemFile,
-            itemStatus: updatedTask.status,
+        }
+        if(tasks?.length>0) {
+            notify.item = "child order";
+        } else if(!status) {
+            notify.item = "status";
+            notify.itemStatus = updatedTask.status
         }
         req.notify=notify;
         const sendNotify = await addNotify(req)
-        if(sendNotify===true) sendResponse(res,200,true,filterField(updatedTask,showField),null,"Change data success")
+        if(sendNotify) console.log("updated notify")
         
     }catch(err){
         next(err)

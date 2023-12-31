@@ -2,12 +2,15 @@ import Badge from '@mui/material/Badge';
 import MailIcon from '@mui/icons-material/Mail';
 import { Button, List, Menu } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { getNotify } from '../../sevice/api';
-import { useSelector } from 'react-redux';
+import { getNotify, getOtherUserInfo } from '../../sevice/api';
+import { useDispatch, useSelector } from 'react-redux';
 import ANotify from './ANotify';
+import { addOtherUsers } from '../../sevice/other_users/slice';
 // import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 export default function Notify() {
+    const otherUsers = useSelector(state=>state.other_users)
+    const dispatch = useDispatch();
     const userInfo = useSelector(state=>state.user_info)
     const [notifies, setNotifies] = useState([])
     const unreadNotify = notifies.filter(e=>e.readBy?.some(u=>u.name!==userInfo.name))
@@ -25,12 +28,22 @@ export default function Notify() {
             if(response?.success===true) {
                 const listNotify = response.data
                 setNotifies(listNotify)
-                console.log("IIIIIIII",listNotify)
+                const userList = Array.from(new Set(listNotify.map(e=>e.user.name).filter(e=>e!==userInfo?.name)))
+                userList.forEach(async (name)=>{
+                    if(!otherUsers.some(e=>e.name===name)){
+                        const response = await getOtherUserInfo(name);
+                        if(response?.success===true)
+                        dispatch(addOtherUsers([response.data]))
+                    }
+                })
+
+
+
             }
             setTimeout( fetchData, 15000);
         }
          fetchData()
-    }, []);
+    }, [userInfo?.name, dispatch,otherUsers]);
     return (
         <>
             {userInfo?
