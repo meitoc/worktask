@@ -103,7 +103,7 @@ export default function AFile(prop) {
               title="Confirm to delete this file"
               text="Impotant: You can not restore the file after delete it!"
             >
-              <MenuItem >Delete task</MenuItem>
+              <MenuItem >Delete file</MenuItem>
             </ModalConfirm>
           </Menu>
         </ListItem>

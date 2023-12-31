@@ -1,7 +1,6 @@
 const { S3Client, GetObjectCommand, ListObjectsV2Command, PutObjectCommand, HeadObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
-const { AWS_URL, AWS_PUBLIC_BUCKET, AWS_SECURE_BUCKET, AWS_ACCESS_KEY, AWS_SECRET_KEY } = process.env;
-
+const { AWS_URL, AWS_PUBLIC_BUCKET, AWS_SECURE_BUCKET, AWS_ACCESS_KEY, AWS_SECRET_KEY,AWS_SECURE_URL } = process.env;
 const S3 = new S3Client({
   region: 'auto',
   endpoint: AWS_URL,
@@ -69,7 +68,11 @@ async function createPresignedUrlDownload(req, res, next) {
     };
     const response = await getSignedUrl(S3, new GetObjectCommand(uploadParams), { expiresIn: 600 })
     if(!response) return res.status(400).json({ errors:[{"type": "data", message: "Invalid file!"}] });
-    req.result=response;
+    //new domain replace, improve feature, browser lock S3 defalut domain
+    const urlObject = new URL(response);
+    const newHostname = new URL(AWS_SECURE_URL).hostname;
+    const newUrl = response.replace(urlObject.hostname, newHostname);
+    req.result=newUrl;
     next();
   } catch (err) {
     res.status(400).json({ errors:[{"type": "data", message: "File server connected fail!"}] });

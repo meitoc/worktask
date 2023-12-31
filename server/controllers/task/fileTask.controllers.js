@@ -1,9 +1,6 @@
 const { sendResponse, AppError}=require("../../helpers/utils.js")
 const taskFileController={}
-const UserInfo = require("../../models/UserInfo.js")
-const User = require("../../models/User.js");
 const File = require("../../models/File.js");
-const {AWS_PUBLIC_URL } = process.env;
 const { filterField } = require("../../tools/filterData.js");
 
 const showField = {_id:1,user:1,name:1,size:1,createdAt:1,updatedAt:1};
