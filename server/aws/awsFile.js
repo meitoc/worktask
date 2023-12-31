@@ -68,11 +68,7 @@ async function createPresignedUrlDownload(req, res, next) {
     };
     const response = await getSignedUrl(S3, new GetObjectCommand(uploadParams), { expiresIn: 600 })
     if(!response) return res.status(400).json({ errors:[{"type": "data", message: "Invalid file!"}] });
-    //new domain replace, improve feature, browser lock S3 defalut domain
-    const urlObject = new URL(response);
-    const newHostname = new URL(AWS_SECURE_URL).hostname;
-    const newUrl = response.replace(urlObject.hostname, newHostname);
-    req.result=newUrl;
+    req.result=response;
     next();
   } catch (err) {
     res.status(400).json({ errors:[{"type": "data", message: "File server connected fail!"}] });
