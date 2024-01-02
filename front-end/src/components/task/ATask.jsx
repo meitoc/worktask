@@ -185,7 +185,7 @@ export default function ATask(prop) {
   );
   else return (
     <Card sx={{width:300, minHeight:100, display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
-      <img style={{maxHeight:150}} src='${VITE_FRONT_END_BASE_URL}/lost-task.svg'></img>
+      <img style={{maxHeight:150}} src={`${VITE_FRONT_END_BASE_URL}/lost-task.svg`}></img>
       </Card>
   );
   

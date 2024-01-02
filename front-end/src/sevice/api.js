@@ -1,10 +1,13 @@
 import axios from 'axios';
 const {VITE_BACK_END_BASE_URL} = import.meta.env
+const throwError = (error)=>{
+  return  {success:false, errors:error.response.data.errors.map(e=>e.message)};
+}
 /////////SPACE
 //update space oder
 async function putSpaces(data) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -16,13 +19,13 @@ async function putSpaces(data) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 
 async function getSpaces() {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -33,12 +36,12 @@ async function getSpaces() {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 async function getSpace(id) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -49,13 +52,13 @@ async function getSpace(id) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 
 async function postSpace(data) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -67,13 +70,13 @@ async function postSpace(data) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 
 async function putSpace(id,data) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -85,12 +88,12 @@ async function putSpace(id,data) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 async function deleteSpace(id) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -101,13 +104,13 @@ async function deleteSpace(id) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 //space detail
 async function putSpaceColor(id,data) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -119,13 +122,13 @@ async function putSpaceColor(id,data) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 //////COLORS
 async function getColors() {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -136,13 +139,13 @@ async function getColors() {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 ////////USER INFO
 async function getUserInfo() {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -154,12 +157,12 @@ async function getUserInfo() {
   } catch (error) {
     localStorage.removeItem('loginSession')
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 async function getOtherUserInfo(userName) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   //prevent multi request
   try {
     const headers = {
@@ -172,12 +175,12 @@ async function getOtherUserInfo(userName) {
   } catch (error) {
     localStorage.removeItem('loginSession')
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 async function putUserInfo(data) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -189,13 +192,13 @@ async function putUserInfo(data) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 ///////ACCESS
 async function getCheckAccess() {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -206,12 +209,12 @@ async function getCheckAccess() {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 async function getLogout() {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -222,7 +225,7 @@ async function getLogout() {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 async function postLogin(data) {
@@ -237,7 +240,7 @@ async function postLogin(data) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 async function getFirstAccess(string) {
@@ -250,7 +253,7 @@ async function getFirstAccess(string) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 async function postForgotPassword(data) {
@@ -264,7 +267,7 @@ async function postForgotPassword(data) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 /////////GOOGLE LOGIN
@@ -280,25 +283,25 @@ async function postGoogleLogin(data) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 /////////USER
 async function getUser(type,value) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
       accept: 'application/json',
       Authorization: `Bearer ${session}`,
     }
-    if(!type || !value) return null;
+    if(!type || !value) return {success:false};
     const response = await axios.get(`${VITE_BACK_END_BASE_URL}/api/user?${type}=${value}`, {headers});
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 async function postCreateUser(data) {
@@ -311,13 +314,12 @@ async function postCreateUser(data) {
     const response = await axios.post(`${VITE_BACK_END_BASE_URL}/api/user`,body, {headers});
     return response.data;
   } catch (error) {
-    console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 async function putUpdateUser(data) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -329,13 +331,13 @@ async function putUpdateUser(data) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 /////////TASKS
 async function getOwnerTasks() {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -346,12 +348,12 @@ async function getOwnerTasks() {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 async function getMemberTasks() {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -362,12 +364,12 @@ async function getMemberTasks() {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 async function getTask(id) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -378,12 +380,12 @@ async function getTask(id) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 async function postTask(data) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -395,13 +397,13 @@ async function postTask(data) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 async function postTaskOnTask(taskId,data) {
   const session = localStorage.getItem('loginSession');
   console.log("HHHHHHHHHHH",data)
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -413,12 +415,12 @@ async function postTaskOnTask(taskId,data) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 async function getTaskList(array) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -430,13 +432,13 @@ async function getTaskList(array) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 
 async function putTask(id,data) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -448,12 +450,12 @@ async function putTask(id,data) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 async function deleteTask(id) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -464,13 +466,13 @@ async function deleteTask(id) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 //task user
 async function putTaskUser(id,data) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -482,12 +484,12 @@ async function putTaskUser(id,data) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 async function deleteTaskUser(id,data) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -498,13 +500,13 @@ async function deleteTaskUser(id,data) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 //task detail
 async function putTaskColor(id,data) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -516,13 +518,13 @@ async function putTaskColor(id,data) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 //SPACE TASKS (TASKS IN A SPACE)
 async function putTaskToSpace(data,spaceId) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -534,12 +536,12 @@ async function putTaskToSpace(data,spaceId) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 // async function deleteTaskFromSpace(taskId,spaceId) {
 //   const session = localStorage.getItem('loginSession');
-//   if (!session) return null;
+//   if (!session) return  null;
 //   try {
 //     const headers = {
 //       'Content-Type': 'application/json',
@@ -550,13 +552,13 @@ async function putTaskToSpace(data,spaceId) {
 //     return response.data;
 //   } catch (error) {
 //     console.error(error);
-//     return null;
+//     return throwError(error);
 //   }
 // }
 //Comments of a task
 async function getComments(taskId) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -567,12 +569,12 @@ async function getComments(taskId) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 async function postComment(data,taskId) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -584,12 +586,12 @@ async function postComment(data,taskId) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 async function deleteComment(commentId,taskId) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -600,14 +602,14 @@ async function deleteComment(commentId,taskId) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 //FILE
 //Get file
 async function getFiles(taskId) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -618,13 +620,13 @@ async function getFiles(taskId) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 //Delete file
 async function deleteFile(taskId,data) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -636,13 +638,13 @@ async function deleteFile(taskId,data) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 //Dowwnload file
 async function postTakeDownloadUrl(taskId,data) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -654,14 +656,14 @@ async function postTakeDownloadUrl(taskId,data) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 // upload a file
 // Step1
 async function postTakeUploadUrl(taskId,data) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -673,13 +675,13 @@ async function postTakeUploadUrl(taskId,data) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 // Step2
 async function putFileToServer(url, file) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': file.type,
@@ -689,13 +691,13 @@ async function putFileToServer(url, file) {
     else return false;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 // Step3
 async function putRecheckFile(taskId,data) {
     const session = localStorage.getItem('loginSession');
-    if (!session) return null;
+    if (!session) return  null;
     try {
       const headers = {
         'Content-Type': 'application/json',
@@ -707,12 +709,12 @@ async function putRecheckFile(taskId,data) {
       return response.data;
     } catch (error) {
       console.error(error);
-      return null;
+      return throwError(error);
     }
   }
 async function postAvatar(imageFile) {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const body = new FormData();
     body.append('image', imageFile);
@@ -724,14 +726,14 @@ async function postAvatar(imageFile) {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 //Noify
 /////////USER
 async function getNotify() {
   const session = localStorage.getItem('loginSession');
-  if (!session) return null;
+  if (!session) return  null;
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -742,7 +744,7 @@ async function getNotify() {
     return response.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return throwError(error);
   }
 }
 export {

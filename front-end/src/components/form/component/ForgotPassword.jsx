@@ -10,6 +10,7 @@ import { postForgotPassword } from "../../../sevice/api";
 export default function ForgotPassword(prop) {
     const [disableInput, setDisableInput] = useState(false)
     const [forgotUser, setForgotUser] = useState("")
+    const [errorText, setErrorText] = useState([])
     const forgotPassword = async ()=>{
         setDisableInput(true)
         console.log(forgotUser)
@@ -17,9 +18,12 @@ export default function ForgotPassword(prop) {
         if(response?.success===true){
             console.log(response)
             setDisableInput(false)
-            // prop.close()
             prop.goTo('waiting');
-        } else setDisableInput(false)
+        } else {
+            console.log("OOOOO",response)
+            setErrorText(response.errors)
+            setDisableInput(false)
+        }
     }
     return(
             <>
@@ -31,6 +35,11 @@ export default function ForgotPassword(prop) {
                     autoComplete="username"
                     onChange={(event)=>setForgotUser(event.target.value)}
                     disabled={disableInput}
+                    helperText=
+                    {errorText.map((e)=>(
+                            e
+                        ))
+                    }
                 />
                 <Button
                     variant="outlined"

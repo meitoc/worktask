@@ -45,55 +45,62 @@ userController.createUser=async(req,res,next)=>{
             active: false,
             password
         }
-        const existUser = await User.findOne({$or:[{name:newUser.name},{email:newUser.email}]})
-        if(existUser) 
-        return res.status(400).json({ errors: [{ message: 'User existed or unvalable!' }] });
-    else try{
-            //create UserInfo
-            const createdInfo= await UserInfo.create({})
-            newUser.information = createdInfo._id;
-            //create User
-            const createdUser= await User.create(newUser)
-            //create Access
-            const otp_string = await createdUser.generateFirst();
-            const session = await createdUser.generateSession();
-            const newAccess = {
-                email_otp : encodeURIComponent(otp_string).replace(/\./g, '__'),
-                email_otp_status : true,
-                session,
-                role: "user",
-                user : createdUser._id
+        const existUser = await User.findOne({$or:[{name:newUser.name,active:true},{email:newUser.email,active:true}]})
+        if(existUser) return res.status(400).json({ errors: [{ message: 'User existed!' }] });
+        else{
+            const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+            const  waitingUser = await User.findOne({$or:[{name:newUser.name,active:false,createdAt: { $gt: tenMinutesAgo }},{email:newUser.email,active:false,createdAt: { $gt: tenMinutesAgo }}]})
+            if(waitingUser) return res.status(400).json({ errors: [{ message: `User  is unvalable, try after ${Math.ceil((waitingUser.createdAt-tenMinutesAgo)/1000)} seconds!` }] });
+            else try{
+                //create UserInfo
+                const createdInfo= await UserInfo.create({})
+                newUser.information = createdInfo._id;
+                //delete old waiting User
+                const  deletingWaitingUser = await User.deleteMany({$or:[{name:newUser.name,active:false,createdAt: { $lte: tenMinutesAgo }},{email:newUser.email,active:false,createdAt: { $lte: tenMinutesAgo }}]})
+                if(deletingWaitingUser) console.log(`Deleted ${deletingWaitingUser.deletedCount} waiting user`)
+                //create User
+                const createdUser= await User.create(newUser)
+                //create Access
+                const otp_string = await createdUser.generateFirst();
+                const session = await createdUser.generateSession();
+                const newAccess = {
+                    email_otp : encodeURIComponent(otp_string).replace(/\./g, '__'),
+                    email_otp_status : true,
+                    session,
+                    role: "user",
+                    user : createdUser._id
+                };
+                const createdAccess= await Access.create(newAccess)
+                //send email contains otp
+                const emailContent=`
+                <div>
+                <p>Welcome you to task.meitoc.net</p>
+                </div>
+                <div>
+                <a href="${FRONTEND_URL}/url-login/${newAccess.email_otp}">CLICK HERE TO VERIFY YOUR EMAIL.</a>
+                </div>`
+                const sendEmail = await email.sendEmail("Email Authentication",emailContent,newUser.email);
+                if(!sendEmail){
+                    //delete UserInfo
+                    const deleteIfo= await UserInfo.deleteOne({_id:createdInfo._id})
+                    //delete User
+                    const deleteUser= await User.deleteOne({_id:createdUser._id})
+                    //delete Access
+                    const deleteAccess = await Access.deleteOne({_id:createdAccess._id});
+                    return res.status(400).json({ errors: [{ message: 'Try other email or try later!' }] });
+                }
+                //response with secure password
+                const responseUser={
+                    name: newUser.name,
+                    email: newUser.email,
+                    password:"********",
+                    sent_email: sendEmail,
+                }
+                sendResponse(res,200,true,{data:responseUser},null,"Create User Success")
+            }catch(err){
+                next(err)
             };
-            const createdAccess= await Access.create(newAccess)
-            //send email contains otp
-            const emailContent=`
-            <div>
-            <p>Welcome you to task.meitoc.net</p>
-            </div>
-            <div>
-            <a href="${FRONTEND_URL}/url-login/${newAccess.email_otp}">CLICK HERE TO VERIFY YOUR EMAIL.</a>
-            </div>`
-            const sendEmail = await email.sendEmail("Email Authentication",emailContent,newUser.email);
-            if(!sendEmail){
-                //delete UserInfo
-                const deleteIfo= await UserInfo.deleteOne({_id:createdInfo._id})
-                //delete User
-                const deleteUser= await User.deleteOne({_id:createdUser._id})
-                //delete Access
-                const deleteAccess = await Access.deleteOne({_id:createdAccess._id});
-                return res.status(400).json({ errors: [{ message: 'Try other email or try later!' }] });
-            }
-            //response with secure password
-            const responseUser={
-                name: newUser.name,
-                email: newUser.email,
-                password:"********",
-                sent_email: sendEmail,
-            }
-            sendResponse(res,200,true,{data:responseUser},null,"Create User Success")
-        }catch(err){
-            next(err)
-        };
+        }
     }catch(err){
         next(err)
     }

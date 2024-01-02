@@ -6,7 +6,7 @@ import { Stack, Typography} from "@mui/material";
 // import AddIcon from '@mui/icons-material/Add';
 import { useDispatch, useSelector } from "react-redux";
 import AUser from "../small-component/AUser";
-import { removeUserFromATask, addUserToATask, updateATask } from "../../sevice/a_task/slice";
+import { removeUserFromATask, addUserToATask } from "../../sevice/a_task/slice";
 import AddUser from "../small-component/AddUser";
 import { deleteTaskUser, putTaskUser } from "../../sevice/api";
 
@@ -26,6 +26,7 @@ export default function TeamAndRole(prop) {
   const member_add_member = useSelector(state=>state.a_task.member_add_member)
   const taskId= useSelector(state=>state.a_task._id)
 
+  const [errorText, setErrorText] = useState([])
   const [rows, setRows] = useState(null);
   const [userRole, setUserRole] = useState(null);
   // const [setActiveAdd] = useState(null);
@@ -57,7 +58,7 @@ export default function TeamAndRole(prop) {
         }
       }
       setRows( newRow );
-      updateATask(result.draggableId,{status:destination.droppableId});//update on server for task status
+      putTaskUser(taskId,{user:result.draggableId,role:destination.droppableId});//update on server for task status
     } else {
       const row = rows[source.droppableId];
       const copiedItems = [...row.items];
@@ -76,33 +77,17 @@ export default function TeamAndRole(prop) {
   const handleAddUser = async (data)=>{
     const response = await putTaskUser(taskId,data)
     if(response?.success===true){
-      // const newRow = 
-      // (userRole==="owner")?{
-      //   ...rows,
-      //   owners:[...rows.owners,{name:data.user,active:true}]
-      // }:
-      // (userRole==="manager")?{
-      //   ...rows,
-      //   managers:[...rows.managers,{name:data.user,active:true}]
-      // }:
-      // (userRole==="member")? {
-      //     ...rows,
-      //     members:[...rows.members,{name:data.user,active:true}]
-      // }:rows;
-      // setRows(newRow)
       dispatch(addUserToATask(data))
+      setErrorText([])
       return true;
-    } else return false;
+    } else {
+      setErrorText(response.errors)
+      return false;
+    }
   }
   const handleDeleteUser = async (userName)=>{
     const response = await deleteTaskUser(taskId,{user:userName})
     if(response?.success===true){
-      // const newRow = {
-      //   owners:{...rows.owners, items: rows.owners.items.filter(e=>e.name!=userName)},
-      //   managers:{...rows.managers, items: rows.managers.items.filter(e=>e.name!=userName)},
-      //   members:{...rows.members, items: rows.members.items.filter(e=>e.name!=userName)},
-      // }
-      // setRows(newRow)
       dispatch(removeUserFromATask(userName))
       return true;
     } else return false;
@@ -238,7 +223,7 @@ export default function TeamAndRole(prop) {
                           );
                         })}
                         {provided.placeholder}
-                        {row?.addRole?.some(e=>e===userRole)?<AddUser display={prop.display} exclude={[...owners,...managers,...members]} addUser={handleAddUser} role={row.role} />:null}
+                        {row?.addRole?.some(e=>e===userRole)?<AddUser errors={errorText} display={prop.display} exclude={[...owners,...managers,...members]} addUser={handleAddUser} role={row.role} />:null}
                       </div>
                     </div>
                     );

@@ -185,11 +185,11 @@ export default function ASpace(prop) {
           }
         </CardActions>
   </Card>
-  );
+  )
   else return (
     <Card sx={{ borderRadius:4, width:300, display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
-      <img style={{width:"200px"}} src='${VITE_FRONT_END_BASE_URL}/lost-space.svg'></img>
-      </Card>
+      <img style={{width:"200px"}} src={`${VITE_FRONT_END_BASE_URL}/lost-space.svg`}></img>
+    </Card>
   );
   
 }

@@ -1,4 +1,4 @@
-import { Chip, Divider, FormControlLabel, IconButton, Paper, Popper, Radio, RadioGroup, Skeleton, TextField } from "@mui/material";
+import { Chip, Divider, FormControlLabel, IconButton, Paper, Popper, Radio, RadioGroup, Skeleton, TextField, Typography } from "@mui/material";
 import AUser from "./AUser";
 // import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
@@ -70,6 +70,10 @@ export default function AddUser(prop) {
               />
               <Popper id={id} open={openPopper} anchorEl={anchorEl}>
               <Paper elevation={5} sx={{p:2, bgcolor:'secondary'}} >
+                  <Typography >{prop.errors?.map((e)=>(
+                            e
+                        ))
+                    }</Typography>
                 <div style={{display:"flex", flexDirection:"row"}}>
                   <RadioGroup
                     row

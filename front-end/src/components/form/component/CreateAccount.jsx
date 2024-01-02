@@ -32,6 +32,7 @@ export default function CreateAccount(prop) {
                 prop.goTo('waiting');
                 setDisableLoginInput(false);
             } else{
+                setCreatePasswordText(response.errors)
                 setDisableLoginInput(false);
             }
     }

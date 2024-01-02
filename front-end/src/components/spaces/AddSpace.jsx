@@ -100,8 +100,7 @@ export default function AddSpace() {
       <Button sx={{color:spaceColor?.text, backgroundColor:spaceColor?.frame}} onClick = {handleCanel} color="warning" >CANCEL</Button>
     </CardActions>
     </Card>);
-  else {
-    if(activeSpace===null) return (
+  else if(activeSpace===null) return (
     <Card sx={{ width:"100%", maxWidth:300, minHeight:150, borderRadius:5, display:"flex", flexDirection:"column", justifyContent:"space-between"}}> 
       <ButtonBase onClick={shandleAddSpace} >
         <img style={{width:"100%", maxHeight:210}} src={`${VITE_FRONT_END_BASE_URL}/add-space.svg`}></img>
@@ -110,8 +109,7 @@ export default function AddSpace() {
     );
     else return (
     <Card sx={{ width:"100%", maxWidth:300, minHeight:150, borderRadius:5, display:"flex", flexDirection:"column", justifyContent:"space-between"}}>
-      <img style={{width:"100%", maxHeight:20}} src={`${VITE_FRONT_END_BASE_URL}/lost-space.svg`}></img>
+      <img style={{width:"100%", maxHeight:210}} src={`${VITE_FRONT_END_BASE_URL}/lost-space.svg`}></img>
     </Card>
     );
-  }
 }

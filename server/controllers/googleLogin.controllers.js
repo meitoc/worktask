@@ -33,7 +33,7 @@ googleLoginController.postGoogleLogin = async (req,res,next) => {
       const userFound = await User.findOne({email, active:true}).populate("information","-_id -__v");
       if(!userFound) {
         //create username by website rule
-        let username = email.split('@')[0].replace(/\./g, '');
+        let username = email.toLowerCase().split('@')[0].replace(/\./g, '');
         if (!isNaN(username.charAt(0))) {
           username = "u" + username;
         }
@@ -46,12 +46,17 @@ googleLoginController.postGoogleLogin = async (req,res,next) => {
             const userNameFound = await User.findOne({name, active:true});
             if(!userNameFound) {
               const createdNewUser = await User.create({name,email,active:true,information:createdNewUserInfo._id,password:" "});
+              const email_otp = await createdNewUser.generateFirst();
               const session = await createdNewUser.generateSession();
-              const updatedAccess= await Access.create({user:createdNewUser._id, session,role:"user",active:true})
-              if(!updatedAccess) return res.status(400).json({ errors: [{ message: 'Try again later!' }] });
-              sendResponse(res,200,true,{session},null,"Login Success");
-              return true
-            } else return false;
+              if(session && email_otp){
+                console.log("SSSSSSSSSSS",session)
+                const updatedAccess= await Access.create({user:createdNewUser._id, email_otp, email_otp_status:false, session,role:"user",active:true})
+                if(!updatedAccess) return res.status(400).json({ errors: [{ message: 'Try again later!' }] });
+                sendResponse(res,200,true,{session},null,"Login Success");
+                return true
+              }
+            }
+            return false;
           }
           
           for(let i = startNumber; i < startNumber+100000;i++){

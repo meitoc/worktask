@@ -10,21 +10,21 @@ const userTaskController={};
 //add a member
 userTaskController.addUser=async(req,res,next)=>{
     try{
-        console.log(req.params.id)
+        console.log("AAAAAAAAAAAAAAAAAAAAAAA")
         //check param and query by express-validator
         await param('id').isMongoId().withMessage('Invalid task id!').run(req);
         await body('user')
         .matches(/^[a-z][a-z0-9_]{4,}$/)
         .withMessage('Name must start with a letter and contain only lowercase letters, numbers, and underscores!')
         .run(req);
-        await body('role').isIn(['owner', 'manager', 'member']).withMessage('Invalid role').run(req);
+        await body('role').isIn(['owner', 'manager', 'member','owners', 'managers', 'members']).withMessage('Invalid role').run(req);
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
         //process
         const userAddName = req.body.user;
-        const userAddRole = req.body.role;
+        const userAddRole = req.body.role.endsWith("s")? req.body.role.slice(0, -1):req.body.role;
         const {userId} = req.access;
         //transfer name to id
         const foundUser = await User.findOne({name:userAddName,active:true},{_id:1})
@@ -95,11 +95,11 @@ userTaskController.addUser=async(req,res,next)=>{
             await addToTaskAndChilds(updatedTask1._id,{"users.owners": userId},{$pull:{"users.owners":userAddId,"users.members":userAddId},$addToSet:{"users.managers":userAddId}})
             :await addToAllTaskOnTree(updatedTask1._id,{"users.owners": userId},{$pull:{"users.managers":userAddId,"users.members":userAddId},$addToSet:{"users.owners":userAddId}});
         }
-        if(updatedTask.access_locked===true) sendResponse(res,200,true,{user:userAddName,totalChangedChildTask},null,"Change data success")
+        if(updatedTask1.access_locked===true) sendResponse(res,200,true,{user:userAddName,totalChangedChildTask},null,"Change data success")
         const notify={
             task:taskId,
             user:userId,
-            sendTo:[...updatedTask.users.owners?.map(e=>e._id),...updatedTask.users.managers?.map(e=>e._id),...updatedTask.users.members?.map(e=>e._id)].filter(u=>u!==userId),
+            sendTo:[...updatedTask1.users.owners?.map(e=>e._id),...updatedTask1.users.managers?.map(e=>e._id),...updatedTask1.users.members?.map(e=>e._id)].filter(u=>u!==userId),
             item:userAddRole,
             readBy:[],
             action:'add',
@@ -171,7 +171,6 @@ userTaskController.removeUser=async(req,res,next)=>{
                 totalChangedChildTask = await removeFromTaskAndChilds(updatedTask2._id,null,{$pull:{"users.managers":userRemoveId,"users.members":userRemoveId}})
             }
         } else{ //update child task when user is the owner
-            console.log("HHHHHHHHHHHEEEEEEE",updatedTask1)
             totalChangedChildTask = await removeFromTaskAndChilds(updatedTask1._id,null,{$pull:{"users.owners":userRemoveId,"users.managers":userRemoveId,"users.members":userRemoveId}})
         }
         sendResponse(res,200,true,{user:userRemoveName,totalChangedChildTask},null,"Change data success")
