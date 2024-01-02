@@ -1,6 +1,6 @@
 const { S3Client, GetObjectCommand, ListObjectsV2Command, PutObjectCommand, HeadObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
-const { AWS_URL, AWS_PUBLIC_BUCKET, AWS_SECURE_BUCKET, AWS_ACCESS_KEY, AWS_SECRET_KEY,AWS_SECURE_URL } = process.env;
+const { AWS_URL, AWS_PUBLIC_BUCKET, AWS_SECURE_BUCKET, AWS_ACCESS_KEY, AWS_SECRET_KEY } = process.env;
 const S3 = new S3Client({
   region: 'auto',
   endpoint: AWS_URL,

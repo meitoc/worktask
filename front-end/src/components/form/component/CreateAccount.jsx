@@ -136,6 +136,7 @@ export default function CreateAccount(prop) {
             }
         </FormControl>
             <Button
+            disabled={disableLoginInput}
             variant="outlined"
             sx={{margin:2, width:270}}
             onClick={createAccount}

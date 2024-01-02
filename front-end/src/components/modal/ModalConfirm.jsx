@@ -23,8 +23,10 @@ export default function ModalConfirm(prop) {
         <>
         {
           prop.children.type=== Button?
-          <div onClick={handleOpenModal}>
+          <div style={{display:"inline-block"}} onClick={handleOpenModal}>
+            <>
             {prop.children}
+            </>
           </div>
           :<ButtonBase style={prop.style} variant="text" onClick={handleOpenModal}>
             {prop.children}

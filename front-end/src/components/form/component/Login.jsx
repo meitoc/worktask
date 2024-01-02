@@ -54,20 +54,16 @@ export default function Login(prop) {
                     console.log("Server: You'r logged in.");
                 }
             } else {
-                // if(response.comment==="login_locked"){
-                //     setNote( "The account is locked!");
-                //     console.log( "Server: The account is locked!");
-                // } else{
-                    setNote( "Wrong password or user name!");
-                    console.log( "Server: Wrong password or user name!");
-                    setDisableLoginInput(false);
-                // }
+                setNote( "Wrong password or user name!");
+                console.log( "Server: Wrong password or user name!");
+                setDisableLoginInput(false);
             }
         }
         setDisableLoginInput(false);
     }
     const login = useGoogleLogin({
         onSuccess: async(tokenResponse) => {
+            setDisableLoginInput(true)
             const response =  await postGoogleLogin(tokenResponse);
             if(response?.success===true) {
                 if(response.data?.session) {
@@ -78,6 +74,10 @@ export default function Login(prop) {
                     setDisableLoginInput(false);
                     console.log("Server: You'r logged in.");
                 }
+            } else {
+                setNote( "Wrong password or user name!");
+                console.log( "Server: Wrong password or user name!");
+                setDisableLoginInput(false);
             }
         }
       });
@@ -138,9 +138,10 @@ export default function Login(prop) {
         <Button
             variant="outlined"
             sx={{margin:2, width:270}}
+            disabled={disableLoginInput}
             onClick={()=>{
             prop.goTo("create_account");
-            setNote('Emter your email')
+            setNote('Eter your email')
             }}
         >
             Create new account

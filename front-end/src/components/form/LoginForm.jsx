@@ -23,6 +23,9 @@ const style = {
   pt: 2,
   px: 4,
   pb: 3,
+  display:"flex",
+  flexDirection:"column",
+  alignItems:"center",
 };
 const styleShow={display: 'flex', flexDirection: 'column', alignItems: 'center'};
 const styleHide={display: 'none'};
@@ -48,26 +51,26 @@ export default function LoginForm(prop) {
       >
         <Box sx={{ ...style, maxWidth: '350px' }}>
           <h2 id="parent-modal-title">{openPart=='login'?'Login':openPart=='otp'?'Submit OTP':openPart=='create_account'?'Create New Account':openPart=='forgot_password'?'Forgot Password':"Waiting"}</h2>
-            <Box >
-              <div style={openPart==="login"?styleShow:styleHide} >
-                <Login goTo={setOpenPart} close={()=>setShowLoginForm(false)} open={()=>setShowLoginForm(true)} >
-                </Login>
-              </div>
-              <div style={openPart==="create_account"?styleShow:styleHide}>
-                <CreateAccount goTo={setOpenPart} close={()=>setShowLoginForm(false)} open={()=>setShowLoginForm(true)} >
-                </CreateAccount>
-              </div>
-              <div style={openPart==="forgot_password"?styleShow:styleHide}>
-                <ForgotPassword goTo={setOpenPart} close={()=>setShowLoginForm(false)} open={()=>setShowLoginForm(true)} >
+          <Box >
+            <div style={openPart==="login"?styleShow:styleHide} >
+              <Login goTo={setOpenPart} close={()=>setShowLoginForm(false)} open={()=>setShowLoginForm(true)} >
+              </Login>
+            </div>
+            <div style={openPart==="create_account"?styleShow:styleHide}>
+              <CreateAccount goTo={setOpenPart} close={()=>setShowLoginForm(false)} open={()=>setShowLoginForm(true)} >
+              </CreateAccount>
+            </div>
+            <div style={openPart==="forgot_password"?styleShow:styleHide}>
+              <ForgotPassword goTo={setOpenPart} close={()=>setShowLoginForm(false)} open={()=>setShowLoginForm(true)} >
 
-                </ForgotPassword>
-              </div>
-              <div style={openPart==="waiting"?styleShow:styleHide}>
-                <Waiting goTo={setOpenPart} close={()=>setShowLoginForm(false)} open={()=>setShowLoginForm(true)} >
+              </ForgotPassword>
+            </div>
+            <div style={openPart==="waiting"?styleShow:styleHide}>
+              <Waiting goTo={setOpenPart} close={()=>setShowLoginForm(false)} open={()=>setShowLoginForm(true)} >
 
-                </Waiting>
-              </div>
-            </Box>
+              </Waiting>
+            </div>
+          </Box>
         </Box>
       </Modal>
     </div>
