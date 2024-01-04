@@ -28,6 +28,7 @@ import FetchUserData from '../features/fetch-data/FetchUserData';
 import LoginForm from '../components/form/LoginForm';
 import Notify from './modules/Notify';
 import { useSelector } from 'react-redux';
+import { Button } from '@mui/material';
 
 let drawerWidth = 240;
 
@@ -135,7 +136,7 @@ export default function Layout() {
                             <Notify />
                             <AccountAvatar />
                           </>
-                          : <p onClick={()=>setShowLoginForm(true)} style={{cursor: 'pointer'}}>Login</p>
+                          : <Button variant='primary' onClick={()=>setShowLoginForm(true)} style={{cursor: 'pointer'}}>Login</Button>
                         }
                       </Box>
                       </Toolbar>

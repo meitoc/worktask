@@ -29,20 +29,22 @@ notifyController.getNotify=async(req,res,next)=>{
 //Post a notify
 notifyController.postNotify=async(req,res,next)=>{
     try{
+        //check param and query by express-validator
+        await param('notifyId').isMongoId().withMessage('Wrong notify id!').run(req);
+        await body('status').isBoolean().withMessage('Invalid status!').run(req);
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        
         const {userId} = req.access;
-        const limit = req.params.limit??100;
-        const filter = {sendTo:userId}
-        const listOfFound= await TaskNotify.find(filter)
-        .populate("user", "name active -_id")
-        .populate("task", "name _id")
-        .populate("sendTo", "name active -_id")
-        .populate("readBy", "name active -_id")
-        .populate("itemOwner", "name active -_id")
-        .populate("itemMember", "name active -_id")
-        .sort({createdAt:-1})
-        .limit(limit);
-        if(listOfFound)
-        sendResponse(res,200,true,listOfFound,null,"Found list of notifys success")
+        const notifyId = req.params.notifyId;
+        const status = req.body.status;
+        const updatedNotify= status?
+            await TaskNotify.updateOne({_id:notifyId},{$push:{readBy:userId}})
+            :await TaskNotify.updateOne({_id:notifyId},{$pull:{readBy:userId}})
+        if(updatedNotify)
+        sendResponse(res,200,true,{_id:notifyId},null,"Found list of notifys success")
     }catch(err){
         next(err)
     }

@@ -161,6 +161,7 @@ async function getUserInfo() {
   }
 }
 async function getOtherUserInfo(userName) {
+  if(!userName) return null;
   const session = localStorage.getItem('loginSession');
   if (!session) return  null;
   //prevent multi request
@@ -729,8 +730,8 @@ async function postAvatar(imageFile) {
     return throwError(error);
   }
 }
-//Noify
-/////////USER
+
+//NOTIFY
 async function getNotify() {
   const session = localStorage.getItem('loginSession');
   if (!session) return  null;
@@ -741,6 +742,23 @@ async function getNotify() {
       Authorization: `Bearer ${session}`,
     }
     const response = await axios.get(`${VITE_BACK_END_BASE_URL}/api/notify`, {headers});
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return throwError(error);
+  }
+}
+async function postReadNotify(id,status) {
+  const session = localStorage.getItem('loginSession');
+  if (!session) return  null;
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+      accept: 'application/json',
+      Authorization: `Bearer ${session}`,
+    }
+    const body = JSON.stringify({status});
+    const response = await axios.post(`${VITE_BACK_END_BASE_URL}/api/notify/${id}`, body,{headers});
     return response.data;
   } catch (error) {
     console.error(error);
@@ -769,5 +787,5 @@ export {
   putFileToServer,
   putRecheckFile,
   postAvatar,
-  getNotify,
+  getNotify,postReadNotify,
 };

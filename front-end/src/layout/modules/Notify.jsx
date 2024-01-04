@@ -13,7 +13,7 @@ export default function Notify() {
     const dispatch = useDispatch();
     const userInfo = useSelector(state=>state.user_info)
     const [notifies, setNotifies] = useState([])
-    const unreadNotify = notifies.filter(e=>e.readBy?.some(u=>u.name!==userInfo.name))
+    const [unreadNotify,setUnreadNotify] = useState(notifies.filter(e=>!e.readBy?.some(u=>u.name==userInfo.name))?.length)
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
@@ -26,9 +26,9 @@ export default function Notify() {
         const fetchData = async ()=>{
             const response = await getNotify()
             if(response?.success===true) {
-                const listNotify = response.data
+                const listNotify = response.data.filter(e=>e.task!==null)
                 setNotifies(listNotify)
-                const userList = Array.from(new Set(listNotify.map(e=>e.user.name).filter(e=>e!==userInfo?.name)))
+                const userList = Array.from(new Set(listNotify.map(e=>e.user?.name).filter(e=>e!==userInfo?.name)))
                 userList.forEach(async (name)=>{
                     if(!otherUsers.some(e=>e.name===name)){
                         const response = await getOtherUserInfo(name);
@@ -38,18 +38,17 @@ export default function Notify() {
                 })
 
 
-
             }
             setTimeout( fetchData, 15000);
         }
          fetchData()
-    }, [userInfo?.name, dispatch,otherUsers]);
+    }, []);
     return (
         <>
             {userInfo?
             <>
                 <Button onClick={handleClick}  >
-                    <Badge badgeContent={unreadNotify?.length??0} color="primary"  sx={{ width: 27, height: 27}} max={9}>
+                    <Badge badgeContent={unreadNotify??0} color="primary"  sx={{ width: 27, height: 27}} max={9}>
                         <MailIcon color="action" />
                     </Badge>
                 </Button>
@@ -71,7 +70,15 @@ export default function Notify() {
                     <List style={{display:"flex",flexDirection:"column"}}>
                     {
                         notifies.map(notify=>{
-                            return (<ANotify notify={notify} key={notify._id} close={handleClose} />)
+                            return (
+                            <ANotify
+                                notify={notify}
+                                key={notify._id}
+                                close={handleClose}
+                                add={()=>setUnreadNotify(unreadNotify+1)}
+                                remove={()=>setUnreadNotify(unreadNotify-1)} 
+                            />
+                            )
                         })
                     }
                     </List>
