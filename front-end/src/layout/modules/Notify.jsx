@@ -28,21 +28,21 @@ export default function Notify() {
             if(response?.success===true) {
                 const listNotify = response.data.filter(e=>e.task!==null)
                 setNotifies(listNotify)
-                const userList = Array.from(new Set(listNotify.map(e=>e.user?.name).filter(e=>e!==userInfo?.name)))
-                userList.forEach(async (name)=>{
-                    if(!otherUsers.some(e=>e.name===name)){
-                        const response = await getOtherUserInfo(name);
-                        if(response?.success===true)
-                        dispatch(addOtherUsers([response.data]))
-                    }
-                })
-
-
             }
-            setTimeout( fetchData, 15000);
+            setTimeout( fetchData, 10000);
         }
          fetchData()
     }, []);
+    useEffect(()=>{
+        const userList = Array.from(new Set(notifies.map(e=>e.user?.name).filter(e=>e!==userInfo?.name)))
+        userList.forEach(async (name)=>{
+            if(!otherUsers.some(e=>e.name===name)){
+                const response = await getOtherUserInfo(name);
+                if(response?.success===true)
+                dispatch(addOtherUsers([response.data]))
+            }
+        })
+    },[notifies,dispatch,otherUsers,userInfo.name])
     return (
         <>
             {userInfo?
