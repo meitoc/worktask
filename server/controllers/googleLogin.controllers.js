@@ -4,6 +4,7 @@ const UserInfo = require("../models/UserInfo.js")
 const { sendResponse, AppError}=require("../helpers/utils.js")
 // const { param, body, validationResult } = require('express-validator');
 const {google} = require('googleapis');
+const { removeUnderscoreAndDot } = require("../tools/realEmailAddess.js");
 const {GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,GOOGLE_REDIRECT_URL} = process.env;
 
 const googleLoginController={}
@@ -25,7 +26,7 @@ googleLoginController.postGoogleLogin = async (req,res,next) => {
     if(response){
       const userInfos = response.data;
       const userRealName = userInfos.names[0].unstructuredName;
-      const email = userInfos.emailAddresses[0].value.toLowerCase();
+      const email = removeUnderscoreAndDot(userInfos.emailAddresses[0].value);
       const verifiedEmail = userInfos.emailAddresses[0].metadata.verified;
       const userAvatar = userInfos.photos[0].url;
       if(!verifiedEmail) return res.status(400).json({ errors: [{ message: 'Try again later!' }] });
@@ -33,7 +34,7 @@ googleLoginController.postGoogleLogin = async (req,res,next) => {
       const userFound = await User.findOne({email, active:true}).populate("information","-_id -__v");
       if(!userFound) {
         //create username by website rule
-        let username = email.toLowerCase().split('@')[0].replace(/\./g, '');
+        let username = email.toLowerCase().split('@')[0];
         if (!isNaN(username.charAt(0))) {
           username = "u" + username;
         }

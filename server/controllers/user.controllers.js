@@ -41,7 +41,7 @@ userController.createUser=async(req,res,next)=>{
         
         const newUser = {
             name:req.body.user,
-            email:req.body.email,
+            email:removeUnderscoreAndDot(req.body.email),
             active: false,
             password
         }
@@ -168,8 +168,7 @@ userController.updateUser=async(req,res,next)=>{
             const updated= await User.findOneAndUpdate({_id:userId, active: true},updateInfo)
             // const updated= await User.findOneAndUpdate({name,password},updateInfo)
             if(updated) {
-                sendResponse(res,200,true,{new_email},null,"Update user success")
-                // sendResponse(res,200,true,{data:{new_email:email}},null,"Send OTP")
+                sendResponse(res,200,true,{new_email:req.body.email},null,"Update user success")
             } else {
                 //send an email for warning
                 return res.status(400).json({ errors:[{"type": "field", "value": new_email, message: "Invalid login info!", path: "password", location:"body"}] });

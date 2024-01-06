@@ -28,9 +28,9 @@ export default function Login(prop) {
     };
     //function for login
     function isEmailOrUsername(input) {
-        const isEmail = /\S+@\S+\.\S+/.test(input.toLowerCase());
+        const isEmail = /\S+@\S+\.\S+/.test(input);
         if(isEmail) return true
-        const isUsername = /^[a-z][a-z0-9_]{4,}$/.test(input.replace(/\./g, '').toLowerCase());
+        const isUsername = /^[a-z][a-z0-9_]{4,}$/.test(input);
         if(isUsername) return false;
         else return null;
     }

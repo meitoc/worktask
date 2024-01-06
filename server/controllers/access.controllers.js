@@ -5,6 +5,7 @@ const Access = require("../models/Access.js")
 const bcrypt = require('bcryptjs');
 const { filterField } = require("../tools/filterData.js");
 const email = require("../email/email.js");
+const { removeUnderscoreAndDot } = require("../tools/realEmailAddess.js");
 const jwtSecretKey = process.env.JWT_SECRET_KEY;
 const showField = {name:1,email:1,phone:1,information:1}
 const accessController={}
@@ -58,7 +59,7 @@ accessController.postLogin = async (req,res,next) => {
             .isLength({ min: 8, max: 64 }).withMessage('Password must be between 8 and 64 characters!')
             .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/)
             .withMessage('Invalid password!')
-            .run(req);;
+            .run(req);
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
@@ -68,7 +69,7 @@ accessController.postLogin = async (req,res,next) => {
         //find and update Access
         const userFound = name?
         await User.findOne({name, active:true}).populate("information","-_id -__v")
-        : await User.findOne({email, active:true}).populate("information","-_id -__v");
+        : await User.findOne({email:removeUnderscoreAndDot(email), active:true}).populate("information","-_id -__v");
         if(!userFound) return res.status(400).json({ errors: [{ message: 'Invalid name or email!' }] });
         const accessFound = await Access.findOne({user: userFound._id})
         console.log("accessFound",accessFound)
@@ -140,7 +141,7 @@ accessController.postForgotPassword=async(req,res,next)=>{
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
-        const targetEmail = req.body.email;
+        const targetEmail = removeUnderscoreAndDot(req.body.email);
         const filter = {
             email:targetEmail,
             active: true
