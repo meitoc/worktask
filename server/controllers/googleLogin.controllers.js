@@ -25,7 +25,7 @@ googleLoginController.postGoogleLogin = async (req,res,next) => {
     if(response){
       const userInfos = response.data;
       const userRealName = userInfos.names[0].unstructuredName;
-      const email = userInfos.emailAddresses[0].value.toLowerCase().replace(/\./g, "");
+      const email = userInfos.emailAddresses[0].value.toLowerCase();
       const verifiedEmail = userInfos.emailAddresses[0].metadata.verified;
       const userAvatar = userInfos.photos[0].url;
       if(!verifiedEmail) return res.status(400).json({ errors: [{ message: 'Try again later!' }] });
@@ -33,7 +33,7 @@ googleLoginController.postGoogleLogin = async (req,res,next) => {
       const userFound = await User.findOne({email, active:true}).populate("information","-_id -__v");
       if(!userFound) {
         //create username by website rule
-        let username = email.toLowerCase().split('@')[0];
+        let username = email.toLowerCase().split('@')[0].replace(/\./g, '');
         if (!isNaN(username.charAt(0))) {
           username = "u" + username;
         }
