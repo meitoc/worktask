@@ -25,7 +25,7 @@ googleLoginController.postGoogleLogin = async (req,res,next) => {
     if(response){
       const userInfos = response.data;
       const userRealName = userInfos.names[0].unstructuredName;
-      const email = userInfos.emailAddresses[0].value;
+      const email = userInfos.emailAddresses[0].value.toLowerCase().replace(/\./g, "");
       const verifiedEmail = userInfos.emailAddresses[0].metadata.verified;
       const userAvatar = userInfos.photos[0].url;
       if(!verifiedEmail) return res.status(400).json({ errors: [{ message: 'Try again later!' }] });
@@ -33,7 +33,7 @@ googleLoginController.postGoogleLogin = async (req,res,next) => {
       const userFound = await User.findOne({email, active:true}).populate("information","-_id -__v");
       if(!userFound) {
         //create username by website rule
-        let username = email.toLowerCase().split('@')[0].replace(/\./g, '');
+        let username = email.toLowerCase().split('@')[0];
         if (!isNaN(username.charAt(0))) {
           username = "u" + username;
         }
@@ -49,7 +49,6 @@ googleLoginController.postGoogleLogin = async (req,res,next) => {
               const email_otp = await createdNewUser.generateFirst();
               const session = await createdNewUser.generateSession();
               if(session && email_otp){
-                console.log("SSSSSSSSSSS",session)
                 const updatedAccess= await Access.create({user:createdNewUser._id, email_otp, email_otp_status:false, session,role:"user",active:true})
                 if(!updatedAccess) return res.status(400).json({ errors: [{ message: 'Try again later!' }] });
                 sendResponse(res,200,true,{session},null,"Login Success");
