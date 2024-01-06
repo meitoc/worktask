@@ -6,6 +6,7 @@ const {JWT_SECRET_SESSION_KEY} = process.env;
 const accessSchema = mongoose.Schema(
   {
     email_otp: { type: String, unique: true},
+    new_email:{ type: String },
     email_otp_status: { type: Boolean, default:true},
     session: { type: String, required: true , unique: true},
     user: { type: mongoose.SchemaTypes.ObjectId, ref: "User", unique: true },

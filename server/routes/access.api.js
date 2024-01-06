@@ -1,15 +1,22 @@
 const express= require("express")
 const router = express.Router()
-const {getFirstAccess, postLogin, getLogout, getCheck, postForgotPassword} = require("../controllers/access.controllers.js")
+const {getOTPChangeEmail,getOTPAccess, postLogin, getLogout, getCheck, postForgotPassword} = require("../controllers/access.controllers.js")
 const { isAuthenticated } = require("../auth/authorization.js")
 
+//Request to change email
+/**
+ * @route GET api/access/url-change-email/aajs8Jhani1JJ
+ * @description access to first login
+ * @access public but just only by who received the otp email
+ */
+router.get("/url-change-email/:otp_string",getOTPChangeEmail)
 //Request to first log in
 /**
  * @route GET api/access/url-login/aajs8Jhani1JJ
  * @description access to first login
  * @access public but just only by who received the otp email
  */
-router.get("/url-login/:otp_string",getFirstAccess)
+router.get("/url-login/:otp_string",getOTPAccess)
 
 //Request for normal log in
 /**

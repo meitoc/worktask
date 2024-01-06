@@ -18,7 +18,7 @@ export default function Login(prop) {
     const [loginUser,setLoginUser] = useState(null);
     const [loginPassword,setLoginPassword] = useState(null);
     const [showPassword, setShowPassword] = useState(false);
-    const [note, setNote] = useState("Enter your username and password!");
+    const [note, setNote] = useState(["Enter your username and password!"]);
     const [disableLoginInput, setDisableLoginInput] = useState(false);
     
     const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -38,7 +38,7 @@ export default function Login(prop) {
     const checkLogin = async (loginName, password) => {
         setDisableLoginInput(true);
         const emailOrUsername = isEmailOrUsername(loginName)
-        if(password.length<8 || password.length>64 || !(/[a-z]/.test(password)) || !(/[A-Z]/.test(password)) || !(/[0-9]/.test(password)) || !(/[!@#$%^&*(),.?":{}|<>]/.test(password))) setNote( "Wrong password or user name!");
+        if(password.length<8 || password.length>64 || !(/[a-z]/.test(password)) || !(/[A-Z]/.test(password)) || !(/[0-9]/.test(password)) || !(/[!@#$%^&*(),.?":{}|<>]/.test(password))) setNote(["Wrong password or user name!"]);
         else if(emailOrUsername!==null ){
             const data = {password: `${password}`}
             if(emailOrUsername===true) data.email = `${loginName}`;
@@ -54,8 +54,7 @@ export default function Login(prop) {
                     console.log("Server: You'r logged in.");
                 }
             } else {
-                setNote( "Wrong password or user name!");
-                console.log( "Server: Wrong password or user name!");
+                setNote(response?.errors??["Unknown error!"]);
                 setDisableLoginInput(false);
             }
         }
@@ -75,8 +74,7 @@ export default function Login(prop) {
                     console.log("Server: You'r logged in.");
                 }
             } else {
-                setNote( "Wrong password or user name!");
-                console.log( "Server: Wrong password or user name!");
+                setNote(["Wrong password or user name!"]);
                 setDisableLoginInput(false);
             }
         }
@@ -115,7 +113,9 @@ export default function Login(prop) {
             label="Password"
         />
         </FormControl>
-        <p>{note}</p>
+        {note.map((e,i)=>{
+            return<p key={i}>{e}</p>
+        })}
         <Button
             variant="outlined"
             sx={{margin:2, width:270}}
@@ -141,7 +141,7 @@ export default function Login(prop) {
             disabled={disableLoginInput}
             onClick={()=>{
             prop.goTo("create_account");
-            setNote('Eter your email')
+            setNote(['Eter your email'])
             }}
         >
             Create new account

@@ -25,9 +25,9 @@ colorTaskController.updateTaskColor=async(req,res,next)=>{
         const {userId} = req.access;
         const colorName = req.body.name;
         const foundColor = await Color.findOne({name: colorName});
-        if(!foundColor) return res.status(400).json({ errors: [{ message: 'Can not update the task color!' }] }); 
+        if(!foundColor) return res.status(400).json({ errors: [{ msg: 'Can not update the task color!' }] }); 
         const updatedTask = await Task.findOneAndUpdate({_id:taskId,$or:[{"users.owners": userId}, {"users.managers": userId}],active:true},{color:foundColor._id});
-        if(!updatedTask) return res.status(400).json({ errors: [{ message: 'Can not update the task color!' }] }); 
+        if(!updatedTask) return res.status(400).json({ errors: [{ msg: 'Can not update the task color!' }] }); 
         sendResponse(res,200,true,{data:filterField(foundColor,showField)},null,"Change color success")
     }catch(err){
         next(err)

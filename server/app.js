@@ -40,7 +40,7 @@ app.use((err, req, res, next) => {
         err.statusCode ? err.statusCode : 500,
         false,
         null,
-        { message: err.message },
+        { msg: err.msg },
         err.isOperational ? err.errorType : "Internal Server Error"
       );
   });

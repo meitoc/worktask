@@ -37,10 +37,10 @@ async function uploadPublicAWSFile(req, res, next) {
   try {
     const uploadCommand = new PutObjectCommand(uploadParams);
     const response = await S3.send(uploadCommand);
-    if(!response) return res.status(400).json({ errors:[{"type": "data", message: "Invalid file!"}] });
+    if(!response) return res.status(400).json({ errors:[{"type": "data", msg: "Invalid file!"}] });
     next();
   } catch (err) {
-    res.status(400).json({ errors:[{"type": "data", message: "File server connected fail!"}] });
+    res.status(400).json({ errors:[{"type": "data", msg: "File server connected fail!"}] });
   }
 }
 
@@ -52,11 +52,11 @@ async function createPresignedUrlUpload(req, res, next) {
       Key: `task/${req.params.id}/${req.file}/${req.body.name}`,
     };
     const response = await getSignedUrl(S3, new PutObjectCommand(uploadParams), { expiresIn: 600 })
-    if(!response) return res.status(400).json({ errors:[{"type": "data", message: "Invalid file!"}] });
+    if(!response) return res.status(400).json({ errors:[{"type": "data", msg: "Invalid file!"}] });
     req.result=response;
     next();
   } catch (err) {
-    res.status(400).json({ errors:[{"type": "data", message: "File server connected fail!"}] });
+    res.status(400).json({ errors:[{"type": "data", msg: "File server connected fail!"}] });
   }
 }
 // upload on secure bucket
@@ -67,11 +67,11 @@ async function createPresignedUrlDownload(req, res, next) {
       Key: `task/${req.params.id}/${req.body._id}/${req.body.name}`,
     };
     const response = await getSignedUrl(S3, new GetObjectCommand(uploadParams), { expiresIn: 600 })
-    if(!response) return res.status(400).json({ errors:[{"type": "data", message: "Invalid file!"}] });
+    if(!response) return res.status(400).json({ errors:[{"type": "data", msg: "Invalid file!"}] });
     req.result=response;
     next();
   } catch (err) {
-    res.status(400).json({ errors:[{"type": "data", message: "File server connected fail!"}] });
+    res.status(400).json({ errors:[{"type": "data", msg: "File server connected fail!"}] });
   }
 }
 // check File on s3
@@ -85,11 +85,11 @@ async function checkAWSFile(req, res, next) {
       Key: `task/${req.params.id}/${req.body._id}/${req.body.name}`,
     };
     const response = await S3.send( new HeadObjectCommand(checkParams))
-    if(!response) return res.status(400).json({ errors:[{"type": "data", message: "Invalid file!"}] });
+    if(!response) return res.status(400).json({ errors:[{"type": "data", msg: "Invalid file!"}] });
     req.result=response;
     next();
   } catch (err) {
-    res.status(400).json({ errors:[{"type": "data", message: "File server connected fail!"}] });
+    res.status(400).json({ errors:[{"type": "data", msg: "File server connected fail!"}] });
   }
 }
 // delete a File on s3
@@ -103,11 +103,11 @@ async function deleteAWSFile(req, res, next) {
       Key: `task/${req.params.id}/${req.body._id}/${req.body.name}`,
     };
     const response = await S3.send( new DeleteObjectCommand(checkParams))
-    if(!response) return res.status(400).json({ errors:[{"type": "data", message: "Invalid file!"}] });
+    if(!response) return res.status(400).json({ errors:[{"type": "data", msg: "Invalid file!"}] });
     req.result=response;
     next();
   } catch (err) {
-    res.status(400).json({ errors:[{"type": "data", message: "File server connected fail!"}] });
+    res.status(400).json({ errors:[{"type": "data", msg: "File server connected fail!"}] });
   }
 }
 

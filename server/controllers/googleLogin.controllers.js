@@ -29,7 +29,7 @@ googleLoginController.postGoogleLogin = async (req,res,next) => {
       const email = removeUnderscoreAndDot(userInfos.emailAddresses[0].value);
       const verifiedEmail = userInfos.emailAddresses[0].metadata.verified;
       const userAvatar = userInfos.photos[0].url;
-      if(!verifiedEmail) return res.status(400).json({ errors: [{ message: 'Try again later!' }] });
+      if(!verifiedEmail) return res.status(400).json({ errors: [{ msg: 'Try again later!' }] });
       //find and update Access
       const userFound = await User.findOne({email, active:true}).populate("information","-_id -__v");
       if(!userFound) {
@@ -51,7 +51,7 @@ googleLoginController.postGoogleLogin = async (req,res,next) => {
               const session = await createdNewUser.generateSession();
               if(session && email_otp){
                 const updatedAccess= await Access.create({user:createdNewUser._id, email_otp, email_otp_status:false, session,role:"user",active:true})
-                if(!updatedAccess) return res.status(400).json({ errors: [{ message: 'Try again later!' }] });
+                if(!updatedAccess) return res.status(400).json({ errors: [{ msg: 'Try again later!' }] });
                 sendResponse(res,200,true,{session},null,"Login Success");
                 return true
               }
@@ -68,12 +68,12 @@ googleLoginController.postGoogleLogin = async (req,res,next) => {
             }
           }
         } else {
-          return res.status(400).json({ errors: [{ message: 'Try again later!' }] });
+          return res.status(400).json({ errors: [{ msg: 'Try again later!' }] });
         }
       }else{
         const session= await userFound.generateSession();
         const updatedAccess= await Access.findOneAndUpdate({user:userFound._id,active:true}, {session})
-        if(!updatedAccess) return res.status(400).json({ errors: [{ message: 'Please login by Google!' }] });
+        if(!updatedAccess) return res.status(400).json({ errors: [{ msg: 'Please login by Google!' }] });
         sendResponse(res,200,true,{session},null,"Authenticate Account Success")
       }
     }

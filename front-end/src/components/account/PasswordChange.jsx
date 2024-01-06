@@ -69,7 +69,7 @@ export default function PasswordChange() {
             setPasswordError(errorString)
         }
     }
-    const handleRepeatePassword = (event)=>{
+    const handleRepeatPassword = (event)=>{
         setRepeatPassword(event.target.value)
     }
     return  (
@@ -113,7 +113,7 @@ export default function PasswordChange() {
                             type={showRepeatPassword ? 'text' : 'password'}
                             autoComplete="new-password"
                             value={repeatPassword}
-                            onChange={handleRepeatePassword}
+                            onChange={handleRepeatPassword}
                             endAdornment={
                             <InputAdornment position="end">
                                 <IconButton

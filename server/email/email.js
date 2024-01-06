@@ -1,8 +1,7 @@
 const nodemailer = require('nodemailer');
-const {BACKEND_MAIL_SERVER_HOST,BACKEND_MAIL_SERVER_USER,BACKEND_MAIL_SERVER_PASSWORD, BACKEND_MAIL_SERVER_PORT} = process.env;
+const {FRONTEND_URL,BACKEND_MAIL_SERVER_HOST,BACKEND_MAIL_SERVER_USER,BACKEND_MAIL_SERVER_PASSWORD, BACKEND_MAIL_SERVER_PORT} = process.env;
 
-const email={}
-email.sendEmail = async function (title,content, emailTarget)
+const sendEmail = async function (title,content, emailTarget)
 {
     const emailContent = `<!DOCTYPE html>
     <html>
@@ -58,4 +57,36 @@ email.sendEmail = async function (title,content, emailTarget)
         return false;
         }
 }
+const activeNewEmailContent= (otp)=>{
+    const content = `<div>
+    <p>Welcome you to task.meitoc.net</p>
+    <p>You are changing email address to this email.</p>
+    </div>
+    <div>
+    <a href="${FRONTEND_URL}/url/url-change-email/${otp}">CLICK HERE TO VERIFY YOUR NEW EMAIL.</a>
+    </div>`
+    return content
+}
+const activeAccountContent= (otp)=>{
+    const content = `<div>
+    <p>Welcome you to task.meitoc.net</p>
+    </div>
+    <div>
+    <a href="${FRONTEND_URL}/url/url-login/${otp}">CLICK HERE TO VERIFY YOUR EMAIL.</a>
+    </div>`
+    return content
+}
+const loginContent= (otp)=>{
+    const content = `<div>
+    <p>Welcome you to task.meitoc.net</p>
+    </div>
+    <div>
+    <a href="${FRONTEND_URL}/url/url-login/${otp}">CLICK HERE TO ACCESS YOUR ACCOUNT.</a>
+    </div>`
+    return content
+}
+const sendVerifyNewEmail = (title,otp,emailTarget)=> sendEmail(title,activeNewEmailContent(otp),emailTarget)
+const sendVerifyEmail = (title,otp,emailTarget)=> sendEmail(title,activeAccountContent(otp),emailTarget)
+const sendLoginEmail = (title,otp,emailTarget)=> sendEmail(title,loginContent(otp),emailTarget)
+const email={sendEmail,sendLoginEmail,sendVerifyEmail,sendVerifyNewEmail}
 module.exports = email;

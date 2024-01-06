@@ -22,8 +22,8 @@ import DetailTask from "./pages/DetailTask";
 import Spaces from "./pages/Spaces";
 import AloneOwnerTasks from "./pages/AloneOwnerTasks";
 import AloneSharedTasks from "./pages/AloneSharedTasks";
-import FirstAccess from "./pages/FirstAccess";
 import Policy from "./pages/Policy";
+import Url from "./pages/Url";
 
 const router = createBrowserRouter([
   {
@@ -87,8 +87,8 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: "url-login/:accessString",
-        element: <FirstAccess />,
+        path: "url/:command/:accessString",
+        element: <Url />,
         errorElement: <ErrorPage />,
       },
       {

@@ -7,6 +7,7 @@ const Access = require("../models/Access.js");
 // const { response } = require("express");
 const email = require("../email/email.js");
 const { filterField } = require("../tools/filterData.js");
+const { removeUnderscoreAndDot } = require("../tools/realEmailAddess.js");
 const showField = {name:1};
 
 const {FRONTEND_URL} = process.env;
@@ -46,11 +47,11 @@ userController.createUser=async(req,res,next)=>{
             password
         }
         const existUser = await User.findOne({$or:[{name:newUser.name,active:true},{email:newUser.email,active:true}]})
-        if(existUser) return res.status(400).json({ errors: [{ message: 'User existed!' }] });
+        if(existUser) return res.status(400).json({ errors: [{ msg: 'User existed!' }] });
         else{
             const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
             const  waitingUser = await User.findOne({$or:[{name:newUser.name,active:false,createdAt: { $gt: tenMinutesAgo }},{email:newUser.email,active:false,createdAt: { $gt: tenMinutesAgo }}]})
-            if(waitingUser) return res.status(400).json({ errors: [{ message: `User  is unvalable, try after ${Math.ceil((waitingUser.createdAt-tenMinutesAgo)/1000)} seconds!` }] });
+            if(waitingUser) return res.status(400).json({ errors: [{ msg: `User  is unvalable, try after ${Math.ceil((waitingUser.createdAt-tenMinutesAgo)/1000)} seconds!` }] });
             else try{
                 //create UserInfo
                 const createdInfo= await UserInfo.create({})
@@ -64,6 +65,7 @@ userController.createUser=async(req,res,next)=>{
                 const otp_string = await createdUser.generateFirst();
                 const session = await createdUser.generateSession();
                 const newAccess = {
+                    new_email:newUser.email,
                     email_otp : encodeURIComponent(otp_string).replace(/\./g, '__'),
                     email_otp_status : true,
                     session,
@@ -72,14 +74,7 @@ userController.createUser=async(req,res,next)=>{
                 };
                 const createdAccess= await Access.create(newAccess)
                 //send email contains otp
-                const emailContent=`
-                <div>
-                <p>Welcome you to task.meitoc.net</p>
-                </div>
-                <div>
-                <a href="${FRONTEND_URL}/url-login/${newAccess.email_otp}">CLICK HERE TO VERIFY YOUR EMAIL.</a>
-                </div>`
-                const sendEmail = await email.sendEmail("Email Authentication",emailContent,newUser.email);
+                const sendEmail = await email.sendVerifyEmail("Email Verify",newAccess.email_otp,newUser.email);
                 if(!sendEmail){
                     //delete UserInfo
                     const deleteIfo= await UserInfo.deleteOne({_id:createdInfo._id})
@@ -87,7 +82,7 @@ userController.createUser=async(req,res,next)=>{
                     const deleteUser= await User.deleteOne({_id:createdUser._id})
                     //delete Access
                     const deleteAccess = await Access.deleteOne({_id:createdAccess._id});
-                    return res.status(400).json({ errors: [{ message: 'Try other email or try later!' }] });
+                    return res.status(400).json({ errors: [{ msg: 'Try other email or try later!' }] });
                 }
                 //response with secure password
                 const responseUser={
@@ -113,7 +108,7 @@ userController.getAUser=async(req,res,next)=>{
         const userFound= req.query.info==="true" ?
         await User.findOne(filter).populate("information")
         :await User.find(filter);
-        if(userFound===null) return res.status(400).json({ errors: [{ message: 'No user be found!' }] }); 
+        if(userFound===null) return res.status(400).json({ errors: [{ msg: 'No user be found!' }] }); 
         const filterredUser = req.query.info==="true" ?
             {name: userFound.name, email: userFound.email?userFound.email:"", phone:userFound.phone?userFound.phone:"", information: userFound.information?userFound.information:{}}
             : {name: userFound.name, email: userFound.email?userFound.email:"", phone:userFound.phone?userFound.phone:""};
@@ -145,17 +140,17 @@ userController.getAllUser=async(req,res,next)=>{
             const filterredUser = userFound.map(e=>filterField(e,showField))
             sendResponse(res,200,true,{users:filterredUser},null,"Found list of users success")
         }
-        else return res.status(400).json({ errors: [{ message: 'No user be found!' }] }); 
+        else return res.status(400).json({ errors: [{ msg: 'No user be found!' }] }); 
     }catch(err){
         next(err)
     }
 }
 //Update a user
 userController.updateUser=async(req,res,next)=>{
-    
     try{
         //check body by express-validator
         const {userId} =  req.access
+        console.log(req.body)
         if(req.body.email) {//update email
             await body('email').isEmail().withMessage('Invalid email!').run(req);
             const errors = validationResult(req);
@@ -163,46 +158,55 @@ userController.updateUser=async(req,res,next)=>{
                 return res.status(400).json({ errors: errors.array() });
             }
 
-            //no secure now
-            //add update for OTP and AccessSession
-            const updated= await User.findOneAndUpdate({_id:userId, active: true},updateInfo)
-            // const updated= await User.findOneAndUpdate({name,password},updateInfo)
-            if(updated) {
-                sendResponse(res,200,true,{new_email:req.body.email},null,"Update user success")
-            } else {
-                //send an email for warning
-                return res.status(400).json({ errors:[{"type": "field", "value": new_email, message: "Invalid login info!", path: "password", location:"body"}] });
+            const new_email=removeUnderscoreAndDot(req.body.email)
+            const existUser = await User.findOne({email:new_email,active:true})
+            if(existUser) return res.status(400).json({ errors: [{ msg: 'Email is exist!' }] });
+            else {
+                const presentUser = await User.findOne({_id:userId,active:true})
+                const otp_string = await presentUser.generateChange();
+                const newAccess = {
+                    new_email,
+                    email_otp : encodeURIComponent(otp_string).replace(/\./g, '__'),
+                    email_otp_status : true
+                };
+                const changedAccess= await Access.findOneAndUpdate({user:presentUser._id},newAccess);
+                if(!changedAccess) return res.status(400).json({ errors: [{ msg: 'User is not exist or is not availabe!' }] });
+                const sendEmail = await email.sendVerifyNewEmail("New Email Verify",newAccess.email_otp,new_email)
+                if(!sendEmail){
+                    return res.status(400).json({ errors: [{ msg: 'Try other email or try later!' }] });
+                }
+                sendResponse(res,200,true,{new_email},null,"Sent email successfully")
             }
         } else {//update password
-        await body('password')
-            .isLength({ min: 8, max: 64 }).withMessage('Password must be between 8 and 64 characters!')
-            .matches(/[a-z]/).withMessage("Contain at least one lowercase letter!")
-            .matches(/[A-Z]/).withMessage( "Contain at least one upprtcase letter!")
-            .matches(/[0-9]/).withMessage( "Contain at least one degit!")
-            .matches(/[!@#$%^&*(),.?":{}|<>]/).withMessage("Contain at least one special character!")
-            .run(req);
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
+            await body('password')
+                .isLength({ min: 8, max: 64 }).withMessage('Password must be between 8 and 64 characters!')
+                .matches(/[a-z]/).withMessage("Contain at least one lowercase letter!")
+                .matches(/[A-Z]/).withMessage( "Contain at least one upprtcase letter!")
+                .matches(/[0-9]/).withMessage( "Contain at least one degit!")
+                .matches(/[!@#$%^&*(),.?":{}|<>]/).withMessage("Contain at least one special character!")
+                .run(req);
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
 
-        const salt = await bcrypt.genSalt(10);
-        const password = await bcrypt.hash(`${req.body.password}`, salt);
-        const updateInfo = {password};
-        console.log(password)
-        //no secure now
-        //add update for OTP and AccessSession
-        const updated= await User.findOneAndUpdate({_id:userId,active:true},updateInfo)
-        // const updated= await User.findOneAndUpdate({name,password},updateInfo)
-        if(updated) {
-            sendResponse(res,200,true,{password},null,"Update user success")
-            // sendResponse(res,200,true,{data:{new_email:email}},null,"Send OTP")
+            const salt = await bcrypt.genSalt(10);
+            const password = await bcrypt.hash(`${req.body.password}`, salt);
+            const updateInfo = {password};
+            console.log(password)
+            //no secure now
+            //add update for OTP and AccessSession
+            const updated= await User.findOneAndUpdate({_id:userId,active:true},updateInfo)
+            // const updated= await User.findOneAndUpdate({name,password},updateInfo)
+            if(updated) {
+                sendResponse(res,200,true,{password},null,"Update user success")
+                // sendResponse(res,200,true,{data:{new_email:email}},null,"Send OTP")
+            }
+            else {
+                //send an email for warning
+                return res.status(400).json({ errors:[{"type": "field", "value": password, msg: "Invalid login info!", path: "password", location:"body"}] });
+            }
         }
-        else {
-            //send an email for warning
-            return res.status(400).json({ errors:[{"type": "field", "value": password, message: "Invalid login info!", path: "password", location:"body"}] });
-        }
-    }
     }catch(err){
         next(err)
     }
@@ -225,7 +229,7 @@ userController.deleteUserByName=async(req,res,next)=>{
             //hide updated for secure
             sendResponse(res,200,true,{},null,"Delete user success");
         }
-        else return res.status(400).json({ errors: [{ message: 'No matched data' }] });
+        else return res.status(400).json({ errors: [{ msg: 'No matched data' }] });
     }catch(err){
         next(err)
     }

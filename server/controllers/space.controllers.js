@@ -38,9 +38,9 @@ spaceController.createSpace = async(req,res,next)=>{
             order: newOder
         }
         const created= await Space.create(info);
-        if(!created) return res.status(400).json({ errors: [{ message: 'Can not create a space!' }] }); 
+        if(!created) return res.status(400).json({ errors: [{ msg: 'Can not create a space!' }] }); 
         const foundSpace = await Space.findOne({_id:created._id,active:true}).populate("color","name background frame text -_id")
-        if(!foundSpace) return res.status(400).json({ errors: [{ message: 'Can not create a space!' }] }); 
+        if(!foundSpace) return res.status(400).json({ errors: [{ msg: 'Can not create a space!' }] }); 
         sendResponse(res,200,true,filterField(foundSpace,showField),null,"Create space Success")
     }catch(err){
         next(err);
@@ -83,7 +83,7 @@ spaceController.updateSpace=async(req,res,next)=>{
         }
         update.color=colorId;
         const updatedSpace = await Space.findOneAndUpdate({_id:spaceId,user: userId,active:true},update,{new:true}).populate("color","name frame background text -_id");
-        if(!updatedSpace) return res.status(400).json({ errors: [{ message: 'Can not update the task!' }] }); 
+        if(!updatedSpace) return res.status(400).json({ errors: [{ msg: 'Can not update the task!' }] }); 
         sendResponse(res,200,true,filterField(updatedSpace,showField),null,"Change data success")
     }catch(err){
         next(err)
@@ -105,7 +105,7 @@ spaceController.updateSpaces=async(req,res,next)=>{
                 const foundTask = await Space.findOneAndUpdate({_id:e,"user":userId,active:true},{order:i})
                 if(foundTask) return e;
             }));
-        if(!updatedSpaces) return res.status(400).json({ errors: [{ message: 'Can not update the task!' }] }); 
+        if(!updatedSpaces) return res.status(400).json({ errors: [{ msg: 'Can not update the task!' }] }); 
         sendResponse(res,200,true,updatedSpaces,null,"Change data success")
     }catch(err){
         next(err)
@@ -125,7 +125,7 @@ spaceController.getAllSpaces=async(req,res,next)=>{
 
     }catch(err){
         //no show public
-        return res.status(400).json({ errors: [{message: "Unkown error"}] });
+        return res.status(400).json({ errors: [{msg: "Unkown error"}] });
     }
 }
 //Get a space
@@ -139,9 +139,9 @@ spaceController.getSpace=async(req,res,next)=>{
             // const user=req.params.user_name;
             const filter = {_id:id,user:userId,active:true}
             const foundSpace=  await Space.findOne(filter).populate("color","name background frame text -_id")
-            if(!foundSpace) return res.status(400).json({ errors: [{message: "Can't find space!"}] });
+            if(!foundSpace) return res.status(400).json({ errors: [{msg: "Can't find space!"}] });
             sendResponse(res,200,true,filterField(foundSpace,showField),null,"Found list of spaces success")
-        }else return res.status(400).json({ errors: [{message: "No accept to access!"}] });
+        }else return res.status(400).json({ errors: [{msg: "No accept to access!"}] });
     }catch(err){
         next(err)
     }

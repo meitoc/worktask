@@ -61,7 +61,7 @@ userTaskController.addUser=async(req,res,next)=>{
             }
             return count+length;
         }
-        if(!foundUser || userAddId===userId) return res.status(400).json({ errors: [{ message: 'Can not update users!' }] }); 
+        if(!foundUser || userAddId===userId) return res.status(400).json({ errors: [{ msg: 'Can not update users!' }] }); 
         //update the task when user is the owner
         const taskId = req.params.id
         let totalChangedChildTask = 0;
@@ -81,7 +81,7 @@ userTaskController.addUser=async(req,res,next)=>{
                 const updatedTask3 = userAddRole==="member"?
                 await Task.findOneAndUpdate({_id:taskId, active:true, member_add_member: true, "users.members": userId, "users.owners":{$ne:userAddId}, "users.managers":{$ne:userAddId}},{$addToSet:{"users.members":userAddId}})
                 : null; 
-                if(!updatedTask3) return res.status(400).json({ errors: [{ message: 'Can not update users!' }] }); 
+                if(!updatedTask3) return res.status(400).json({ errors: [{ msg: 'Can not update users!' }] }); 
                 else {  //update child task when user is the member
                     totalChangedChildTask = await addToTaskAndChilds(updatedTask3._id, {task:{$ne:null}, "users.members": userId, "users.owners":{$ne:userAddId}, "users.managers":{$ne:userAddId}},{$addToSet:{"users.managers":userAddId}})
                 }
@@ -154,7 +154,7 @@ userTaskController.removeUser=async(req,res,next)=>{
             }
             return count+length;
         }
-        if(!foundUser || userRemoveId===userId) return res.status(400).json({ errors: [{ message: 'Can not update users!' }] }); 
+        if(!foundUser || userRemoveId===userId) return res.status(400).json({ errors: [{ msg: 'Can not update users!' }] }); 
         //update the task when user is the owner
         const taskId = req.params.id
         let totalChangedChildTask = 0;
@@ -163,7 +163,7 @@ userTaskController.removeUser=async(req,res,next)=>{
             const updatedTask2 = await Task.findOneAndUpdate({_id:taskId, active:true, member_add_member:true, "users.managers": userId},{$pull:{"users.managers":userRemoveId,"users.members":userRemoveId}})
             if(!updatedTask2) {  //update the task when user is the member
                 const updatedTask3 = await Task.findOneAndUpdate({_id:taskId, active:true, member_add_member: true, "users.member": userId},{$pull:{"users.members":userRemoveId}})
-                if(!updatedTask3) return res.status(400).json({ errors: [{ message: 'Can not update users!' }] }); 
+                if(!updatedTask3) return res.status(400).json({ errors: [{ msg: 'Can not update users!' }] }); 
                 else {
                     totalChangedChildTask = await removeFromTaskAndChilds(updatedTask3._id,null,{$pull:{"users.managers":userRemoveId,"users.members":userRemoveId}})
                 }

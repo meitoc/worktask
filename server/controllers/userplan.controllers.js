@@ -25,7 +25,7 @@ userPlanController.createUserPlan = async(req,res,next)=>{
         const matchedPlan = await Plan.findOne({code: planCode});
         console.log(matchedPlan);
         if(!matchedPlan)
-        return res.status(400).json({ errors:[{"type": "field", "value": req.body.plan_code, message: "Invalid plan code!", path: "plan_code", location:"body"}] });
+        return res.status(400).json({ errors:[{"type": "field", "value": req.body.plan_code, msg: "Invalid plan code!", path: "plan_code", location:"body"}] });
         
         //process
         const info = {
@@ -40,7 +40,7 @@ userPlanController.createUserPlan = async(req,res,next)=>{
     }catch(err){
         //error
         if (err.code === 11000) {
-        return res.status(400).json({ errors:[{"type": "field", "value": req.body.code, message: "Name is already exist!", path: "code", location:"body"}] });
+        return res.status(400).json({ errors:[{"type": "field", "value": req.body.code, msg: "Name is already exist!", path: "code", location:"body"}] });
         }
         //show other error for admin
         next(err);
@@ -67,7 +67,7 @@ userPlanController.updateUserPlan=async(req,res,next)=>{
         //load user_name
         const matchedPlan = await Plan.findOne({code: planCode});
         if(!matchedPlan)
-        return res.status(400).json({ errors:[{"type": "field", "value": req.body.plan_code, message: "Invalid plan code!", path: "plan_code", location:"body"}] });
+        return res.status(400).json({ errors:[{"type": "field", "value": req.body.plan_code, msg: "Invalid plan code!", path: "plan_code", location:"body"}] });
     
         const id = req.params.id;
         const {start, expiry, paid, total_paid} = req.body;
@@ -99,7 +99,7 @@ userPlanController.getAllUserPlans=async(req,res,next)=>{
 
     }catch(err){
         //no show public
-        return res.status(400).json({ errors: [{message: "Unkown error"}] });
+        return res.status(400).json({ errors: [{msg: "Unkown error"}] });
     }
 }
 //Get a user plan
@@ -116,7 +116,7 @@ userPlanController.getUserPlan=async(req,res,next)=>{
                 await UserPlan.find(filter).populate("plan")
                 : await UserPlan.find(filter);
             sendResponse(res,200,true,{data:listOfFound},null,"Found list of userPlans success")
-        }else return res.status(400).json({ errors: [{message: "No accept to access!"}] });
+        }else return res.status(400).json({ errors: [{msg: "No accept to access!"}] });
     }catch(err){
         next(err)
     }

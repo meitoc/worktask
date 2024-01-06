@@ -1,7 +1,7 @@
 import axios from 'axios';
 const {VITE_BACK_END_BASE_URL} = import.meta.env
 const throwError = (error)=>{
-  return  {success:false, errors:error.response.data.errors.map(e=>e.message)};
+  return  {success:false, errors:error.response.data.errors.map(e=>e.msg)};
 }
 /////////SPACE
 //update space oder
@@ -244,7 +244,8 @@ async function postLogin(data) {
     return throwError(error);
   }
 }
-async function getFirstAccess(string) {
+//otp for access
+async function getURLAccess(string) {
   try {
     const headers = {
       'Content-Type': 'application/json',
@@ -765,13 +766,27 @@ async function postReadNotify(id,status) {
     return throwError(error);
   }
 }
+// otp method
+async function getURLChangeEmail(string) {
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+      accept: 'application/json',
+    }
+    const response = await axios.get(`${VITE_BACK_END_BASE_URL}/api/access/url-change-email/${string}`,{headers});
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return throwError(error);
+  }
+}
 export {
   putSpaces,
   getSpaces, getSpace,postSpace,putSpace,deleteSpace,
   putSpaceColor,
   getColors,
   getUserInfo,getOtherUserInfo, putUserInfo,
-  getCheckAccess, getLogout, postLogin, getFirstAccess, postForgotPassword,
+  getCheckAccess, getLogout, postLogin, getURLAccess, postForgotPassword,
   postGoogleLogin,
   getUser,
   postCreateUser, putUpdateUser,
@@ -788,4 +803,5 @@ export {
   putRecheckFile,
   postAvatar,
   getNotify,postReadNotify,
+  getURLChangeEmail,
 };

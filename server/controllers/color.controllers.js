@@ -26,7 +26,7 @@ colorController.createColor = async(req,res,next)=>{
     }catch(err){
         //error
         if (err.code === 11000) {
-        return res.status(400).json({ errors:[{"type": "field", "value": req.body.name, message: "Name is already exist!", path: "name", location:"body"}] });
+        return res.status(400).json({ errors:[{"type": "field", "value": req.body.name, msg: "Name is already exist!", path: "name", location:"body"}] });
         }
         //show other error for admin
         next(err);
@@ -65,7 +65,7 @@ colorController.getAllColors=async(req,res,next)=>{
 
     }catch(err){
         //no show public
-        return res.status(400).json({ errors: [{message: "Unkown error"}] });
+        return res.status(400).json({ errors: [{msg: "Unkown error"}] });
     }
 }
 //Get a color

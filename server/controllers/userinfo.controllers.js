@@ -45,7 +45,7 @@ userInfoController.getAUserInfo=async(req,res,next)=>{
     else filter._id=userId;
     try{
         const userInfoFound = await User.findOne(filter).populate("information", "-_id -__v");
-        if(userInfoFound===null) return res.status(400).json({ errors: [{ message: 'No user info be found!' }] }); 
+        if(userInfoFound===null) return res.status(400).json({ errors: [{ msg: 'No user info be found!' }] }); 
         sendResponse(res,200,true, filterField(userInfoFound,showField),null,"Found list of user info success")
     }catch(err){
         next(err)

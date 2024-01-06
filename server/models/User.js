@@ -8,7 +8,6 @@ const userSchema = mongoose.Schema(
     name: { type: String, required: true, unique: true },
     
     email:{ type: String },
-    new_email:{ type: String },
     phone:{ type: String },
     active: { type: Boolean, required: true },
     information: { type: mongoose.SchemaTypes.ObjectId, ref: "UserInfo", unique: true },
@@ -27,6 +26,11 @@ userSchema.methods.generateSession = async function() {
 //JWT secure firt login string, forever life time
 userSchema.methods.generateFirst = async function() {
   const accessToken = await jwt.sign({_id: this._id, email: this.email_otp}, JWT_SECRET_FIRST_KEY);
+  return accessToken;
+}
+//JWT secure firt login string, forever life time
+userSchema.methods.generateChange = async function() {
+  const accessToken = await jwt.sign({_id: this._id, email: this.email_otp}, JWT_SECRET_FIRST_KEY,{expiresIn: '1d'});
   return accessToken;
 }
 //Create and export model

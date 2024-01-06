@@ -23,9 +23,9 @@ taskSpaceController.addSpaceTask=async(req,res,next)=>{
         const {userId} = req.access;
         const taskId = req.body.task;
         const foundTask = await Task.findOne({_id: taskId, $or:[{"users.owners":userId},{"users.members":userId}],active:true});
-        if(!foundTask) return res.status(400).json({ errors: [{ message: 'Can not update the space task!' }] }); 
+        if(!foundTask) return res.status(400).json({ errors: [{ msg: 'Can not update the space task!' }] }); 
         const updatedSpace = await Space.findOneAndUpdate({ _id:spaceId,user: userId },{ $addToSet: { tasks: taskId } },{ new: true });
-        if(!updatedSpace) return res.status(400).json({ errors: [{ message: 'Can not update the space task!' }] }); 
+        if(!updatedSpace) return res.status(400).json({ errors: [{ msg: 'Can not update the space task!' }] }); 
         const updatedOtherSpace = await Space.findOneAndUpdate({ _id:{$ne:spaceId},user: userId,tasks:taskId  },{ $pull: { tasks: taskId } },{ new: true });
         if(!updatedOtherSpace) updatedSpace.remove_from_space=updatedOtherSpace?._id??null;
         sendResponse(res,200,true,filterField(updatedSpace,showField),null,"Add task success")
@@ -48,9 +48,9 @@ taskSpaceController.removeSpaceTask=async(req,res,next)=>{
         const {userId} = req.access;
         const taskId = req.body.task;
         const foundTask = await Task.findOne({_id: taskId, $or:[{"users.owners":userId},{"users.members":userId}],active:true});
-        if(!foundTask) return res.status(400).json({ errors: [{ message: 'Can not update the space task!' }] }); 
+        if(!foundTask) return res.status(400).json({ errors: [{ msg: 'Can not update the space task!' }] }); 
         const updatedSpace = await Space.findOneAndUpdate({ _id:spaceId,user: userId },{ $pull: { tasks: taskId } },{ new: true });
-        if(!updatedSpace) return res.status(400).json({ errors: [{ message: 'Can not update the space task!' }] }); 
+        if(!updatedSpace) return res.status(400).json({ errors: [{ msg: 'Can not update the space task!' }] }); 
         sendResponse(res,200,true,filterField(updatedSpace,showField),null,"Add task success")
     }catch(err){
         next(err)

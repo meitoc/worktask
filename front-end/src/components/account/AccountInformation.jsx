@@ -16,14 +16,16 @@ export default function AccountInformation() {
     const [doneSubmitEmail, setDoneSubmitEmail] = useState(undefined);
     const [openModalEmail, setOpenModalEmail] = useState(false);
     const [emailError, setEmailError] = useState(false);
+    const [errors, setErrors] = useState([]);
     
     const handleSubmit = async () => {
         if(email!==showEmail){
             setDoneSubmitEmail(false);
-            const result = await putUpdateUser({showEmail});
-                if (result?.status === true) {
+            const result = await putUpdateUser({email:showEmail});
+                if (result?.success === true) {
                     setDoneSubmitEmail(true);
                 } else {
+                    setErrors(result.errors)
                     setDoneSubmitEmail(undefined);
                 }
         } else setEmailError(true)
@@ -51,7 +53,7 @@ export default function AccountInformation() {
             >
                 <div style={doneSubmitEmail!==true?styleShow:styleHide}>
                     <TextField
-                        disabled={doneSubmitEmail===""}
+                        disabled={doneSubmitEmail===false}
                         sx={{margin:2, width:270}}
                         required
                         id="outlined-required"
@@ -60,9 +62,15 @@ export default function AccountInformation() {
                         onChange={handleChangeEmail}
                         error={emailError}
                     />
-                    <Typography sx={{display:(doneSubmitEmail===false?"block":"none"),margin:2, width:270}} variant="caption" gutterBottom>
-                        Sorry! Something went be wrong. Try again or wait a minute.
-                    </Typography>
+                    {
+                        errors.map((e,i)=>{
+                            return (
+                                <Typography key={i} sx={{margin:2, width:270}} variant="caption" gutterBottom>
+                                    {e}
+                                </Typography>
+                            )
+                        })
+                    }
                     <Button
                         disabled={doneSubmitEmail===""}
                         sx={{margin:2, width:270}}

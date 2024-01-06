@@ -1,7 +1,7 @@
 const utilsHelper = {};
 class AppError extends Error {
-    constructor(statusCode, message, errorType) {
-      super(message);
+    constructor(statusCode, msg, errorType) {
+      super(msg);
       this.statusCode = statusCode;
       this.errorType = errorType;
       // all errors using this class are operational errors.
@@ -14,11 +14,11 @@ class AppError extends Error {
   utilsHelper.AppError = AppError;
   module.exports = utilsHelper;
 
-utilsHelper.sendResponse = (res, status, success, data, errors, message) => {
+utilsHelper.sendResponse = (res, status, success, data, errors, msg) => {
   const response = {};
   if (success) response.success = success;
   if (data) response.data = data;
   if (errors) response.errors = errors;
-  if (message) response.message = message;
+  if (msg) response.msg = msg;
   return res.status(status).json(response);
 };

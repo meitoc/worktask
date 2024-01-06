@@ -76,7 +76,7 @@ taskController.createRootTask = async(req,res,next)=>{
 
         //process
         const created= await Task.create(newTask);
-        if(!created) return res.status(400).json({ errors: [{ message: 'Can not create a task!' }] }); 
+        if(!created) return res.status(400).json({ errors: [{ msg: 'Can not create a task!' }] }); 
         const foundTask = await Task.findOne({_id:created._id})
             .populate("users.owners users.managers users.members","name active -_id")
             .populate("color","name background frame text -_id")
@@ -143,7 +143,7 @@ taskController.createTask=async(req,res,next)=>{
         const parentTaskId = req.params.id;
         //find task
         const foundTask = await Task.findOne({_id:parentTaskId, $or:[{"users.owners":userId}, {"users.managers":userId}, {"users.members":userId}], active:true})
-        if(!foundTask) return res.status(400).json({ errors: [{ message: 'Can not create a task!' }] }); 
+        if(!foundTask) return res.status(400).json({ errors: [{ msg: 'Can not create a task!' }] }); 
         console.log(foundTask)
         let users = {
             owners: [...foundTask?.users?.owners],
@@ -179,13 +179,13 @@ taskController.createTask=async(req,res,next)=>{
         const sortByTime = req.query.time==="forward"? 1 : req.query.time==="backward"? -1 : 0;
         //process
         const createdTask= await Task.create(newTask)
-        if(!createdTask) return res.status(400).json({ errors: [{ message: 'Can not create a task!' }] }); 
+        if(!createdTask) return res.status(400).json({ errors: [{ msg: 'Can not create a task!' }] }); 
         const filter = {_id:parentTaskId,$or:[{"users.owners": userId}, {"users.managers": userId}, {"users.members": userId}], active:true}
         const reFoundTask= await Task.findOne(filter).populate("color","name background frame text -_id")
             .populate("users.owners users.managers users.members","name active -_id")
             .populate("color","name frame background text -_id")
             .sort({ order:1, createdAt: sortByTime })
-        if(!reFoundTask) return res.status(400).json({ errors: [{ message: 'Wrong task id!' }] });
+        if(!reFoundTask) return res.status(400).json({ errors: [{ msg: 'Wrong task id!' }] });
         reFoundTask.tree = await loadTree(reFoundTask.parent_task,userId);
         reFoundTask.tasks = await loadTasks(reFoundTask._id);
         sendResponse(res,200,true,filterField(reFoundTask,showField),null,"Found list of task success")
@@ -266,7 +266,7 @@ taskController.updateTask=async(req,res,next)=>{
                     .sort({ order:1, createdAt: sortByTime })
             :false;
         if(!updatedTask) {
-            return res.status(400).json({ errors: [{ message: 'Can not update the task!' }] }); 
+            return res.status(400).json({ errors: [{ msg: 'Can not update the task!' }] }); 
         }
         updatedTask.tree = await loadTree(updatedTask.parent_task,userId);
         updatedTask.tasks = await loadTasks(updatedTask._id);
@@ -318,7 +318,7 @@ taskController.getTask=async(req,res,next)=>{
             .populate("users.owners users.managers users.members","name active -_id")
             .populate("color","name frame background text -_id")
             .sort({ order:1, createdAt: sortByTime })
-        if(!foundTask) return res.status(400).json({ errors: [{ message: 'Wrong task id!' }] });
+        if(!foundTask) return res.status(400).json({ errors: [{ msg: 'Wrong task id!' }] });
         foundTask.tree = await loadTree(foundTask.parent_task,userId);
         foundTask.tasks = await loadTasks(foundTask._id);
         sendResponse(res,200,true,filterField(foundTask,showField),null,"Found list of task success")
@@ -383,7 +383,7 @@ taskController.deleteTask=async(req,res,next)=>{
         const changedTask = await Task.findOneAndUpdate({_id:taskId,$or:[{"users.owners":userId},{"users.managers":userId}],active:true},{active:false, task:null})
         .populate("users.owners users.managers users.members","name active -_id")
         .populate("color","name background frame text -_id");
-        if(!changedTask) return res.status(400).json({ errors: [{ message: 'Invalid data!' }] });
+        if(!changedTask) return res.status(400).json({ errors: [{ msg: 'Invalid data!' }] });
         // recursive function
         async function deleteChildTasks (parentId) {
             const childTask = await Task.find({parent_task:parentId,active:true},{_id:1});
@@ -403,7 +403,7 @@ taskController.deleteTask=async(req,res,next)=>{
             const changedOtherTaskOrder = changedTask.parent_task? await Task.updateMany({ order: { $gt: changedTask.order??0 },active:true,parent_task:changedTask.parent_task }, { $inc: { order: -1 } }):true;
             if(changedOtherTaskOrder) sendResponse(res,200,true,{id:taskId,totalChangedChildTask,totalChangedSpace:totalChangedSpace?.upsertedCount},null,"Delete task success")
         }
-        else return res.status(400).json({ errors: [{ message: 'Invalid data!' }] });
+        else return res.status(400).json({ errors: [{ msg: 'Invalid data!' }] });
      }catch(err){
          next(err)
      }

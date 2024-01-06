@@ -6,7 +6,7 @@ fileValidator.avatarCheck = async(req,res,next)=>{
     try{
         const {userId} = req.access;
         if (req.file?.fieldname!=="image") {
-            return res.status(400).json({ errors:[{"type": "data", message: "Image is invalid!"}] });
+            return res.status(400).json({ errors:[{"type": "data", msg: "Image is invalid!"}] });
         }
         req.key=`avatar/${userId}.jpg`;
         next();
@@ -27,7 +27,7 @@ fileValidator.taskAccessCheck = async(req,res,next)=>{
         const taskId=req.params.id;
         const filter = {_id:taskId,$or:[{"users.owners": userId}, {"users.managers": userId}, {"users.members": userId}], active:true}
         const foundTask= await Task.findOne(filter);
-        if(!foundTask) return res.status(400).json({ errors: [{ message: 'Wrong task id!' }] });
+        if(!foundTask) return res.status(400).json({ errors: [{ msg: 'Wrong task id!' }] });
         next();
     }catch(err){
         next(err);

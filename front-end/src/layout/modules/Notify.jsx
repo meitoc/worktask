@@ -67,21 +67,24 @@ export default function Notify() {
                         horizontal: 'left',
                     }}
                 >
-                    <List style={{display:"flex",flexDirection:"column"}}>
-                    {
-                        notifies.map(notify=>{
-                            return (
-                            <ANotify
-                                notify={notify}
-                                key={notify._id}
-                                close={handleClose}
-                                add={()=>setUnreadNotify(unreadNotify+1)}
-                                remove={()=>setUnreadNotify(unreadNotify-1)} 
-                            />
-                            )
-                        })
+                    {notifies?.length===0?
+                        <p>Empty notify box.</p>
+                        :<List style={{display:"flex",flexDirection:"column"}}>
+                            {
+                                notifies.map(notify=>{
+                                    return (
+                                    <ANotify
+                                        notify={notify}
+                                        key={notify._id}
+                                        close={handleClose}
+                                        add={()=>setUnreadNotify(unreadNotify+1)}
+                                        remove={()=>setUnreadNotify(unreadNotify-1)} 
+                                    />
+                                    )
+                                })
+                            }
+                        </List>
                     }
-                    </List>
                 </Menu>
                 </>
             :null}

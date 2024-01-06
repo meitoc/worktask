@@ -11,10 +11,10 @@ taskFileController.createFileRecord = async(req,res,next)=>{
         const taskId=req.params.id;
         const userId = req.access.userId;
         const {name, size, type } = req.body;
-        if(size>10485760) return res.status(400).json({ errors: [{ message: 'File is over 10MB!' }] });
+        if(size>10485760) return res.status(400).json({ errors: [{ msg: 'File is over 10MB!' }] });
         const data= {name, size, type, task: taskId, user:userId, active:false }
         const createdFile = await File.create(data);
-        if(!createdFile) return res.status(400).json({ errors: [{ message: 'Wrong task id!' }] });
+        if(!createdFile) return res.status(400).json({ errors: [{ msg: 'Wrong task id!' }] });
         req.file=createdFile?._id
         next();
     }catch(err){
